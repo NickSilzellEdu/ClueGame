@@ -18,7 +18,7 @@ public class TestBoard {
 	// Returns the cell from the board at row, col
 	public TestBoardCell getCell(int row, int col) {
 		// INCOMPLETE
-		return new TestBoardCell(0, 0);
+		return new TestBoardCell(row, col);
 	}
 	
 	// Gets the targets last created by calcTargest()
