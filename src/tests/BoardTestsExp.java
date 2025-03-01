@@ -137,9 +137,9 @@ public class BoardTestsExp {
 	@Test
 	public void testOccupiedCorner() {
 		TestBoardCell cell = board.getCell(3, 3);
-		board.calcTargets(cell, 2);
 		board.getCell(3,1).setOccupied(true);
 		board.getCell(1,3).setOccupied(true);
+		board.calcTargets(cell, 2);
 		Set<TestBoardCell> targets = board.getTargets();
 		Assertions.assertEquals(1, targets.size());
 		Assertions.assertTrue(targets.contains(board.getCell(2, 2)));
@@ -151,18 +151,20 @@ public class BoardTestsExp {
 	@Test
 	public void testBigRoom() {
 		TestBoardCell cell = board.getCell(2, 2);
-		board.calcTargets(cell, 3);
 		board.getCell(0,0).setIsRoom(true);
 		board.getCell(0,1).setIsRoom(true);
 		board.getCell(1,0).setIsRoom(true);
 		board.getCell(1,1).setIsRoom(true);
-		board.getCell(3, 3).setOccupied(true);
+		board.getCell(3,3).setOccupied(true);
+		board.calcTargets(cell, 3);
 		Set<TestBoardCell> targets = board.getTargets();
-		Assertions.assertEquals(4, targets.size());
+		Assertions.assertEquals(6, targets.size());
 		Assertions.assertTrue(targets.contains(board.getCell(3, 0)));
 		Assertions.assertTrue(targets.contains(board.getCell(2, 1)));
 		Assertions.assertTrue(targets.contains(board.getCell(1, 2)));
 		Assertions.assertTrue(targets.contains(board.getCell(0, 3)));
+		Assertions.assertTrue(targets.contains(board.getCell(3, 2)));
+		Assertions.assertTrue(targets.contains(board.getCell(2, 3)));
 	}
 	
 	/*
@@ -202,7 +204,7 @@ public class BoardTestsExp {
 	@Test
 	public void testMaxRoll() {
 		TestBoardCell cell = board.getCell(3, 2);
-		board.calcTargets(cell, 3);
+		board.calcTargets(cell, 6);
 		Set<TestBoardCell> targets = board.getTargets();
 		Assertions.assertEquals(7, targets.size());
 		Assertions.assertTrue(targets.contains(board.getCell(0, 1)));

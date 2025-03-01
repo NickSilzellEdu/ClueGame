@@ -8,37 +8,40 @@ import java.util.Set;
 import java.util.HashSet;
 
 public class TestBoardCell {
+	private int row, col;
+	private Boolean isRoom, isOccupied;
+	Set<TestBoardCell> adjList;
 
 	public TestBoardCell(int row, int col) {
-		// INCOMPLETE
+		adjList = new HashSet<TestBoardCell>();
+		this.row = row;
+		this.col = col;
+		this.isRoom = false;
+		this.isOccupied = false;
 	}
 	
 	// Add a cell to this cell's adjacency list
 	public void addAdjacency(TestBoardCell cell) {
-		// INCOMPLETE
+		adjList.add(cell);
 	}
 	
 	// Return adjacency list for this cell
 	public Set<TestBoardCell> getAdjList(){
-		// INCOMPLETE
-		return new HashSet<TestBoardCell>();
+		return adjList;
 	}
 	
 	public void setIsRoom(boolean isRoom) {
-		// INCOMPLETE
-	}
+		this.isRoom = isRoom;	}
 	
 	public boolean isRoom() {
-		// INCOMPLETE
-		return false;
+		return isRoom;
 	}
 	
 	public void setOccupied(boolean isOccupied) {
-		// INCOMPLETE
+		this.isOccupied = isOccupied;
 	}
 	
 	public boolean getOccupied() {
-		// INCOMPLETE
-		return false;
+		return isOccupied;
 	}	
 }
