@@ -11,12 +11,12 @@ public class TestBoard {
 	private Set<TestBoardCell> visited;
 	final static int COLS = 4;
 	final static int ROWS = 4;
-	
+
 	public TestBoard() {
 		// Initialize sets
 		targets = new HashSet<TestBoardCell>();
 		visited = new HashSet<TestBoardCell>();
-		
+
 		// Initialize grid
 		grid = new TestBoardCell[ROWS][COLS];
 		for(int row = 0; row < ROWS; row++) {
@@ -24,7 +24,7 @@ public class TestBoard {
 				grid[row][col] = new TestBoardCell(row,col);
 			}
 		}
-		
+
 		// Set up adjacency list for each cell
 		for(int row = 0; row < ROWS; row++) {
 			for(int col = 0; col < COLS; col++) {
@@ -35,11 +35,11 @@ public class TestBoard {
 			}
 		}
 	}
-	
+
 	// Calculates legal targets for a move from startCell of length pathLength
 	public void calcTargets(TestBoardCell startCell, int pathLength) {
 		visited.add(startCell);
-		
+
 		// Visit current cell's adjacent cells
 		for(TestBoardCell cell : startCell.getAdjList()) {
 			if(!visited.contains(cell)) {
@@ -54,12 +54,12 @@ public class TestBoard {
 			}
 		}
 	}
-	
+
 	// Returns the cell from the board at row, col
 	public TestBoardCell getCell(int row, int col) {
 		return grid[row][col];
 	}
-	
+
 	// Gets the targets last created by calcTargest()
 	public Set<TestBoardCell> getTargets(){
 		return targets;

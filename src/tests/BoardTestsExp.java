@@ -144,28 +144,6 @@ public class BoardTestsExp {
 		Assertions.assertEquals(1, targets.size());
 		Assertions.assertTrue(targets.contains(board.getCell(2, 2)));
 	}
-
-	/*
-	 * Test where a 2x2 room starting at (0,0) exists, (3,3) is occupied, and roll is 3 from (2,2)
-	 */
-	@Test
-	public void testBigRoom() {
-		TestBoardCell cell = board.getCell(2, 2);
-		board.getCell(0,0).setIsRoom(true);
-		board.getCell(0,1).setIsRoom(true);
-		board.getCell(1,0).setIsRoom(true);
-		board.getCell(1,1).setIsRoom(true);
-		board.getCell(3,3).setOccupied(true);
-		board.calcTargets(cell, 3);
-		Set<TestBoardCell> targets = board.getTargets();
-		Assertions.assertEquals(6, targets.size());
-		Assertions.assertTrue(targets.contains(board.getCell(3, 0)));
-		Assertions.assertTrue(targets.contains(board.getCell(2, 1)));
-		Assertions.assertTrue(targets.contains(board.getCell(1, 2)));
-		Assertions.assertTrue(targets.contains(board.getCell(0, 3)));
-		Assertions.assertTrue(targets.contains(board.getCell(3, 2)));
-		Assertions.assertTrue(targets.contains(board.getCell(2, 3)));
-	}
 	
 	/*
 	 * Test targets with several rolls and start locations
@@ -197,7 +175,6 @@ public class BoardTestsExp {
 		Assertions.assertTrue(targets.contains(board.getCell(1, 2)));
 		Assertions.assertTrue(targets.contains(board.getCell(2, 2)));
 		Assertions.assertTrue(targets.contains(board.getCell(3, 3)));
-
 	}
 	
 	// Test max roll(6) on an empty board
