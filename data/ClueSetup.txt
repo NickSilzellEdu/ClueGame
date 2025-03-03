@@ -1,0 +1,13 @@
+// Rooms and room cards
+Room, Town Hall, T
+Room, Builder Hut, B
+Room, Spell Factory, S
+Room, Dark Barracks, D
+Room, Elixir Storage, E
+Room, Laboratory, L
+Room, Clan Caste, C
+Room, Army Camp, A
+Room, Gold Storage, G
+// other spaces on board
+Space, Unused, X
+Space, Walkway, W
