@@ -1,0 +1,19 @@
+Tests.txt
+
+Door Direction Tests:
+- Cell (25,23): This cell corresponds to the Town Hall room and is expected to have a door opening UP. The selection verifies that the board correctly identifies a northern door.
+- Cell (7,8): Selected because it represents Army Camp, which is configured with a door opening DOWN.
+- Cell (9,12): This cell belongs to Dark Barracks and was chosen to test that its door correctly opens LEFT.
+- Cell (23,20): Chosen for Gold Storage to confirm that the door opens to the RIGHT.
+
+Non-Doorway Cell Verification:
+- Cells such as (16,15), (4,5), and (0,0) were selected because they are not marked as doorways. These tests ensure the board properly distinguishes non-door cells.
+
+Room Type Tests:
+- Standard Room: Cell (16,15) in Town Hall tests a normal room where no special markers are set.
+- Label Cell: Cell (5,9) in Army Camp verifies that the room label is correctly assigned.
+- Room Center: Cell (25,22) in Dark Barracks is used to ensure the room center is correctly identified.
+- Secret Passage: Cell (19,28) in Elixir Storage tests the secret passage feature, expecting a secret passage indicator (in this case, 'G').
+
+These test cell selections were made to comprehensively cover the key aspects of the board’s configuration. 
+By targeting specific cells with known expected behavior, we ensure our configuration handling is robust and distinct from the 306 tests.
