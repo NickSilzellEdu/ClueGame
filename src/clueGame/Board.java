@@ -4,8 +4,14 @@ package clueGame;
  * Created by Nick Silzell and Andrwe Grimes on Mar 2 2025
  */
 import java.util.Set;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 public class Board {
 	private static Board theInstance = new Board();
 	private BoardCell[][] grid;
@@ -22,25 +28,28 @@ public class Board {
 		super();
 	}
 
-	// Initialize board
+	// Initialize board, load both config files
 	public void initialize() {
-		
-		//INCOMPLETE: get rows and cols from csv
-		this.rows = 30;
-		this.cols = 30;
-		
-		
+
+		// Initialize all variables
+		roomMap = new HashMap<Character, Room>();
+		// Load layout and setup files
+		try {
+			this.loadSetupConfig();
+			this.loadLayoutConfig();
+		}
+		catch(FileNotFoundException e) {
+			System.out.println(e.getMessage());
+			return; // Exit 
+		}
+		catch(BadConfigFormatException e) {
+			System.out.println(e.getMessage());
+			return; // Exit
+		}
+
 		// Initialize sets
 		targets = new HashSet<BoardCell>();
 		visited = new HashSet<BoardCell>();
-
-		// Initialize grid
-		grid = new BoardCell[rows][cols];
-		for(int row = 0; row < rows; row++) {
-			for(int col = 0; col < cols; col++) {
-				grid[row][col] = new BoardCell(row,col);
-			}
-		}
 
 		// Set up adjacency list for each cell
 		for(int row = 0; row < rows; row++) {
@@ -87,35 +96,145 @@ public class Board {
 		return targets;
 	}
 
-	// Return the room based on it's name
+	// Return the room based on it's symbol
 	public Room getRoom(Character roomChar) {
-		// INCOMPLETE
-		return new Room("Fail");
+		return roomMap.get('C');
 	}
-	
+
 	// Return the room based on it's cell
 	public Room getRoom(BoardCell cell) {
-		//INCOMPLETE
-		return new Room("Fail");
+		return roomMap.get(cell.getInitial());
 	}
-	
+
 	public int getNumRows() {
 		return rows;
 	}
-	
+
 	public int getNumColumns() {
 		return cols;
 	}
-	
+
 	public void setConfigFiles(String layout, String setup) {
 		this.layoutConfigFile = layout;
 		this.setupConfigFile = setup;
 	}
-	public void loadSetupConfig(){
-		//INCOMPLETE
+
+	// NOTE- does nothing with X or W yet? not sure what to do
+	// Use scanner to read in room setups from setup file
+	public void loadSetupConfig() throws FileNotFoundException{
+		// Set up config file
+		FileReader setupFileReader = new FileReader(this.setupConfigFile);
+		Scanner scan = new Scanner(setupFileReader);
+
+		// Read setup file line by line
+		String currentLine = "";
+		while(scan.hasNextLine()) {
+			currentLine = scan.nextLine();
+			String [] splitLine = currentLine.split("[,]"); // Split on comma + space
+
+			if(!splitLine[0].startsWith("//")) { // Add all rooms to the map
+				String roomName = splitLine[1];
+				Character roomChar = splitLine[2].trim().charAt(0);
+
+				Room roomToAdd = new Room(roomName);
+				roomMap.put(roomChar, roomToAdd);
+			}
+		}
+		scan.close();
+	}
+
+	// Use scanner to read in grid layout
+	public void loadLayoutConfig() throws FileNotFoundException, BadConfigFormatException {
+		// read nonempty lines from layout file
+		List<String> lines = new ArrayList<String>();
+		try (Scanner scanner = new Scanner(new FileReader(layoutConfigFile))) {
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				if (!line.trim().isEmpty()) {
+					lines.add(line);
+				}
+			}
+				
+		} catch (Exception ex) {
+			throw new BadConfigFormatException("cant read layout file: " + ex.getMessage());
+		}
+		
+		if (lines.isEmpty()) {
+			throw new BadConfigFormatException("empty layout file");
+		}
+		
+		// amt of rows and cols from the file
+		int numRows = lines.size();
+		String[] firstTokens = lines.get(0).split(",");
+		int numCols = firstTokens.length;
+		
+		// validate amt of rows matches amt of cols
+		for (int r = 0; r < numRows; r++) {
+			String[] tokens = lines.get(r).split(",");
+			if (tokens.length != numCols) {
+				throw new BadConfigFormatException("row " + r + " has " + tokens.length + " columns, expected " + numCols);
+			}
+		}
+		
+		// set board dimensions
+		this.rows = numRows;
+		this.cols = numCols;
+		grid = new BoardCell[rows][cols];
+		
+		for (int r = 0; r < rows; r++) {
+			String[] tokens = lines.get(r).split(",");
+			for (int c = 0; c < cols; c++) {
+				String token = tokens[c].trim();
+				if (token.isEmpty()) {
+					throw new BadConfigFormatException("empty token at row " + r + ", column " + c);
+				}
+				
+				// create new cell
+				BoardCell cell = new BoardCell(r, c);
+				char initial = token.charAt(0);
+				cell.setInitial(initial);
+				
+				// verify room initial exists in roomMap
+				if (roomMap != null && !roomMap.containsKey(initial)) {
+					throw new BadConfigFormatException("unknown room initial '" + initial + "' at row " + r + ", column " + c);
+				}
+				
+				// process extra character
+				if (token.length() > 1) {
+					for (int i = 1; i < token.length(); i++) {
+						char ch = token.charAt(i);
+						switch (ch) {
+							case '<':
+								cell.setDoorDirection(DoorDirection.LEFT);
+								break;
+							case '^':
+								cell.setDoorDirection(DoorDirection.UP);
+								break;
+							case '>':
+								cell.setDoorDirection(DoorDirection.RIGHT);
+								break;
+							case 'v':
+								cell.setDoorDirection(DoorDirection.DOWN);
+								break;
+							case '*':
+								cell.setRoomCenter(true);
+								break;
+							case '#':
+								cell.setLabel(true);
+								break;
+								
+							default:
+								// secretPassage indicator
+								if (token.length() == 2) {
+									cell.setSecretPassage(ch);
+								}
+								break;
+						}
+					}
+				}
+				grid[r][c] = cell;
+			}
+		}
 	}
 	
-	public void loadLayoutConfig() {
-		//INCOMPLETE
-	}
 }

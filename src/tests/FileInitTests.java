@@ -25,7 +25,7 @@ public class FileInitTests {
 		board = Board.getInstance();
 
 		// Setup files and initialize board based on them
-		board.setConfigFiles("ClueLayout.csv", "ClueSetup.txt");
+		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
 		board.initialize();
 	}
 
