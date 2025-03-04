@@ -6,7 +6,7 @@ import clueGame.BadConfigFormatException;
 import clueGame.Board;
 import java.io.FileNotFoundException;
 
-public class ExceptionsTests {
+public class ExceptionTests {
 
     @Test
     public void testBadColumns() throws BadConfigFormatException, FileNotFoundException {
