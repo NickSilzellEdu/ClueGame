@@ -12,46 +12,56 @@ public class Board {
 	private String layoutConfigFile;
 	private String setupConfigFile;
 	private Map<Character, Room> roomMap;
-	
+
 	private Set<BoardCell> targets;
 	private Set<BoardCell> visited;
-	final static int COLS = 4;
-	final static int ROWS = 4;
-	
+	private int rows;
+	private int cols;
+
 	private Board() {
 		super();
+	}
+
+	// Initialize board
+	public void initialize() {
+		
+		//INCOMPLETE: get rows and cols from csv
+		this.rows = 30;
+		this.cols = 30;
+		
+		
 		// Initialize sets
 		targets = new HashSet<BoardCell>();
 		visited = new HashSet<BoardCell>();
-		
+
 		// Initialize grid
-		grid = new BoardCell[ROWS][COLS];
-		for(int row = 0; row < ROWS; row++) {
-			for(int col = 0; col < COLS; col++) {
+		grid = new BoardCell[rows][cols];
+		for(int row = 0; row < rows; row++) {
+			for(int col = 0; col < cols; col++) {
 				grid[row][col] = new BoardCell(row,col);
 			}
 		}
-		
+
 		// Set up adjacency list for each cell
-		for(int row = 0; row < ROWS; row++) {
-			for(int col = 0; col < COLS; col++) {
+		for(int row = 0; row < rows; row++) {
+			for(int col = 0; col < cols; col++) {
 				if(row > 0) grid[row][col].addAdjacency(grid[row - 1][col]);
-				if(row < ROWS - 1) grid[row][col].addAdjacency(grid[row + 1][col]);
+				if(row < rows - 1) grid[row][col].addAdjacency(grid[row + 1][col]);
 				if(col > 0) grid[row][col].addAdjacency(grid[row][col - 1]);
-				if(col < COLS - 1) grid[row][col].addAdjacency(grid[row][col + 1]);
+				if(col < cols - 1) grid[row][col].addAdjacency(grid[row][col + 1]);
 			}
 		}
 	}
-	
+
 	// Return the only method of Board
 	public static Board getInstance() {
 		return theInstance;
 	}
-	
+
 	// Calculates legal targets for a move from startCell of length pathLength
 	public void calcTargets(BoardCell startCell, int pathLength) {
 		visited.add(startCell);
-		
+
 		// Visit current cell's adjacent cells
 		for(BoardCell cell : startCell.getAdjList()) {
 			if(!visited.contains(cell)) {
@@ -66,16 +76,46 @@ public class Board {
 			}
 		}
 	}
-	
+
 	// Returns the cell from the board at row, col
 	public BoardCell getCell(int row, int col) {
 		return grid[row][col];
 	}
-	
+
 	// Gets the targets last created by calcTargest()
 	public Set<BoardCell> getTargets(){
 		return targets;
 	}
+
+	// Return the room based on it's name
+	public Room getRoom(Character roomChar) {
+		// INCOMPLETE
+		return new Room("Fail");
+	}
 	
-	// Set 
+	// Return the room based on it's cell
+	public Room getRoom(BoardCell cell) {
+		//INCOMPLETE
+		return new Room("Fail");
+	}
+	
+	public int getNumRows() {
+		return rows;
+	}
+	
+	public int getNumColumns() {
+		return cols;
+	}
+	
+	public void setConfigFiles(String layout, String setup) {
+		this.layoutConfigFile = layout;
+		this.setupConfigFile = setup;
+	}
+	public void loadSetupConfig(){
+		//INCOMPLETE
+	}
+	
+	public void loadLayoutConfig() {
+		//INCOMPLETE
+	}
 }

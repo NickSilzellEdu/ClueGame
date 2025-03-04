@@ -14,7 +14,7 @@ public class BoardCell {
 	private char secretPassage;
 	private Set<BoardCell> adjList;
 
-	private BoardCell(int row, int col) {
+	public BoardCell(int row, int col) {
 		this.row = row;
 		this.col = col;
 		this.initial = ' ';
