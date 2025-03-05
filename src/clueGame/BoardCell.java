@@ -1,5 +1,8 @@
 package clueGame;
-
+/*
+ * Created by Nick Silzell and Andrew Grimes
+ * This class represents one cell in the Game Board
+ */
 import java.util.HashSet;
 import java.util.Set;
 public class BoardCell {
@@ -12,7 +15,7 @@ public class BoardCell {
 	private boolean isRoom;
 	private boolean isOccupied;
 	private char secretPassage;
-	private Set<BoardCell> adjList;
+	private Set<BoardCell> adjList; // Cells adjacent to this cell
 
 	public BoardCell(int row, int col) {
 		this.row = row;

@@ -2,8 +2,8 @@ package clueGame;
 
 public class Room {
 	private String name;
-	private BoardCell centerCell;
-	private BoardCell labelCell;
+	private BoardCell centerCell; // The cell where players will stand
+	private BoardCell labelCell; // The cell where the room label will be
 	
 	public Room(String name) {
 		this.name = name;

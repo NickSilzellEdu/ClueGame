@@ -1,7 +1,8 @@
 package clueGame;
 
 /*
- * Created by Nick Silzell and Andrwe Grimes on Mar 2 2025
+ * Created by Nick Silzell and Andrew Grimes on Mar 2 2025
+ * This class represents the Clue Game board
  */
 import java.util.Set;
 import java.io.FileNotFoundException;
@@ -27,7 +28,6 @@ public class Board {
 
 	private Board() {
 		super();
-		roomMap = new HashMap<Character, Room>(); // Initialize even if initialize() is not called
 	}
 
 	// Initialize board, load both config files
@@ -119,30 +119,36 @@ public class Board {
 
 	// Use scanner to read in room setups from setup file
 	public void loadSetupConfig() throws FileNotFoundException, BadConfigFormatException{
+		// Make sure roomMap gets initialized during testing:
+		if(roomMap == null) roomMap = new HashMap<Character, Room>();
+		
 		// Set up config file
 		try(Scanner scan = new Scanner(new FileReader(this.setupConfigFile))) {
-
 			// Read setup file line by line, and add to roomMap if valid
 			// For now: spaces are considered rooms
 			String currentLine = "";
 			while(scan.hasNextLine()) {
 				currentLine = scan.nextLine();
-				String [] splitLine = currentLine.split("[,]"); // Split on comma + space
+				String [] splitLine = currentLine.split("[,]"); // Split on commas
 
-				if(splitLine[0].trim().equals("Room") || splitLine[0].trim().equals("Space")) { // Add all rooms to the map
+				if(splitLine[0].trim().equals("Room") || splitLine[0].trim().equals("Space")) { // Add all rooms and spaces to roomMap
 					String roomName = splitLine[1].trim();
 					Character roomChar = splitLine[2].trim().charAt(0);
-
 					Room roomToAdd = new Room(roomName);
 					roomMap.put(roomChar, roomToAdd);
-				} else if(!splitLine[0].startsWith("//")) throw new BadConfigFormatException("Error: \"" + this.setupConfigFile + "\" is not properly configured for setup");
+				}
+				// If line does not start with //, Room, or Space, throw an error
+				else if(!splitLine[0].startsWith("//")) throw new BadConfigFormatException("Error: \"" + this.setupConfigFile + "\" is not properly configured for setup");
 			}
 		}
 	}
 
 	// Use scanner to read in grid layout
-	public void loadLayoutConfig() throws FileNotFoundException, BadConfigFormatException {
-		// read nonempty lines from layout file
+	public void loadLayoutConfig() throws FileNotFoundException, BadConfigFormatException {		
+		// Make sure roomMap gets initialized during testing:
+		if(roomMap == null) roomMap = new HashMap<Character, Room>();
+		
+		// Read nonempty lines from layout file
 		List<String> lines = new ArrayList<String>();
 		try (Scanner scanner = new Scanner(new FileReader(layoutConfigFile))) {
 			while (scanner.hasNextLine()) {
@@ -153,19 +159,19 @@ public class Board {
 			}
 
 		} catch (Exception ex) {
-			throw new BadConfigFormatException("cant read layout file: " + ex.getMessage());
+			throw new BadConfigFormatException("Error: cannot read layout file, " + ex.getMessage());
 		}
 
 		if (lines.isEmpty()) {
-			throw new BadConfigFormatException("empty layout file");
+			throw new BadConfigFormatException("Error: Layout file is empty");
 		}
 
-		// amt of rows and cols from the file
+		// Amount of rows and columns from the file
 		int numRows = lines.size();
 		String[] firstTokens = lines.get(0).split(",");
 		int numCols = firstTokens.length;
 
-		// validate amt of rows matches amt of cols
+		// Validate amount of rows matches amount of columns
 		for (int r = 0; r < numRows; r++) {
 			String[] tokens = lines.get(r).split(",");
 			if (tokens.length != numCols) {
@@ -173,7 +179,7 @@ public class Board {
 			}
 		}
 
-		// set board dimensions
+		// Set board dimensions
 		this.rows = numRows;
 		this.cols = numCols;
 		grid = new BoardCell[rows][cols];
@@ -186,17 +192,17 @@ public class Board {
 					throw new BadConfigFormatException("empty token at row " + r + ", column " + c);
 				}
 
-				// create new cell
+				// Create new cell
 				BoardCell cell = new BoardCell(r, c);
 				char initial = token.charAt(0);
 				cell.setInitial(initial);
 
-				// verify room initial exists in roomMap
+				// Verify room initial exists in roomMap
 				if (roomMap != null && !roomMap.containsKey(initial)) {
 					throw new BadConfigFormatException("unknown room initial '" + initial + "' at row " + r + ", column " + c);
 				}
 
-				// process extra character
+				// Process extra character if exists
 				if (token.length() > 1) {
 					for (int i = 1; i < token.length(); i++) {
 						char ch = token.charAt(i);
@@ -223,7 +229,7 @@ public class Board {
 							break;
 
 						default:
-							// secretPassage indicator
+							// SecretPassage indicator
 							if (token.length() == 2) {
 								cell.setSecretPassage(ch);
 							}
