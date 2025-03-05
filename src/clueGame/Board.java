@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
 public class Board {
 	private static Board theInstance = new Board();
 	private BoardCell[][] grid;
@@ -26,13 +27,11 @@ public class Board {
 
 	private Board() {
 		super();
+		roomMap = new HashMap<Character, Room>(); // Initialize even if initialize() is not called
 	}
 
 	// Initialize board, load both config files
 	public void initialize() {
-
-		// Initialize all variables
-		roomMap = new HashMap<Character, Room>();
 		// Load layout and setup files
 		try {
 			this.loadSetupConfig();
@@ -86,12 +85,11 @@ public class Board {
 		}
 	}
 
-	// Returns the cell from the board at row, col
 	public BoardCell getCell(int row, int col) {
 		return grid[row][col];
 	}
 
-	// Gets the targets last created by calcTargest()
+	// Gets the targets last created by calcTargets()
 	public Set<BoardCell> getTargets(){
 		return targets;
 	}
@@ -119,28 +117,27 @@ public class Board {
 		this.setupConfigFile = setup;
 	}
 
-	// NOTE- does nothing with X or W yet? not sure what to do
 	// Use scanner to read in room setups from setup file
-	public void loadSetupConfig() throws FileNotFoundException{
+	public void loadSetupConfig() throws FileNotFoundException, BadConfigFormatException{
 		// Set up config file
-		FileReader setupFileReader = new FileReader(this.setupConfigFile);
-		Scanner scan = new Scanner(setupFileReader);
+		try(Scanner scan = new Scanner(new FileReader(this.setupConfigFile))) {
 
-		// Read setup file line by line
-		String currentLine = "";
-		while(scan.hasNextLine()) {
-			currentLine = scan.nextLine();
-			String [] splitLine = currentLine.split("[,]"); // Split on comma + space
+			// Read setup file line by line, and add to roomMap if valid
+			// For now: spaces are considered rooms
+			String currentLine = "";
+			while(scan.hasNextLine()) {
+				currentLine = scan.nextLine();
+				String [] splitLine = currentLine.split("[,]"); // Split on comma + space
 
-			if(!splitLine[0].startsWith("//")) { // Add all rooms to the map
-				String roomName = splitLine[1].trim();
-				Character roomChar = splitLine[2].trim().charAt(0);
+				if(splitLine[0].trim().equals("Room") || splitLine[0].trim().equals("Space")) { // Add all rooms to the map
+					String roomName = splitLine[1].trim();
+					Character roomChar = splitLine[2].trim().charAt(0);
 
-				Room roomToAdd = new Room(roomName);
-				roomMap.put(roomChar, roomToAdd);
+					Room roomToAdd = new Room(roomName);
+					roomMap.put(roomChar, roomToAdd);
+				} else if(!splitLine[0].startsWith("//")) throw new BadConfigFormatException("Error: \"" + this.setupConfigFile + "\" is not properly configured for setup");
 			}
 		}
-		scan.close(); 
 	}
 
 	// Use scanner to read in grid layout
@@ -154,20 +151,20 @@ public class Board {
 					lines.add(line);
 				}
 			}
-				
+
 		} catch (Exception ex) {
 			throw new BadConfigFormatException("cant read layout file: " + ex.getMessage());
 		}
-		
+
 		if (lines.isEmpty()) {
 			throw new BadConfigFormatException("empty layout file");
 		}
-		
+
 		// amt of rows and cols from the file
 		int numRows = lines.size();
 		String[] firstTokens = lines.get(0).split(",");
 		int numCols = firstTokens.length;
-		
+
 		// validate amt of rows matches amt of cols
 		for (int r = 0; r < numRows; r++) {
 			String[] tokens = lines.get(r).split(",");
@@ -175,12 +172,12 @@ public class Board {
 				throw new BadConfigFormatException("row " + r + " has " + tokens.length + " columns, expected " + numCols);
 			}
 		}
-		
+
 		// set board dimensions
 		this.rows = numRows;
 		this.cols = numCols;
 		grid = new BoardCell[rows][cols];
-		
+
 		for (int r = 0; r < rows; r++) {
 			String[] tokens = lines.get(r).split(",");
 			for (int c = 0; c < cols; c++) {
@@ -188,49 +185,49 @@ public class Board {
 				if (token.isEmpty()) {
 					throw new BadConfigFormatException("empty token at row " + r + ", column " + c);
 				}
-				
+
 				// create new cell
 				BoardCell cell = new BoardCell(r, c);
 				char initial = token.charAt(0);
 				cell.setInitial(initial);
-				
+
 				// verify room initial exists in roomMap
 				if (roomMap != null && !roomMap.containsKey(initial)) {
 					throw new BadConfigFormatException("unknown room initial '" + initial + "' at row " + r + ", column " + c);
 				}
-				
+
 				// process extra character
 				if (token.length() > 1) {
 					for (int i = 1; i < token.length(); i++) {
 						char ch = token.charAt(i);
 						switch (ch) {
-							case '<':
-								cell.setDoorDirection(DoorDirection.LEFT);
-								break;
-							case '^':
-								cell.setDoorDirection(DoorDirection.UP);
-								break;
-							case '>':
-								cell.setDoorDirection(DoorDirection.RIGHT);
-								break;
-							case 'v':
-								cell.setDoorDirection(DoorDirection.DOWN);
-								break;
-							case '*':
-								cell.setRoomCenter(true);
-								roomMap.get(initial).setCenterCell(cell);
-								break;
-							case '#':
-								cell.setLabel(true);
-								roomMap.get(initial).setLabelCell(cell);
-								break;
-								
-							default:
-								// secretPassage indicator
-								if (token.length() == 2) {
-									cell.setSecretPassage(ch);
-								}
-								break;
+						case '<':
+							cell.setDoorDirection(DoorDirection.LEFT);
+							break;
+						case '^':
+							cell.setDoorDirection(DoorDirection.UP);
+							break;
+						case '>':
+							cell.setDoorDirection(DoorDirection.RIGHT);
+							break;
+						case 'v':
+							cell.setDoorDirection(DoorDirection.DOWN);
+							break;
+						case '*':
+							cell.setRoomCenter(true);
+							roomMap.get(initial).setCenterCell(cell);
+							break;
+						case '#':
+							cell.setLabel(true);
+							roomMap.get(initial).setLabelCell(cell);
+							break;
+
+						default:
+							// secretPassage indicator
+							if (token.length() == 2) {
+								cell.setSecretPassage(ch);
+							}
+							break;
 						}
 					}
 				}
@@ -238,5 +235,5 @@ public class Board {
 			}
 		}
 	}
-	
+
 }

@@ -10,3 +10,4 @@ Notes:
  	- Changed TestUnusedCorners, it was trying to access board.getCell(NUM_ROWS, NUM_COlUMNS), but they needed to be decremented by 1 to prevent out of bounds error.
  	- Changed TestDoorDirections, the test had column and row numbers swapped for the intended testing cells;
  	- Changed TestTypesOfRooms, the test columns and rows were switched again
+ 	- Changed ExceptionTests and ExceptionTests306 to include "data/" for files
