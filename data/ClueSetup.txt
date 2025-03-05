@@ -5,7 +5,7 @@ Room, Spell Factory, S
 Room, Dark Barracks, D
 Room, Elixir Storage, E
 Room, Laboratory, L
-Room, Clan Caste, C
+Room, Clan Castle, C
 Room, Army Camp, A
 Room, Gold Storage, G
 // other spaces on board

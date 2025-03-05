@@ -98,7 +98,7 @@ public class Board {
 
 	// Return the room based on it's symbol
 	public Room getRoom(Character roomChar) {
-		return roomMap.get('C');
+		return roomMap.get(roomChar);
 	}
 
 	// Return the room based on it's cell
@@ -133,14 +133,14 @@ public class Board {
 			String [] splitLine = currentLine.split("[,]"); // Split on comma + space
 
 			if(!splitLine[0].startsWith("//")) { // Add all rooms to the map
-				String roomName = splitLine[1];
+				String roomName = splitLine[1].trim();
 				Character roomChar = splitLine[2].trim().charAt(0);
 
 				Room roomToAdd = new Room(roomName);
 				roomMap.put(roomChar, roomToAdd);
 			}
 		}
-		scan.close();
+		scan.close(); 
 	}
 
 	// Use scanner to read in grid layout
@@ -218,9 +218,11 @@ public class Board {
 								break;
 							case '*':
 								cell.setRoomCenter(true);
+								roomMap.get(initial).setCenterCell(cell);
 								break;
 							case '#':
 								cell.setLabel(true);
+								roomMap.get(initial).setLabelCell(cell);
 								break;
 								
 							default:
