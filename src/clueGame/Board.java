@@ -121,7 +121,7 @@ public class Board {
 	public void loadSetupConfig() throws FileNotFoundException, BadConfigFormatException{
 		// Make sure roomMap gets initialized during testing:
 		if(roomMap == null) roomMap = new HashMap<Character, Room>();
-		
+
 		// Set up config file
 		try(Scanner scan = new Scanner(new FileReader(this.setupConfigFile))) {
 			// Read setup file line by line, and add to roomMap if valid
@@ -147,7 +147,7 @@ public class Board {
 	public void loadLayoutConfig() throws FileNotFoundException, BadConfigFormatException {		
 		// Make sure roomMap gets initialized during testing:
 		if(roomMap == null) roomMap = new HashMap<Character, Room>();
-		
+
 		// Read nonempty lines from layout file
 		List<String> lines = new ArrayList<String>();
 		try (Scanner scanner = new Scanner(new FileReader(layoutConfigFile))) {
@@ -240,6 +240,11 @@ public class Board {
 				grid[r][c] = cell;
 			}
 		}
+	}
+
+	// Get adjacency list for the cell at row,col
+	public Set<BoardCell> getAdjList(int row, int col) {
+		return grid[row][col].getAdjList();
 	}
 
 }
