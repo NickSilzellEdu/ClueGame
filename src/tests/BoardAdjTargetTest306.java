@@ -41,7 +41,7 @@ public class BoardAdjTargetTest306 {
 		
 		// now test the ballroom (note not marked since multiple test here)
 		testList = board.getAdjList(20, 11);
-		assertEquals(4, testList.size());
+		assertEquals(4, testList.size()); // NOTE TO ANDREW- failing here
 		assertTrue(testList.contains(board.getCell(16, 9)));
 		
 		// one more room, the kitchen

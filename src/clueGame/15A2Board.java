@@ -258,11 +258,11 @@
 //		}
 //	}
 //	
-//	// NEW: Advanced adjacency calculation method.
-//	// This method clears any previously set adjacencies and then sets them up based on:
-//	// - Walkways only connect to adjacent walkways or doorways (if entry is valid)
-//	// - Doorways connect to adjacent walkways and to their corresponding room center
-//	// - Room center cells connect to doorways and to a secret passage partner, if any.
+////	 NEW: Advanced adjacency calculation method.
+////	 This method clears any previously set adjacencies and then sets them up based on:
+////	 - Walkways only connect to adjacent walkways or doorways (if entry is valid)
+////	 - Doorways connect to adjacent walkways and to their corresponding room center
+////	 - Room center cells connect to doorways and to a secret passage partner, if any.
 //	private void calcAdvancedAdjacencies() {
 //		// Clear all adjacencies first
 //		for (int r = 0; r < rows; r++) {
@@ -361,7 +361,7 @@
 //				return false;
 //		}
 //	}
-//	
+////	
 //	// NEW: Finds the room center cell corresponding to a given door cell based on door direction.
 //	private BoardCell findCenterCellForDoor(BoardCell door) {
 //		int row = door.getRow();

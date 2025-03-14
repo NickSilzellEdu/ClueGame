@@ -51,14 +51,7 @@ public class Board {
 		visited = new HashSet<BoardCell>();
 
 		// Set up adjacency list for each cell
-		for(int row = 0; row < rows; row++) {
-			for(int col = 0; col < cols; col++) {
-				if(row > 0) grid[row][col].addAdjacency(grid[row - 1][col]);
-				if(row < rows - 1) grid[row][col].addAdjacency(grid[row + 1][col]);
-				if(col > 0) grid[row][col].addAdjacency(grid[row][col - 1]);
-				if(col < cols - 1) grid[row][col].addAdjacency(grid[row][col + 1]);
-			}
-		}
+		calcAdjacencies();
 	}
 
 	// Return the only method of Board
@@ -196,11 +189,14 @@ public class Board {
 				BoardCell cell = new BoardCell(r, c);
 				char initial = token.charAt(0);
 				cell.setInitial(initial);
+				
+
 
 				// Verify room initial exists in roomMap
 				if (roomMap != null && !roomMap.containsKey(initial)) {
 					throw new BadConfigFormatException("unknown room initial '" + initial + "' at row " + r + ", column " + c);
 				}
+				else if(roomMap != null && roomMap.containsKey(initial)) cell.setIsRoom(true); // Set to a room cell if true
 
 				// Process extra character if exists
 				if (token.length() > 1) {
@@ -242,9 +238,104 @@ public class Board {
 		}
 	}
 
-	// Get adjacency list for the cell at row,col
+	// Get adjacency list for the cell at row, col
 	public Set<BoardCell> getAdjList(int row, int col) {
 		return grid[row][col].getAdjList();
 	}
 
+	// Populate adjacency for a cell
+	private void calcAdjacencies() {
+		// Go through each cell, and check walkways and doorways. 
+		BoardCell cell = null;
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				cell = grid[row][col];
+
+				// If the cell is a walkway
+				if(cell.getInitial() == 'W' || cell.isDoorway()) {
+					if (isValidIndex(row - 1, col) && isValidCell(grid[row-1][col])) {
+						cell.addAdjacency(grid[row - 1][col]);
+					}
+					if (isValidIndex(row + 1, col) && isValidCell(grid[row + 1][col])) {
+						cell.addAdjacency(grid[row + 1][col]);
+					}
+					if (isValidIndex(row, col - 1) && isValidCell(grid[row][col - 1])) {
+						cell.addAdjacency(grid[row][col - 1]);
+					}
+					if (isValidIndex(row, col + 1) && isValidCell(grid[row][col + 1])) {
+						cell.addAdjacency(grid[row][col + 1]);
+					}
+				}
+
+				// If cell is a doorway, add the room center, and also add this cell to room center's adjacencies
+				if(cell.isDoorway()) {
+					BoardCell center = findCenterCell(cell);
+					if(center != null) {
+					center.addAdjacency(cell);
+					cell.addAdjacency(center);
+					}
+				}
+
+				// Add adjacencies to both room centers
+				if(cell.isRoom() && cell.getSecretPassage() != '\0') {
+					Room adjRoom = getRoom(cell.getSecretPassage());
+					BoardCell roomCenter = roomMap.get(cell.getInitial()).getCenterCell();
+					if(adjRoom != null && adjRoom.getCenterCell() != null) {
+						BoardCell adjCenter = adjRoom.getCenterCell();
+						roomCenter.addAdjacency(adjCenter);
+						adjCenter.addAdjacency(roomCenter);
+					}
+
+				}
+			}
+		}
+	}
+
+	// Make sure row and column are in bounds
+	private boolean isValidIndex(int row, int col){
+		return (row >= 0 && row < rows && col >= 0 && col < cols);
+	}
+
+	// Make sure cell is a walkway or doorway
+	private boolean isValidCell(BoardCell cell) {
+		return (cell.getInitial() == 'W' || cell.isDoorway());
+	}
+	// Find room center for door cell based on direction
+	private BoardCell findCenterCell(BoardCell doorCell) {
+		int row = doorCell.getRow();
+		int col = doorCell.getCol();
+		DoorDirection direction = doorCell.getDoorDirection();
+
+		// Use the character of the adjacent room cell to locate room center
+		switch(direction) {
+		case UP:
+			if(isValidIndex(row - 1, col)) {
+				char roomChar = grid[row - 1][col].getInitial();
+				return roomMap.get(roomChar).getCenterCell();
+			}
+			break;
+		case DOWN:
+			if(isValidIndex(row + 1, col)) {
+				char roomChar = grid[row][col - 1].getInitial();
+				return roomMap.get(roomChar).getCenterCell();
+			}
+			break;
+		case LEFT:
+			if(isValidIndex(row, col - 1)) {
+				char roomChar = grid[row - 1][col].getInitial();
+				return roomMap.get(roomChar).getCenterCell();
+			}
+			break;
+		case RIGHT:
+			if(isValidIndex(row, col + 1)) {
+				char roomChar = grid[row - 1][col].getInitial();
+				return roomMap.get(roomChar).getCenterCell();
+			}
+			break;
+		default:
+			break;	
+		}
+		// If no valid cells, return null
+		return null;
+	}
 }
