@@ -249,7 +249,14 @@ public class Board {
 		BoardCell cell = null;
 		for (int row = 0; row < rows; row++) {
 			for (int col = 0; col < cols; col++) {
+//				
+//				//test cell - remove after tests
+//				int row = 19;
+//				int col = 5;
+				
 				cell = grid[row][col];
+				
+
 
 				// If the cell is a walkway
 				if(cell.getInitial() == 'W' || cell.isDoorway()) {
@@ -316,19 +323,19 @@ public class Board {
 			break;
 		case DOWN:
 			if(isValidIndex(row + 1, col)) {
-				char roomChar = grid[row][col - 1].getInitial();
+				char roomChar = grid[row + 1][col].getInitial();
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
 		case LEFT:
 			if(isValidIndex(row, col - 1)) {
-				char roomChar = grid[row - 1][col].getInitial();
+				char roomChar = grid[row][col - 1].getInitial();
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
 		case RIGHT:
 			if(isValidIndex(row, col + 1)) {
-				char roomChar = grid[row - 1][col].getInitial();
+				char roomChar = grid[row][col + 1].getInitial();
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
