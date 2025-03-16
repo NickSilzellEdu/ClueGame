@@ -58,7 +58,7 @@ public class Board {
 	public static Board getInstance() {
 		return theInstance;
 	}
-
+	
 	// Calculates legal targets for a move from startCell of length pathLength
 	public void calcTargets(BoardCell startCell, int pathLength) {
 		visited.add(startCell);
@@ -68,10 +68,11 @@ public class Board {
 			if(!visited.contains(cell)) {
 				visited.add(cell);
 				// If out of steps and empty add to targets, if not call recursively on adjList
-				if(pathLength == 1 || cell.isRoom()) {
+				if(cell.isRoomCenter()) targets.add(cell);
+				else if(pathLength == 1) {
 					if(!cell.getOccupied()) targets.add(cell);
 				} else {
-					if(!(cell.isRoom() || cell.getOccupied())) calcTargets(cell, pathLength - 1);
+					if(!(cell.isRoomCenter() || cell.getOccupied())) calcTargets(cell, pathLength - 1);
 				}
 				visited.remove(cell);
 			}

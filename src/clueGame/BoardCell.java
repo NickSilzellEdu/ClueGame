@@ -21,6 +21,8 @@ public class BoardCell {
 		this.row = row;
 		this.col = col;
 		this.initial = ' ';
+		this.isRoom = false;
+		
 		this.doorDirection = DoorDirection.NONE;
 		this.isLabel = false;
 		this.isRoomCenter = false;

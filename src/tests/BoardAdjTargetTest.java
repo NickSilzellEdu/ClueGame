@@ -82,7 +82,7 @@ public class BoardAdjTargetTest {
 		// Test a corner walkway with 2 adjacencies
 		Set<BoardCell> testList = board.getAdjList(5, 5);
 		assertEquals(2, testList.size());
-		assertTrue(testList.contains(board.getCell(4, 5)));
+		assertTrue(testList.contains(board.getCell(6, 5)));
 		assertTrue(testList.contains(board.getCell(5, 4)));
 
 		// Test a walkway diagnol to a doorway, making sure doorway is not included
@@ -148,7 +148,7 @@ public class BoardAdjTargetTest {
 	@Test
 	public void TestWalkwayTargets() {
 		// Test a roll of 1
-		board.calcTargets(board.getCell(25, 15), 1);
+		board.calcTargets(board.getCell(27, 15), 1);
 		Set<BoardCell> targets = board.getTargets();
 		assertEquals(3, targets.size());
 		assertTrue(targets.contains(board.getCell(27, 16)));
@@ -156,7 +156,7 @@ public class BoardAdjTargetTest {
 		assertTrue(targets.contains(board.getCell(28, 15)));
 
 		// Test a roll of 3
-		board.calcTargets(board.getCell(25, 15), 3);
+		board.calcTargets(board.getCell(27, 15), 3);
 		targets = board.getTargets();
 		assertEquals(12, targets.size());
 		assertTrue(targets.contains(board.getCell(30, 15)));
@@ -166,7 +166,7 @@ public class BoardAdjTargetTest {
 		assertTrue(targets.contains(board.getCell(25, 14)));
 
 		// Test a roll of 4
-		board.calcTargets(board.getCell(25, 15), 4);
+		board.calcTargets(board.getCell(27, 15), 4);
 		targets = board.getTargets();
 		assertEquals(16, targets.size());
 		assertTrue(targets.contains(board.getCell(24, 14)));
@@ -266,7 +266,7 @@ public class BoardAdjTargetTest {
 		board.getCell(27, 17).setOccupied(false);
 		targets = board.getTargets();
 		assertEquals(5, targets.size());
-		assertTrue(targets.contains(board.getCell(12,20)));
+		assertTrue(targets.contains(board.getCell(26,21)));
 		assertTrue(targets.contains(board.getCell(24, 18)));
 		assertFalse(targets.contains(board.getCell(27, 17)));
 		
