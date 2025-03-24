@@ -30,54 +30,59 @@ public class Board {
 		super();
 	}
 
-	// Initialize board, load both config files
+	// new stuff lines 33-55
 	public void initialize() {
-		// Load layout and setup files
-		try {
-			this.loadSetupConfig();
-			this.loadLayoutConfig();
-		}
-		catch(FileNotFoundException e) {
-			System.out.println(e.getMessage());
-			return; // Exit 
-		}
-		catch(BadConfigFormatException e) {
-			System.out.println(e.getMessage());
-			return; // Exit
-		}
+	    // Initialize sets FIRST
+	    targets = new HashSet<BoardCell>();
+	    visited = new HashSet<BoardCell>();
 
-		// Initialize sets
-		targets = new HashSet<BoardCell>();
-		visited = new HashSet<BoardCell>();
+	    // Load layout and setup files
+	    try {
+	        this.loadSetupConfig();
+	        this.loadLayoutConfig();
+	    }
+	    catch(FileNotFoundException e) {
+	        System.out.println(e.getMessage());
+	        return; // Exit 
+	    }
+	    catch(BadConfigFormatException e) {
+	        System.out.println(e.getMessage());
+	        return; // Exit
+	    }
 
-		// Set up adjacency list for each cell
-		calcAdjacencies();
+	    // Set up adjacency list for each cell
+	    calcAdjacencies();
 	}
+
 
 	// Return the only method of Board
 	public static Board getInstance() {
 		return theInstance;
 	}
 	
-	// Calculates legal targets for a move from startCell of length pathLength
+	// new stuff lines 62-82
 	public void calcTargets(BoardCell startCell, int pathLength) {
-		visited.add(startCell);
-
-		// Visit current cell's adjacent cells
-		for(BoardCell cell : startCell.getAdjList()) {
-			if(!visited.contains(cell)) {
-				visited.add(cell);
-				// If out of steps and empty add to targets, if not call recursively on adjList
-				if(cell.isRoomCenter()) targets.add(cell);
-				else if(pathLength == 1) {
-					if(!cell.getOccupied()) targets.add(cell);
-				} else {
-					if(!(cell.isRoomCenter() || cell.getOccupied())) calcTargets(cell, pathLength - 1);
-				}
-				visited.remove(cell);
-			}
-		}
+	    targets.clear();  // Important to clear targets before each calculation
+	    visited.clear();  // Clear visited set for fresh calculation
+	    visited.add(startCell);
+	    findAllTargets(startCell, pathLength);
 	}
+
+	private void findAllTargets(BoardCell currentCell, int stepsRemaining) {
+	    for (BoardCell adjCell : currentCell.getAdjList()) {
+	        if (visited.contains(adjCell) || (adjCell.getOccupied() && !adjCell.isRoomCenter())) {
+	            continue; // Skip visited cells or occupied cells unless they're room centers
+	        }
+	        visited.add(adjCell);
+	        if (stepsRemaining == 1 || adjCell.isRoomCenter()) {
+	            targets.add(adjCell);
+	        } else {
+	            findAllTargets(adjCell, stepsRemaining - 1);
+	        }
+	        visited.remove(adjCell);  // Important for backtracking
+	    }
+	}
+
 
 	public BoardCell getCell(int row, int col) {
 		return grid[row][col];
@@ -226,9 +231,16 @@ public class Board {
 							break;
 
 						default:
+							// new stuff lines 234-242
 							// SecretPassage indicator
-							if (token.length() == 2) {
-								cell.setSecretPassage(ch);
+							if (token.length() == 2 && Character.isLetter(ch)) {
+							    cell.setSecretPassage(ch);
+							    if (cell.isRoomCenter()) {
+							        Room currentRoom = roomMap.get(initial);
+							        if (currentRoom != null) {
+							            currentRoom.setCenterCell(cell);
+							        }
+							    }
 							}
 							break;
 						}
@@ -296,6 +308,15 @@ public class Board {
 
 				}
 			}
+		}
+		for (Room room : roomMap.values()) {
+		    BoardCell centerCell = room.getCenterCell();
+		    if (centerCell != null && centerCell.getSecretPassage() != '\0') {
+		        Room passageRoom = roomMap.get(centerCell.getSecretPassage());
+		        if (passageRoom != null && passageRoom.getCenterCell() != null) {
+		            centerCell.addAdjacency(passageRoom.getCenterCell());
+		        }
+		    }
 		}
 	}
 
