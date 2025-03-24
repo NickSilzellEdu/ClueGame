@@ -30,7 +30,6 @@ public class Board {
 		super();
 	}
 
-	// new stuff lines 33-55
 	public void initialize() {
 	    // Initialize sets FIRST
 	    targets = new HashSet<BoardCell>();
@@ -60,7 +59,6 @@ public class Board {
 		return theInstance;
 	}
 	
-	// new stuff lines 62-82
 	public void calcTargets(BoardCell startCell, int pathLength) {
 	    targets.clear();  // Important to clear targets before each calculation
 	    visited.clear();  // Clear visited set for fresh calculation
@@ -69,6 +67,7 @@ public class Board {
 	}
 
 	private void findAllTargets(BoardCell currentCell, int stepsRemaining) {
+		
 	    for (BoardCell adjCell : currentCell.getAdjList()) {
 	        if (visited.contains(adjCell) || (adjCell.getOccupied() && !adjCell.isRoomCenter())) {
 	            continue; // Skip visited cells or occupied cells unless they're room centers
@@ -231,7 +230,6 @@ public class Board {
 							break;
 
 						default:
-							// new stuff lines 234-242
 							// SecretPassage indicator
 							if (token.length() == 2 && Character.isLetter(ch)) {
 							    cell.setSecretPassage(ch);
