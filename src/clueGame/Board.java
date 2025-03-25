@@ -2,7 +2,7 @@ package clueGame;
 
 /*
  * Created by Nick Silzell and Andrew Grimes on Mar 2 2025
- * This class represents the Clue Game board
+ * This class represents the Clue Game board, a singleton class
  */
 import java.util.Set;
 import java.io.FileNotFoundException;
@@ -20,7 +20,6 @@ public class Board {
 	private String layoutConfigFile;
 	private String setupConfigFile;
 	private Map<Character, Room> roomMap;
-
 	private Set<BoardCell> targets;
 	private Set<BoardCell> visited;
 	private int rows;
@@ -31,88 +30,57 @@ public class Board {
 	}
 
 	public void initialize() {
-	    // Initialize sets FIRST
-	    targets = new HashSet<BoardCell>();
-	    visited = new HashSet<BoardCell>();
+		// Initialize sets for targets algorithm
+		targets = new HashSet<BoardCell>();
+		visited = new HashSet<BoardCell>();
 
-	    // Load layout and setup files
-	    try {
-	        this.loadSetupConfig();
-	        this.loadLayoutConfig();
-	    }
-	    catch(FileNotFoundException e) {
-	        System.out.println(e.getMessage());
-	        return; // Exit 
-	    }
-	    catch(BadConfigFormatException e) {
-	        System.out.println(e.getMessage());
-	        return; // Exit
-	    }
+		// Load layout and setup files
+		try {
+			this.loadSetupConfig();
+			this.loadLayoutConfig();
+		}
+		catch(FileNotFoundException e) {
+			System.out.println(e.getMessage());
+			return; // Exit 
+		}
+		catch(BadConfigFormatException e) {
+			System.out.println(e.getMessage());
+			return; // Exit
+		}
 
-	    // Set up adjacency list for each cell
-	    calcAdjacencies();
+		// Set up adjacency list for each cell
+		calcAdjacencies();
 	}
 
-
-	// Return the only method of Board
+	// Return the only instance of Board
 	public static Board getInstance() {
 		return theInstance;
 	}
 	
+	// Setup properly for calcTargetsRecursive
 	public void calcTargets(BoardCell startCell, int pathLength) {
-	    targets.clear();  // Important to clear targets before each calculation
-	    visited.clear();  // Clear visited set for fresh calculation
-	    visited.add(startCell);
-	    findAllTargets(startCell, pathLength);
+		targets.clear();  // Important to clear targets before each calculation
+		visited.clear();  // Clear visited set for fresh calculation
+		visited.add(startCell);
+		calcTargetsRecursive(startCell, pathLength); // Recursively add proper cells to targets
 	}
 
-	private void findAllTargets(BoardCell currentCell, int stepsRemaining) {
-		
-	    for (BoardCell adjCell : currentCell.getAdjList()) {
-	        if (visited.contains(adjCell) || (adjCell.getOccupied() && !adjCell.isRoomCenter())) {
-	            continue; // Skip visited cells or occupied cells unless they're room centers
-	        }
-	        visited.add(adjCell);
-	        if (stepsRemaining == 1 || adjCell.isRoomCenter()) {
-	            targets.add(adjCell);
-	        } else {
-	            findAllTargets(adjCell, stepsRemaining - 1);
-	        }
-	        visited.remove(adjCell);  // Important for backtracking
-	    }
-	}
-
-
-	public BoardCell getCell(int row, int col) {
-		return grid[row][col];
-	}
-
-	// Gets the targets last created by calcTargets()
-	public Set<BoardCell> getTargets(){
-		return targets;
-	}
-
-	// Return the room based on it's symbol
-	public Room getRoom(Character roomChar) {
-		return roomMap.get(roomChar);
-	}
-
-	// Return the room based on it's cell
-	public Room getRoom(BoardCell cell) {
-		return roomMap.get(cell.getInitial());
-	}
-
-	public int getNumRows() {
-		return rows;
-	}
-
-	public int getNumColumns() {
-		return cols;
-	}
-
-	public void setConfigFiles(String layout, String setup) {
-		this.layoutConfigFile = layout;
-		this.setupConfigFile = setup;
+	// Recursively add proper targets to targets set
+	private void calcTargetsRecursive(BoardCell currentCell, int stepsRemaining) {
+		// Iterate through each adjacency
+		for (BoardCell adjCell : currentCell.getAdjList()) {
+			if (visited.contains(adjCell) || (adjCell.getOccupied() && !adjCell.isRoomCenter())) {
+				continue; // Skip visited cells or occupied cells unless they're room centers
+			}
+			visited.add(adjCell);
+			// If we have one more step, this cell is a target so add it unless it is a room center
+			if (stepsRemaining == 1 || adjCell.isRoomCenter()) {
+				targets.add(adjCell);
+			} else {
+				calcTargetsRecursive(adjCell, stepsRemaining - 1);
+			}
+			visited.remove(adjCell); // Make sure to only go through each cell once
+		}
 	}
 
 	// Use scanner to read in room setups from setup file
@@ -129,6 +97,7 @@ public class Board {
 				currentLine = scan.nextLine();
 				String [] splitLine = currentLine.split("[,]"); // Split on commas
 
+				// Handle spaces that require room initials
 				if(splitLine[0].trim().equals("Room") || splitLine[0].trim().equals("Space")) { // Add all rooms and spaces to roomMap
 					String roomName = splitLine[1].trim();
 					Character roomChar = splitLine[2].trim().charAt(0);
@@ -182,6 +151,7 @@ public class Board {
 		this.cols = numCols;
 		grid = new BoardCell[rows][cols];
 
+		// Iterate through each row and column and setup the cell and it's initials
 		for (int r = 0; r < rows; r++) {
 			String[] tokens = lines.get(r).split(",");
 			for (int c = 0; c < cols; c++) {
@@ -194,8 +164,6 @@ public class Board {
 				BoardCell cell = new BoardCell(r, c);
 				char initial = token.charAt(0);
 				cell.setInitial(initial);
-				
-
 
 				// Verify room initial exists in roomMap
 				if (roomMap != null && !roomMap.containsKey(initial)) {
@@ -208,6 +176,7 @@ public class Board {
 					for (int i = 1; i < token.length(); i++) {
 						char ch = token.charAt(i);
 						switch (ch) {
+						// Doors
 						case '<':
 							cell.setDoorDirection(DoorDirection.LEFT);
 							break;
@@ -220,11 +189,11 @@ public class Board {
 						case 'v':
 							cell.setDoorDirection(DoorDirection.DOWN);
 							break;
-						case '*':
+						case '*': // Room Center
 							cell.setRoomCenter(true);
 							roomMap.get(initial).setCenterCell(cell);
 							break;
-						case '#':
+						case '#': // Room label
 							cell.setLabel(true);
 							roomMap.get(initial).setLabelCell(cell);
 							break;
@@ -232,26 +201,21 @@ public class Board {
 						default:
 							// SecretPassage indicator
 							if (token.length() == 2 && Character.isLetter(ch)) {
-							    cell.setSecretPassage(ch);
-							    if (cell.isRoomCenter()) {
-							        Room currentRoom = roomMap.get(initial);
-							        if (currentRoom != null) {
-							            currentRoom.setCenterCell(cell);
-							        }
-							    }
+								cell.setSecretPassage(ch);
+								if (cell.isRoomCenter()) {
+									Room currentRoom = roomMap.get(initial);
+									if (currentRoom != null) {
+										currentRoom.setCenterCell(cell);
+									}
+								}
 							}
 							break;
 						}
 					}
 				}
-				grid[r][c] = cell;
+				grid[r][c] = cell; // Update grid to have this cell
 			}
 		}
-	}
-
-	// Get adjacency list for the cell at row, col
-	public Set<BoardCell> getAdjList(int row, int col) {
-		return grid[row][col].getAdjList();
 	}
 
 	// Populate adjacency for a cell
@@ -260,14 +224,8 @@ public class Board {
 		BoardCell cell = null;
 		for (int row = 0; row < rows; row++) {
 			for (int col = 0; col < cols; col++) {
-//				
-//				//test cell - remove after tests
-//				int row = 19;
-//				int col = 5;
-				
-				cell = grid[row][col];
-				
 
+				cell = grid[row][col];
 
 				// If the cell is a walkway
 				if(cell.getInitial() == 'W' || cell.isDoorway()) {
@@ -289,8 +247,8 @@ public class Board {
 				if(cell.isDoorway()) {
 					BoardCell center = findCenterCell(cell);
 					if(center != null) {
-					center.addAdjacency(cell);
-					cell.addAdjacency(center);
+						center.addAdjacency(cell);
+						cell.addAdjacency(center);
 					}
 				}
 
@@ -298,42 +256,36 @@ public class Board {
 				if(cell.isRoom() && cell.getSecretPassage() != '\0') {
 					Room adjRoom = getRoom(cell.getSecretPassage());
 					BoardCell roomCenter = roomMap.get(cell.getInitial()).getCenterCell();
+					// If a secret room exists, and it has a center cell, make them adjacent
 					if(adjRoom != null && adjRoom.getCenterCell() != null) {
 						BoardCell adjCenter = adjRoom.getCenterCell();
 						roomCenter.addAdjacency(adjCenter);
 						adjCenter.addAdjacency(roomCenter);
 					}
-
 				}
 			}
 		}
+		// Loop through each room to connect its center cell to the center cell of the secret room
 		for (Room room : roomMap.values()) {
-		    BoardCell centerCell = room.getCenterCell();
-		    if (centerCell != null && centerCell.getSecretPassage() != '\0') {
-		        Room passageRoom = roomMap.get(centerCell.getSecretPassage());
-		        if (passageRoom != null && passageRoom.getCenterCell() != null) {
-		            centerCell.addAdjacency(passageRoom.getCenterCell());
-		        }
-		    }
+			// Get the room's center cell and check if it has a secret passage
+			BoardCell centerCell = room.getCenterCell();
+			if (centerCell != null && centerCell.getSecretPassage() != '\0') {
+				Room passageRoom = roomMap.get(centerCell.getSecretPassage());
+				// If the destination room and its center cell exist, link them as adjacent cells
+				if (passageRoom != null && passageRoom.getCenterCell() != null) {
+					centerCell.addAdjacency(passageRoom.getCenterCell());
+				}
+			}
 		}
 	}
 
-	// Make sure row and column are in bounds
-	private boolean isValidIndex(int row, int col){
-		return (row >= 0 && row < rows && col >= 0 && col < cols);
-	}
-
-	// Make sure cell is a walkway or doorway
-	private boolean isValidCell(BoardCell cell) {
-		return (cell.getInitial() == 'W' || cell.isDoorway());
-	}
 	// Find room center for door cell based on direction
 	private BoardCell findCenterCell(BoardCell doorCell) {
 		int row = doorCell.getRow();
 		int col = doorCell.getCol();
 		DoorDirection direction = doorCell.getDoorDirection();
 
-		// Use the character of the adjacent room cell to locate room center
+		// Use the character of the adjacent room cell to locate room center 
 		switch(direction) {
 		case UP:
 			if(isValidIndex(row - 1, col)) {
@@ -365,4 +317,53 @@ public class Board {
 		// If no valid cells, return null
 		return null;
 	}
+
+	// Make sure row and column are in bounds
+	private boolean isValidIndex(int row, int col){
+		return (row >= 0 && row < rows && col >= 0 && col < cols);
+	}
+
+	// Make sure cell is a walkway or doorway
+	private boolean isValidCell(BoardCell cell) {
+		return (cell.getInitial() == 'W' || cell.isDoorway());
+	}
+
+	public BoardCell getCell(int row, int col) {
+		return grid[row][col];
+	}
+
+	// Gets the targets last created by calcTargets()
+	public Set<BoardCell> getTargets(){
+		return targets;
+	}
+
+	// Return the room based on it's symbol
+	public Room getRoom(Character roomChar) {
+		return roomMap.get(roomChar);
+	}
+
+	// Return the room based on it's cell
+	public Room getRoom(BoardCell cell) {
+		return roomMap.get(cell.getInitial());
+	}
+
+	public int getNumRows() {
+		return rows;
+	}
+
+	public int getNumColumns() {
+		return cols;
+	}
+
+	public void setConfigFiles(String layout, String setup) {
+		this.layoutConfigFile = layout;
+		this.setupConfigFile = setup;
+	}
+
+	// Get adjacency list for the cell at row, col
+	public Set<BoardCell> getAdjList(int row, int col) {
+		return grid[row][col].getAdjList();
+	}
+
 }
+

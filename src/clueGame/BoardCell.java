@@ -3,8 +3,10 @@ package clueGame;
  * Created by Nick Silzell and Andrew Grimes
  * This class represents one cell in the Game Board
  */
+
 import java.util.HashSet;
 import java.util.Set;
+
 public class BoardCell {
 	private int row;
 	private int col;
@@ -15,14 +17,14 @@ public class BoardCell {
 	private boolean isRoom;
 	private boolean isOccupied;
 	private char secretPassage;
-	private Set<BoardCell> adjList; // Cells adjacent to this cell
+	private Set<BoardCell> adjList;
 
+	// Constructor to initialize a board cell with row and column values
 	public BoardCell(int row, int col) {
 		this.row = row;
 		this.col = col;
 		this.initial = ' ';
 		this.isRoom = false;
-		
 		this.doorDirection = DoorDirection.NONE;
 		this.isLabel = false;
 		this.isRoomCenter = false;
@@ -30,61 +32,98 @@ public class BoardCell {
 		this.adjList = new HashSet<BoardCell>();
 	}
 
+	// Returns the row index of the cell
 	public int getRow() {
 		return row;
 	}
+
+	// Returns the column index of the cell
 	public int getCol() {
 		return col;
 	}
+
+	// Returns the room initial of the cell
 	public char getInitial() {
 		return initial;
 	}
+
+	// Sets the room initial of the cell
 	public void setInitial(char initial) {
 		this.initial = initial;
 	}
+
+	// Returns the door direction of the cell
 	public DoorDirection getDoorDirection() {
 		return doorDirection;
 	}
+
+	// Sets the door direction of the cell
 	public void setDoorDirection(DoorDirection doorDirection) {
 		this.doorDirection = doorDirection;
 	}
+
+	// Returns true if the cell contains a label
 	public boolean isLabel() {
 		return isLabel;
 	}
+
+	// Sets whether the cell contains a label
 	public void setLabel(boolean isLabel) {
 		this.isLabel = isLabel;
 	}
+
+	// Returns true if the cell is the center of a room
 	public boolean isRoomCenter() {
 		return isRoomCenter;
 	}
+
+	// Sets whether the cell is the center of a room
 	public void setRoomCenter(boolean isRoomCenter) {
 		this.isRoomCenter = isRoomCenter;
 	}
+
+	// Returns the secret passage character of the cell
 	public char getSecretPassage() {
 		return secretPassage;
 	}
+
+	// Sets the secret passage character of the cell
 	public void setSecretPassage(char secretPassage) {
 		this.secretPassage = secretPassage;
 	}
+
+	// Returns true if the cell is a doorway
 	public boolean isDoorway() {
 		return (doorDirection != DoorDirection.NONE);
 	}
+
+	// Adds an adjacent cell to the set of adjacent cells
 	public void addAdjacency(BoardCell adj) {
 		adjList.add(adj);
 	}
+
+	// Returns the set of adjacent cells
 	public Set<BoardCell> getAdjList() {
 		return adjList;
 	}
+
+	// Sets whether the cell is part of a room
 	public void setIsRoom(boolean isRoom) {
-		this.isRoom = isRoom;	
+		this.isRoom = isRoom;
 	}
+
+	// Returns true if the cell is part of a room
 	public boolean isRoom() {
 		return isRoom;
 	}
+
+	// Sets whether the cell is currently occupied
 	public void setOccupied(boolean isOccupied) {
 		this.isOccupied = isOccupied;
 	}
+
+	// Returns true if the cell is currently occupied
 	public boolean getOccupied() {
 		return isOccupied;
-	}	
+	}
 }
