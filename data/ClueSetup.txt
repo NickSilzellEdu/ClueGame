@@ -11,3 +11,17 @@ Room, Gold Storage, G
 // other spaces on board
 Space, Unused, X
 Space, Walkway, W
+// Players for the game
+Player, Barbarian King, Yellow
+Player, Archer Queen, Purple
+Player, Grand Warden, Pink
+Player, Royal Champion, Blue
+Player, Giant, Orange
+Player, Wizard, Red
+// Weapons for the game
+Weapon, FireBall
+Weapon, Staff
+Weapon, Sword
+Weapon, Spear
+Weapon, Fists
+Weapon, Bow

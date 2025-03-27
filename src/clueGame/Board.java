@@ -15,6 +15,10 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Board {
+	public static final int NUM_PLAYERS = 6;
+	public static final int NUM_ROOMS = 9;
+	public static final int NUM_WEAPONS = 6;
+	public static final int DECK_SIZE = NUM_PLAYERS + NUM_ROOMS + NUM_WEAPONS;
 	private static Board theInstance = new Board();
 	private BoardCell[][] grid;
 	private String layoutConfigFile;
@@ -24,12 +28,21 @@ public class Board {
 	private Set<BoardCell> visited;
 	private int rows;
 	private int cols;
+	private Set<Card> deck;
+	private Solution theAnswer;
+	private Player[] players;
+	
 
 	private Board() {
 		super();
 	}
 
 	public void initialize() {
+		// Initialize variables
+		this.players = new Player[NUM_PLAYERS]; // Will maybe need to be handled in load setup
+		this.deck = new HashSet<Card>(); // Will need to be be handled in loadSetup
+		this.theAnswer = new Solution(null, null, null);// Will need to assign eventually
+		
 		// Initialize sets for targets algorithm
 		targets = new HashSet<BoardCell>();
 		visited = new HashSet<BoardCell>();
@@ -104,6 +117,10 @@ public class Board {
 					Room roomToAdd = new Room(roomName);
 					roomMap.put(roomChar, roomToAdd);
 				}
+				// TESTing purposes - make sure it doesnt error
+				else if(splitLine[0].trim().equals("Weapon") || splitLine[0].trim().equals("Player")) {
+					continue;// do nothing for now
+				}	
 				// If line does not start with //, Room, or Space, throw an error
 				else if(!splitLine[0].startsWith("//")) throw new BadConfigFormatException("Error: \"" + this.setupConfigFile + "\" is not properly configured for setup");
 			}
@@ -317,6 +334,11 @@ public class Board {
 		// If no valid cells, return null
 		return null;
 	}
+	
+	// Deal cards to players
+	public void deal() {
+		// TOBE implemented
+	}
 
 	// Make sure row and column are in bounds
 	private boolean isValidIndex(int row, int col){
@@ -364,6 +386,20 @@ public class Board {
 	public Set<BoardCell> getAdjList(int row, int col) {
 		return grid[row][col].getAdjList();
 	}
+	
+	// Return players
+	public Player[] getPlayers() {
+		return this.players;
+	}
+	
+	// Return the Solution
+	public Solution getSolution() {
+		return this.theAnswer;
+	}
+	
+	// Return deck
+	public Set<Card> getDeck(){
+		return this.deck;
+	}
 
 }
-
