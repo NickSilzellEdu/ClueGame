@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.awt.Color;
+import java.util.Random;
 
 public class Board {
 	public static final int NUM_PLAYERS = 6;
@@ -28,10 +30,10 @@ public class Board {
 	private Set<BoardCell> visited;
 	private int rows;
 	private int cols;
-	private Set<Card> deck;
+	private ArrayList<Card> deck;
 	private Solution theAnswer;
-	private Player[] players;
-	
+	private ArrayList<Player> players;
+
 
 	private Board() {
 		super();
@@ -39,10 +41,9 @@ public class Board {
 
 	public void initialize() {
 		// Initialize variables
-		this.players = new Player[NUM_PLAYERS]; // Will maybe need to be handled in load setup
-		this.deck = new HashSet<Card>(); // Will need to be be handled in loadSetup
-		this.theAnswer = new Solution(null, null, null);// Will need to assign eventually
-		
+		this.players = new ArrayList<Player>(); 
+		this.deck = new ArrayList<Card>(); 
+
 		// Initialize sets for targets algorithm
 		targets = new HashSet<BoardCell>();
 		visited = new HashSet<BoardCell>();
@@ -63,13 +64,17 @@ public class Board {
 
 		// Set up adjacency list for each cell
 		calcAdjacencies();
+
+		// Get solution from deck
+		getRandomSolution();
+
 	}
 
 	// Return the only instance of Board
 	public static Board getInstance() {
 		return theInstance;
 	}
-	
+
 	// Setup properly for calcTargetsRecursive
 	public void calcTargets(BoardCell startCell, int pathLength) {
 		targets.clear();  // Important to clear targets before each calculation
@@ -98,6 +103,8 @@ public class Board {
 
 	// Use scanner to read in room setups from setup file
 	public void loadSetupConfig() throws FileNotFoundException, BadConfigFormatException{
+		int playersLoaded = 0; // For determining computer player vs human player
+
 		// Make sure roomMap gets initialized during testing:
 		if(roomMap == null) roomMap = new HashMap<Character, Room>();
 
@@ -116,15 +123,31 @@ public class Board {
 					Character roomChar = splitLine[2].trim().charAt(0);
 					Room roomToAdd = new Room(roomName);
 					roomMap.put(roomChar, roomToAdd);
+
+					// If card is a room, add it to deck
+					if(splitLine[0].trim().equals("Room")) deck.add(new Card(roomName, CardType.ROOM));
 				}
-				// TESTing purposes - make sure it doesnt error
-				else if(splitLine[0].trim().equals("Weapon") || splitLine[0].trim().equals("Player")) {
-					continue;// do nothing for now
-				}	
+				// If card is a weapon, add it to deck
+				else if(splitLine[0].trim().equals("Weapon")) deck.add(new Card(splitLine[1].trim(), CardType.WEAPON));
+				// If card is a player add it to deck
+
+				else if(splitLine[0].trim().equals("Player")) {
+					// Make sure Color read in is valid
+					Color playerColor = getColorFromName(splitLine[2].trim()); // make sure color is valid
+					if(playerColor == null) throw new BadConfigFormatException("Error: invalid color");	
+					// Load the first player as a human player
+					if(playersLoaded == 0) players.add(new HumanPlayer(splitLine[1].trim(), playerColor, Integer.parseInt(splitLine[3].trim()), Integer.parseInt(splitLine[4].trim())));
+					else players.add(new ComputerPlayer(splitLine[1].trim(), playerColor, Integer.parseInt(splitLine[3].trim()), Integer.parseInt(splitLine[4].trim())));
+					deck.add(new Card(splitLine[1].trim(), CardType.PERSON));
+					playersLoaded++;
+				}
 				// If line does not start with //, Room, or Space, throw an error
 				else if(!splitLine[0].startsWith("//")) throw new BadConfigFormatException("Error: \"" + this.setupConfigFile + "\" is not properly configured for setup");
 			}
 		}
+		// Possible if any data is missing and splitLine[i] fails
+		catch(NullPointerException e) {
+			throw new BadConfigFormatException("Error: \"" + this.setupConfigFile + "\" is not properly configured for setup");		}
 	}
 
 	// Use scanner to read in grid layout
@@ -334,7 +357,40 @@ public class Board {
 		// If no valid cells, return null
 		return null;
 	}
-	
+
+	// Helper function to read config file, 
+	public static Color getColorFromName(String name) {
+		String lowerCaseName = name.toLowerCase();
+		switch (lowerCaseName.toLowerCase()) {
+		case "black": return Color.BLACK;
+		case "blue": return Color.BLUE;
+		case "cyan": return Color.CYAN;
+		case "dark_gray": return Color.DARK_GRAY;
+		case "gray": return Color.GRAY;
+		case "green": return Color.GREEN;
+		case "light_gray": return Color.LIGHT_GRAY;
+		case "magenta": return Color.MAGENTA;
+		case "orange": return Color.ORANGE;
+		case "pink": return Color.PINK;
+		case "red": return Color.RED;
+		case "white": return Color.WHITE;
+		case "yellow": return Color.YELLOW;
+		default: return null; 
+		}
+	}
+
+	// Helper function to get a random solution from the deck
+	public void getRandomSolution() {
+		Random rand = new Random();
+
+		// Deck will be in order Room, Person, Weapon from config file
+
+		// Make sure it is not already initialized, get random solution
+		if(theAnswer != null) {
+			theAnswer = new Solution( deck.get(rand.nextInt(NUM_ROOMS)), deck.get(rand.nextInt(NUM_PLAYERS) + NUM_ROOMS), deck.get(rand.nextInt((NUM_PLAYERS + NUM_ROOMS) + NUM_WEAPONS)));
+		}
+	}
+
 	// Deal cards to players
 	public void deal() {
 		// TOBE implemented
@@ -386,19 +442,19 @@ public class Board {
 	public Set<BoardCell> getAdjList(int row, int col) {
 		return grid[row][col].getAdjList();
 	}
-	
+
 	// Return players
-	public Player[] getPlayers() {
+	public ArrayList<Player> getPlayers() {
 		return this.players;
 	}
-	
+
 	// Return the Solution
 	public Solution getSolution() {
 		return this.theAnswer;
 	}
-	
+
 	// Return deck
-	public Set<Card> getDeck(){
+	public ArrayList<Card> getDeck(){
 		return this.deck;
 	}
 
