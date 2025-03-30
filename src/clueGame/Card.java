@@ -1,5 +1,7 @@
 package clueGame;
 
+import java.util.Objects;
+
 /*
  * This class represents a card in the game of clue, either a player, weapon, or room
  */
@@ -25,15 +27,22 @@ public class Card {
 	}
 	
 	// Return whether this card is equal to another
-	public boolean equals(Card target) {
-//		if (target == null) return false;
-//		return this.cardName.equals(target.cardName) && this.type == target.type;
-		return false;
-	}
+	@Override
+	public boolean equals(Object target) {
+		if (target == null) return false;
+		return this == target;
+		}
 	
 	// Returns a string respresentation of the card
 	@Override
 	public String toString() {
 		return cardName + " (" + type + ")";
 	}	
+	
+	// Used for hashmap
+	@Override
+	public int hashCode() {
+		return Objects.hash(cardName, type);
+	}
+
 }
