@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertNotNull;
 import org.junit.jupiter.api.BeforeAll;
@@ -106,8 +107,31 @@ public class GameSetupTests {
 		assertEquals(Board.NUM_PLAYERS, personCount);
 		assertEquals(Board.NUM_WEAPONS, weaponCount);
 	}
+	
+	// Make sure solution is random every round
+	@Test
+	public void testRandomSolution() {
+		Solution sol;
+		HashMap<Card, Integer> instances = new HashMap<Card, Integer>();
+		
+		// Create 500 solutions, increment instances
+		for(int i = 0; i < 500; i++) {
+			board.getRandomSolution();
+			sol = board.getSolution();
+			// Increment count of each card by 1
+			instances.put(sol.getRoom(), instances.getOrDefault(sol.getRoom(), 0) + 1); 
+			instances.put(sol.getPerson(), instances.getOrDefault(sol.getPerson(), 0) + 1); 
+			instances.put(sol.getWeapon(), instances.getOrDefault(sol.getWeapon(), 0) + 1); 
+
+		}
+		
+		// Make sure each card has been picked at least 10 times
+		for(Card card : board.getDeck()) {
+			assertTrue(instances.get(card) >= 10);
+		}
+	}
 }
 
-// We should write a test to make sure solutoin is randomly picked
-// Use a map to count cards and instances, randomly run it like 1000 times and
-// if any cards are not picked throw error
+
+
+

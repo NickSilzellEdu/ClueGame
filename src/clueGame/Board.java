@@ -380,15 +380,16 @@ public class Board {
 	}
 
 	// Helper function to get a random solution from the deck
+	// Public for testing purposes
 	public void getRandomSolution() {
 		Random rand = new Random();
 
 		// Deck will be in order Room, Person, Weapon from config file
 
 		// Make sure it is not already initialized, get random solution
-		if(theAnswer != null) {
-			theAnswer = new Solution( deck.get(rand.nextInt(NUM_ROOMS)), deck.get(rand.nextInt(NUM_PLAYERS) + NUM_ROOMS), deck.get(rand.nextInt((NUM_PLAYERS + NUM_ROOMS) + NUM_WEAPONS)));
-		}
+		if(theAnswer == null) theAnswer = new Solution(null, null, null);
+		theAnswer = new Solution(deck.get(rand.nextInt(NUM_ROOMS)), deck.get(rand.nextInt(NUM_PLAYERS) + NUM_ROOMS), deck.get(rand.nextInt((NUM_WEAPONS) + NUM_PLAYERS + NUM_ROOMS)));
+		
 	}
 
 	// Deal cards to players

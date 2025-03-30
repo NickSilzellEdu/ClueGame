@@ -14,13 +14,13 @@ public class Solution {
 		this.weapon = weapon;
 	}
 	public Card getRoom() {
-		return new Card("a", CardType.PERSON); // Stub
+		return room;
 	}
 	public Card getPerson() {
-		return new Card("a", CardType.PERSON); // Stub
+		return person;
 	}
 	public Card getWeapon() {
-		return new Card("a", CardType.PERSON); // Stub
+		return weapon;
 	}
 	
 }
