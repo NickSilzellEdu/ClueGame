@@ -4,6 +4,7 @@ package clueGame;
  * Created by Nick Silzell and Andrew Grimes on Mar 2 2025
  * This class represents the Clue Game board, a singleton class
  */
+
 import java.util.Set;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
