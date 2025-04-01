@@ -6,6 +6,7 @@ package clueGame;
  */
 
 import java.util.Set;
+import java.util.Collections;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -386,7 +387,6 @@ public class Board {
 		Random rand = new Random();
 
 		// Deck will be in order Room, Person, Weapon from config file
-
 		// Make sure it is not already initialized, get random solution
 		if(theAnswer == null) theAnswer = new Solution(null, null, null);
 		theAnswer = new Solution(deck.get(rand.nextInt(NUM_ROOMS)), deck.get(rand.nextInt(NUM_PLAYERS) + NUM_ROOMS), deck.get(rand.nextInt((NUM_WEAPONS) + NUM_PLAYERS + NUM_ROOMS)));
@@ -395,7 +395,28 @@ public class Board {
 
 	// Deal cards to players
 	public void deal() {
-		// TOBE implemented
+		
+		// Remove the solution cards from the deck
+	    Card solutionRoom = theAnswer.getRoom();
+	    Card solutionPerson = theAnswer.getPerson();
+	    Card solutionWeapon = theAnswer.getWeapon();
+	    
+	    // Create a new list that holds the remaining cards
+	    ArrayList<Card> remainingCards = new ArrayList<Card>(deck);
+	    remainingCards.remove(solutionRoom);
+	    remainingCards.remove(solutionPerson);
+	    remainingCards.remove(solutionWeapon);
+	    
+	    // Shuffle the cards
+	    Collections.shuffle(remainingCards);
+	    
+	    // Deal cards to players
+	    int playerIndex = 0;
+	    int numPlayers = players.size();
+	    for (Card card : remainingCards) {
+	         players.get(playerIndex).updateHand(card);
+	         playerIndex = (playerIndex + 1) % numPlayers;
+	    }
 	}
 
 	// Make sure row and column are in bounds

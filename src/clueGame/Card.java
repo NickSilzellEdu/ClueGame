@@ -18,7 +18,7 @@ public class Card {
 	
 	// Return the card name
 	public String getCardName() {
-		return "name"; // stub
+		return cardName; // stub
 	}
 	
 	// Return the card type
@@ -29,8 +29,10 @@ public class Card {
 	// Return whether this card is equal to another
 	@Override
 	public boolean equals(Object target) {
-		if (target == null) return false;
-		return this == target;
+		if (this == target) return true;
+        if (!(target instanceof Card)) return false;
+        Card other = (Card) target;
+        return cardName.equals(other.cardName) && type == other.type;
 		}
 	
 	// Returns a string respresentation of the card
