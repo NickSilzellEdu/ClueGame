@@ -11,8 +11,6 @@ import java.util.Comparator;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -76,12 +74,10 @@ public class Board {
 
 		// Get solution from deck
 		getRandomSolution();
-		
-		// Deal the rest of trds 
+
+		// Deal the rest of cards
 		deal();
 
-		// Deal the cards
-		deal();
 
 	}
 
@@ -166,8 +162,10 @@ public class Board {
 				// If line does not start with //, Room, or Space, throw an error
 				else if(!splitLine[0].startsWith("//")) throw new BadConfigFormatException("Error: \"" + this.setupConfigFile + "\" is not properly configured for setup");
 			}
+
 			// Update deck size based on the three types of cards
 			deckSize = numPlayers + numRooms + numWeapons;
+
 		}
 		// Possible if any data is missing and splitLine[i] fails
 		catch(NullPointerException e) {
@@ -406,37 +404,47 @@ public class Board {
 	// Helper function to get a random solution from the deck
 	// Public for testing purposes
 	public void getRandomSolution() {
-		Random rand = new Random();
-		
-		// Make sure deck is in order Room, Person, Weapon
-		Collections.sort(deck, Comparator.comparing(Card::getType));
-		// Sort into type lists
-		List<Card> roomCards = deck.subList(0, numRooms);
-		List<Card> playerCards = deck.subList(numRooms, numRooms + numPlayers);
-		List<Card> weaponCards = deck.subList(numRooms + numPlayers, deck.size());
+		// Make sure card setup was correct
+		if(numRooms == 0 || numPlayers == 0 || numWeapons == 0) {
+			theAnswer = null;
+		}
+		else {
+			Random rand = new Random();
+			// Make sure deck is in order Room, Person, Weapon
+			Collections.sort(deck, Comparator.comparing(Card::getType));
+			// Sort into type lists
+			List<Card> roomCards = deck.subList(0, numRooms);
+			List<Card> playerCards = deck.subList(numRooms, numRooms + numPlayers);
+			List<Card> weaponCards = deck.subList(numRooms + numPlayers, deck.size());
 
-		// Make sure it is not already initialized, get random solution
-		if(theAnswer == null) theAnswer = new Solution(null, null, null);
-		theAnswer = new Solution(roomCards.get(rand.nextInt(roomCards.size())), playerCards.get(rand.nextInt(playerCards.size())), weaponCards.get(rand.nextInt((weaponCards.size()))));
-		
+			theAnswer = new Solution(roomCards.get(rand.nextInt(roomCards.size())), playerCards.get(rand.nextInt(playerCards.size())), weaponCards.get(rand.nextInt((weaponCards.size()))));
+		}
 	}
 	// Deal cards to players
 	public void deal() {
-		ArrayList<Card> cardsToDeal = new ArrayList<Card>(deck); // Create a copy so we don't affect the actual deck
-		// Remove the solution cards
-		cardsToDeal.remove(theAnswer.getRoom());
-		cardsToDeal.remove(theAnswer.getPerson());
-		cardsToDeal.remove(theAnswer.getWeapon());
-		int playerIndex = 0; // keep track of which player gets the card using modulus
-		Random rand = new Random(); // for random card picking
-		
-		// While the deck has cards, deal one random card to each player
-		while(!cardsToDeal.isEmpty()) {
-			// get a random number, and add it to a player's hand
-			Card cardDealt = cardsToDeal.get(rand.nextInt(cardsToDeal.size()));
-			players.get(playerIndex % numPlayers).getHand().add(cardDealt);
-			cardsToDeal.remove(cardDealt);
-			playerIndex++;
+		// Make sure solution is not null
+		if(theAnswer != null) {
+			// Remove the solution cards from the deck
+	 	    Card solutionRoom = theAnswer.getRoom();
+	 	    Card solutionPerson = theAnswer.getPerson();
+	 	    Card solutionWeapon = theAnswer.getWeapon();
+	 	    
+	 	    // Create a new list that holds the remaining cards
+	 	    ArrayList<Card> remainingCards = new ArrayList<Card>(deck);
+	 	    remainingCards.remove(solutionRoom);
+	 	    remainingCards.remove(solutionPerson);
+	 	    remainingCards.remove(solutionWeapon);
+	 	    
+	 	    // Shuffle the cards
+	 	    Collections.shuffle(remainingCards);
+	 	    
+	 	    // Deal cards to players
+	 	    int playerIndex = 0;
+	 	    int numPlayers = players.size();
+	 	    for (Card card : remainingCards) {
+	 	         players.get(playerIndex).updateHand(card);
+	 	         playerIndex = (playerIndex + 1) % numPlayers;
+	 	    }
 		}
 
 	}
