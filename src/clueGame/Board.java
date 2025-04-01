@@ -7,6 +7,7 @@ package clueGame;
 
 import java.util.Set;
 import java.util.Collections;
+import java.util.Comparator;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -21,10 +22,10 @@ import java.awt.Color;
 import java.util.Random;
 
 public class Board {
-	public static final int NUM_PLAYERS = 6;
-	public static final int NUM_ROOMS = 9;
-	public static final int NUM_WEAPONS = 6;
-	public static final int DECK_SIZE = NUM_PLAYERS + NUM_ROOMS + NUM_WEAPONS;
+	private int numPlayers;
+	private int numRooms;
+	private int numWeapons;
+	private int deckSize;
 	private static Board theInstance = new Board();
 	private BoardCell[][] grid;
 	private String layoutConfigFile;
@@ -47,6 +48,10 @@ public class Board {
 		// Initialize variables
 		this.players = new ArrayList<Player>(); 
 		this.deck = new ArrayList<Card>(); 
+		numPlayers = 0;
+		numWeapons = 0;
+		numRooms = 0;
+		deckSize = 0;
 
 		// Initialize sets for targets algorithm
 		targets = new HashSet<BoardCell>();
@@ -73,6 +78,9 @@ public class Board {
 		getRandomSolution();
 		
 		// Deal the rest of trds 
+		deal();
+
+		// Deal the cards
 		deal();
 
 	}
@@ -132,10 +140,16 @@ public class Board {
 					roomMap.put(roomChar, roomToAdd);
 
 					// If card is a room, add it to deck
-					if(splitLine[0].trim().equals("Room")) deck.add(new Card(roomName, CardType.ROOM));
+					if(splitLine[0].trim().equals("Room")) {
+						deck.add(new Card(roomName, CardType.ROOM));
+						numRooms++;
+					}
 				}
 				// If card is a weapon, add it to deck
-				else if(splitLine[0].trim().equals("Weapon")) deck.add(new Card(splitLine[1].trim(), CardType.WEAPON));
+				else if(splitLine[0].trim().equals("Weapon")) {
+					deck.add(new Card(splitLine[1].trim(), CardType.WEAPON));
+					numWeapons++;
+				}
 				// If card is a player add it to deck
 
 				else if(splitLine[0].trim().equals("Player")) {
@@ -147,10 +161,13 @@ public class Board {
 					else players.add(new ComputerPlayer(splitLine[1].trim(), playerColor, Integer.parseInt(splitLine[3].trim()), Integer.parseInt(splitLine[4].trim())));
 					deck.add(new Card(splitLine[1].trim(), CardType.PERSON));
 					playersLoaded++;
+					numPlayers++;
 				}
 				// If line does not start with //, Room, or Space, throw an error
 				else if(!splitLine[0].startsWith("//")) throw new BadConfigFormatException("Error: \"" + this.setupConfigFile + "\" is not properly configured for setup");
 			}
+			// Update deck size based on the three types of cards
+			deckSize = numPlayers + numRooms + numWeapons;
 		}
 		// Possible if any data is missing and splitLine[i] fails
 		catch(NullPointerException e) {
@@ -390,14 +407,13 @@ public class Board {
 	// Public for testing purposes
 	public void getRandomSolution() {
 		Random rand = new Random();
-
+		
 		// Make sure deck is in order Room, Person, Weapon
 		Collections.sort(deck, Comparator.comparing(Card::getType));
 		// Sort into type lists
-		List<Card> roomCards = deck.subList(0, NUM_ROOMS);
-		List<Card> playerCards = deck.subList(NUM_ROOMS, NUM_ROOMS + NUM_PLAYERS);
-		List<Card> weaponCards = deck.subList(NUM_ROOMS + NUM_PLAYERS, deck.size());
-
+		List<Card> roomCards = deck.subList(0, numRooms);
+		List<Card> playerCards = deck.subList(numRooms, numRooms + numPlayers);
+		List<Card> weaponCards = deck.subList(numRooms + numPlayers, deck.size());
 
 		// Make sure it is not already initialized, get random solution
 		if(theAnswer == null) theAnswer = new Solution(null, null, null);
@@ -406,7 +422,6 @@ public class Board {
 	}
 	// Deal cards to players
 	public void deal() {
-
 		ArrayList<Card> cardsToDeal = new ArrayList<Card>(deck); // Create a copy so we don't affect the actual deck
 		// Remove the solution cards
 		cardsToDeal.remove(theAnswer.getRoom());
@@ -419,7 +434,7 @@ public class Board {
 		while(!cardsToDeal.isEmpty()) {
 			// get a random number, and add it to a player's hand
 			Card cardDealt = cardsToDeal.get(rand.nextInt(cardsToDeal.size()));
-			players.get(playerIndex % NUM_PLAYERS).getHand().add(cardDealt);
+			players.get(playerIndex % numPlayers).getHand().add(cardDealt);
 			cardsToDeal.remove(cardDealt);
 			playerIndex++;
 		}
@@ -486,6 +501,20 @@ public class Board {
 	// Return deck
 	public ArrayList<Card> getDeck(){
 		return this.deck;
+	}
+
+	// Get numbers of cards for testing
+	public int getNumRooms() {
+		return numRooms;
+	}
+	public int getNumPlayers() {
+		return numPlayers;
+	}
+	public int getNumWeapons() {
+		return numWeapons;
+	}
+	public int getDeckSize() {
+		return deckSize;
 	}
 
 }

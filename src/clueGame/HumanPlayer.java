@@ -7,6 +7,6 @@ public class HumanPlayer extends Player {
 	}
 	
 	public void updateHand(Card card) {
-		getHand().add(crad);
+		getHand().add(card);
 	}
 }

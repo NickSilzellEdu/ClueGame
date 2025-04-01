@@ -34,11 +34,11 @@ public class GameSetupTests {
 	// Test to ensure there are a total of six players
 	@Test
 	public void testLoadPLayers() {
-		assertEquals(Board.NUM_PLAYERS, board.getPlayers().size());
+		assertEquals(board.getNumPlayers(), board.getPlayers().size());
 		Player p1 = board.getPlayers().get(0);
 		assertTrue(p1 instanceof HumanPlayer);
 
-		for(int i = 1; i < Board.NUM_PLAYERS; i++) {
+		for(int i = 1; i < board.getNumPlayers(); i++) {
 			assertTrue(board.getPlayers().get(i) instanceof ComputerPlayer);
 		}
 	}
@@ -65,7 +65,7 @@ public class GameSetupTests {
 		for(Player player : board.getPlayers()) {
 			player.getHand().clear();
 		}
-		
+
 		HashSet<Card> dealtCards = new HashSet<Card>();
 		TreeSet<Integer> handSizes = new TreeSet<Integer>();
 		board.deal();
@@ -89,7 +89,7 @@ public class GameSetupTests {
 	@Test
 	public void testLoadDeck() {
 		ArrayList<Card> deck = board.getDeck();
-		assertEquals(Board.DECK_SIZE, deck.size());
+		assertEquals(board.getDeckSize(), deck.size());
 
 		// Count each card type
 		int roomCount = 0;
@@ -108,11 +108,11 @@ public class GameSetupTests {
 		}
 
 		// Assertions for exact amount of rooms, people, and weapons
-		assertEquals(Board.NUM_ROOMS, roomCount);
-		assertEquals(Board.NUM_PLAYERS, personCount);
-		assertEquals(Board.NUM_WEAPONS, weaponCount);
+		assertEquals(board.getNumRooms(), roomCount);
+		assertEquals(board.getNumPlayers(), personCount);
+		assertEquals(board.getNumWeapons(), weaponCount);
 	}
-	
+
 	// Make sure solution is random every round
 	@Test
 	public void testRandomSolution() {
@@ -129,13 +129,14 @@ public class GameSetupTests {
 			instances.put(sol.getRoom(), instances.getOrDefault(sol.getRoom(), 0) + 1); 
 			instances.put(sol.getPerson(), instances.getOrDefault(sol.getPerson(), 0) + 1); 
 			instances.put(sol.getWeapon(), instances.getOrDefault(sol.getWeapon(), 0) + 1); 
-			
+
 		}
 		// Make sure each card has been picked at least 10 times
 		for(Card card : board.getDeck()) {
+			assertNotNull(instances.get(card));
 			assertTrue(instances.get(card) >= 10);
 		}
-		
+
 		// Make sure room cards, player cards, and weapon cards are equal
 		for(Card card : instances.keySet()) {
 			if (card.getType() == CardType.ROOM) {

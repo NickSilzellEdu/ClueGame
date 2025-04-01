@@ -18,11 +18,7 @@ public class Card {
 	
 	// Return the card name
 	public String getCardName() {
-<<<<<<< Updated upstream
-		return cardName; // stub
-=======
 		return cardName;
->>>>>>> Stashed changes
 	}
 	
 	// Return the card type
@@ -33,17 +29,10 @@ public class Card {
 	// Return whether this card is equal to another
 	@Override
 	public boolean equals(Object target) {
-<<<<<<< Updated upstream
-		if (this == target) return true;
-        if (!(target instanceof Card)) return false;
-        Card other = (Card) target;
-        return cardName.equals(other.cardName) && type == other.type;
-=======
 		if (target == null) return false;
 		if (this == target) return true;
 		Card cardTarget = (Card)target;
 		return (cardName == cardTarget.getCardName() && type == cardTarget.getType());
->>>>>>> Stashed changes
 		}
 	
 	// Returns a string respresentation of the card
