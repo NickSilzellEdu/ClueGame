@@ -61,12 +61,17 @@ public class GameSetupTests {
 	// Test to ensure no two players have the same card, and that players have roughly the same number of cards
 	@Test
 	public void testPlayerDeal() {
+		// Make sure all player's hands are empty
+		for(Player player : board.getPlayers()) {
+			player.getHand().clear();
+		}
+		
 		HashSet<Card> dealtCards = new HashSet<Card>();
 		TreeSet<Integer> handSizes = new TreeSet<Integer>();
 		board.deal();
 		for(Player player : board.getPlayers()) {
 			// Add each hand size to a sorted Set
-			handSizes.add((Integer)(player.getHand().size()));
+			handSizes.add((player.getHand().size()));
 
 			// Make sure no two players have the same card
 			for(Card card : player.getHand()) {
@@ -74,9 +79,9 @@ public class GameSetupTests {
 				dealtCards.add(card);
 			}
 		}
-
+		assertFalse(dealtCards.isEmpty());
 		// Make sure hand sizes don't differ by more than one
-		if(!handSizes.isEmpty()) assertTrue(Math.abs(handSizes.first()-handSizes.last()) <= 1 );		
+		assertTrue(Math.abs(handSizes.first()-handSizes.last()) <= 1 );		
 
 	}
 
@@ -113,7 +118,9 @@ public class GameSetupTests {
 	public void testRandomSolution() {
 		Solution sol;
 		HashMap<Card, Integer> instances = new HashMap<Card, Integer>();
-		
+		int personCount = 0;
+		int roomCount = 0;
+		int weaponCount = 0;
 		// Create 500 solutions, increment instances
 		for(int i = 0; i < 500; i++) {
 			board.getRandomSolution();
@@ -122,13 +129,25 @@ public class GameSetupTests {
 			instances.put(sol.getRoom(), instances.getOrDefault(sol.getRoom(), 0) + 1); 
 			instances.put(sol.getPerson(), instances.getOrDefault(sol.getPerson(), 0) + 1); 
 			instances.put(sol.getWeapon(), instances.getOrDefault(sol.getWeapon(), 0) + 1); 
-
+			
 		}
-		
 		// Make sure each card has been picked at least 10 times
 		for(Card card : board.getDeck()) {
 			assertTrue(instances.get(card) >= 10);
 		}
+		
+		// Make sure room cards, player cards, and weapon cards are equal
+		for(Card card : instances.keySet()) {
+			if (card.getType() == CardType.ROOM) {
+				roomCount += instances.get(card);
+			} else if (card.getType() == CardType.PERSON) {
+				personCount += instances.get(card);
+			} else if (card.getType() == CardType.WEAPON) {
+				weaponCount += instances.get(card);
+			}
+		}
+		assertTrue(personCount == roomCount);
+		assertTrue(roomCount == weaponCount);
 	}
 }
 

@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -69,6 +71,9 @@ public class Board {
 
 		// Get solution from deck
 		getRandomSolution();
+		
+		// Deal the rest of trds 
+		deal();
 
 	}
 
@@ -386,37 +391,39 @@ public class Board {
 	public void getRandomSolution() {
 		Random rand = new Random();
 
-		// Deck will be in order Room, Person, Weapon from config file
+		// Make sure deck is in order Room, Person, Weapon
+		Collections.sort(deck, Comparator.comparing(Card::getType));
+		// Sort into type lists
+		List<Card> roomCards = deck.subList(0, NUM_ROOMS);
+		List<Card> playerCards = deck.subList(NUM_ROOMS, NUM_ROOMS + NUM_PLAYERS);
+		List<Card> weaponCards = deck.subList(NUM_ROOMS + NUM_PLAYERS, deck.size());
+
+
 		// Make sure it is not already initialized, get random solution
 		if(theAnswer == null) theAnswer = new Solution(null, null, null);
-		theAnswer = new Solution(deck.get(rand.nextInt(NUM_ROOMS)), deck.get(rand.nextInt(NUM_PLAYERS) + NUM_ROOMS), deck.get(rand.nextInt((NUM_WEAPONS) + NUM_PLAYERS + NUM_ROOMS)));
+		theAnswer = new Solution(roomCards.get(rand.nextInt(roomCards.size())), playerCards.get(rand.nextInt(playerCards.size())), weaponCards.get(rand.nextInt((weaponCards.size()))));
 		
 	}
-
 	// Deal cards to players
 	public void deal() {
+
+		ArrayList<Card> cardsToDeal = new ArrayList<Card>(deck); // Create a copy so we don't affect the actual deck
+		// Remove the solution cards
+		cardsToDeal.remove(theAnswer.getRoom());
+		cardsToDeal.remove(theAnswer.getPerson());
+		cardsToDeal.remove(theAnswer.getWeapon());
+		int playerIndex = 0; // keep track of which player gets the card using modulus
+		Random rand = new Random(); // for random card picking
 		
-		// Remove the solution cards from the deck
-	    Card solutionRoom = theAnswer.getRoom();
-	    Card solutionPerson = theAnswer.getPerson();
-	    Card solutionWeapon = theAnswer.getWeapon();
-	    
-	    // Create a new list that holds the remaining cards
-	    ArrayList<Card> remainingCards = new ArrayList<Card>(deck);
-	    remainingCards.remove(solutionRoom);
-	    remainingCards.remove(solutionPerson);
-	    remainingCards.remove(solutionWeapon);
-	    
-	    // Shuffle the cards
-	    Collections.shuffle(remainingCards);
-	    
-	    // Deal cards to players
-	    int playerIndex = 0;
-	    int numPlayers = players.size();
-	    for (Card card : remainingCards) {
-	         players.get(playerIndex).updateHand(card);
-	         playerIndex = (playerIndex + 1) % numPlayers;
-	    }
+		// While the deck has cards, deal one random card to each player
+		while(!cardsToDeal.isEmpty()) {
+			// get a random number, and add it to a player's hand
+			Card cardDealt = cardsToDeal.get(rand.nextInt(cardsToDeal.size()));
+			players.get(playerIndex % NUM_PLAYERS).getHand().add(cardDealt);
+			cardsToDeal.remove(cardDealt);
+			playerIndex++;
+		}
+
 	}
 
 	// Make sure row and column are in bounds
