@@ -51,6 +51,14 @@ public abstract class Player {
     	return col;
     }
     
+    public String getName() {
+    	return name;
+    }
+    
+    public Color getColor() {
+    	return color;
+    }
+    
     // For testing, not to be used in game code
     public void setRow(int row) {
     	this.row = row;
