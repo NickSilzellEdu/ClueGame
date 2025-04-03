@@ -77,8 +77,6 @@ public class Board {
 
 		// Deal the rest of cards
 		deal();
-
-
 	}
 
 	// Return the only instance of Board
@@ -420,33 +418,51 @@ public class Board {
 			theAnswer = new Solution(roomCards.get(rand.nextInt(roomCards.size())), playerCards.get(rand.nextInt(playerCards.size())), weaponCards.get(rand.nextInt((weaponCards.size()))));
 		}
 	}
+
 	// Deal cards to players
 	public void deal() {
 		// Make sure solution is not null
 		if(theAnswer != null) {
 			// Remove the solution cards from the deck
-	 	    Card solutionRoom = theAnswer.getRoom();
-	 	    Card solutionPerson = theAnswer.getPerson();
-	 	    Card solutionWeapon = theAnswer.getWeapon();
-	 	    
-	 	    // Create a new list that holds the remaining cards
-	 	    ArrayList<Card> remainingCards = new ArrayList<Card>(deck);
-	 	    remainingCards.remove(solutionRoom);
-	 	    remainingCards.remove(solutionPerson);
-	 	    remainingCards.remove(solutionWeapon);
-	 	    
-	 	    // Shuffle the cards
-	 	    Collections.shuffle(remainingCards);
-	 	    
-	 	    // Deal cards to players
-	 	    int playerIndex = 0;
-	 	    int numPlayers = players.size();
-	 	    for (Card card : remainingCards) {
-	 	         players.get(playerIndex).updateHand(card);
-	 	         playerIndex = (playerIndex + 1) % numPlayers;
-	 	    }
+			Card solutionRoom = theAnswer.getRoom();
+			Card solutionPerson = theAnswer.getPerson();
+			Card solutionWeapon = theAnswer.getWeapon();
+
+			// Create a new list that holds the remaining cards
+			ArrayList<Card> remainingCards = new ArrayList<Card>(deck);
+			remainingCards.remove(solutionRoom);
+			remainingCards.remove(solutionPerson);
+			remainingCards.remove(solutionWeapon);
+
+			// Shuffle the cards
+			Collections.shuffle(remainingCards);
+
+			// Deal cards to players
+			int playerIndex = 0;
+			int numPlayers = players.size();
+			for (Card card : remainingCards) {
+				players.get(playerIndex).updateHand(card);
+				playerIndex = (playerIndex + 1) % numPlayers;
+			}
 		}
 
+	}
+
+	// Check to see if an accusation is correct
+	public boolean checkAccusation(Solution solution) {
+		return(theAnswer.getPerson() == solution.getPerson() && theAnswer.getRoom() == solution.getRoom() && theAnswer.getWeapon() == solution.getWeapon());
+	}
+
+	// Go through each player and see if they can disprove the suggestion made
+	public Card handleSuggestion(Solution suggestion, Player suggestingPlayer) {
+		Card cardToReturn = null;
+		for(Player player : players) {
+			if(player != suggestingPlayer) { // Make sure the player's own cards are not spoiled
+				cardToReturn = player.disproveSuggestion(suggestion);
+				if(cardToReturn != null) return cardToReturn;
+			}
+		}
+		return null;// If no one can disprove it, return null
 	}
 
 	// Make sure row and column are in bounds
@@ -525,4 +541,13 @@ public class Board {
 		return deckSize;
 	}
 
+	// Used for testing
+	public void setSolution(Solution sol) {
+		theAnswer = sol;
+	}
+
+	// Used for testing
+	public void setPlayersArrayList(ArrayList<Player> players) {
+		this.players = players;
+	}
 }

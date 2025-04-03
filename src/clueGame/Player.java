@@ -40,4 +40,12 @@ public abstract class Player {
     public Set<Card> getSeen() {
     	return seen;
     }
+    
+    public int getRow() {
+    	return row;
+    }
+    
+    public int getCol() {
+    	return col;
+    }
 }
