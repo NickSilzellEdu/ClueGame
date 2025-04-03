@@ -12,14 +12,11 @@ public class ComputerPlayer extends Player{
 		super(name, color, row, col);
 	}
 	
-	@Override
-	public void updateHand(Card card) {
-		getHand().add(card);
-	}
-	
+
 	// Disprove a suggestion, kinda like it does in HumanPlayer.java
     @Override
     public Card disproveSuggestion(Solution suggestion) {
+    	// Add all matching cards to matching array
         List<Card> matching = new ArrayList<>();
         for (Card card : getHand()) {
             if (card.equals(suggestion.getPerson()) ||
@@ -29,6 +26,7 @@ public class ComputerPlayer extends Player{
             }
         }
         
+        // Pick a random card if there exists a match, return null if not
         if (matching.isEmpty())
             return null;
         Random rand = new Random();
@@ -105,6 +103,8 @@ public class ComputerPlayer extends Player{
     public BoardCell selectTarget(Set<BoardCell> targets) {
         List<BoardCell> roomTargets = new ArrayList<>();
         Board board = Board.getInstance();
+        
+        // If a room within roll distance is unseen, add it to room targets
         for (BoardCell cell : targets) {
             if (cell.isRoom()) {
                 Room room = board.getRoom(cell);
@@ -130,7 +130,7 @@ public class ComputerPlayer extends Player{
             return roomTargets.get(rand.nextInt(roomTargets.size()));
         }
         
-        // A random target is selected
+        // A random target is selected if there is no rooms
         int index = rand.nextInt(targets.size());
         int i = 0;
         for (BoardCell cell : targets) {

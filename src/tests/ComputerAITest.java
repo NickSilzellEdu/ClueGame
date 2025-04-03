@@ -15,7 +15,7 @@ import clueGame.*;
 
 // This class tests the functionality of the AI players
 public class ComputerAITest {
-	public static Board board;
+	private static Board board;
 	private static ComputerPlayer computerPlayer;
 
 	// Setup

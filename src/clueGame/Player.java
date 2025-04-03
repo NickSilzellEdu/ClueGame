@@ -22,7 +22,9 @@ public abstract class Player {
 	}
 	
 	// Each player adds a card to their hand
-    public abstract void updateHand(Card card);
+    public void updateHand(Card card) {
+    	hand.add(card);
+    }
 	
     // Each player will try to disprove a suggestion
     public abstract Card disproveSuggestion(Solution suggestion);

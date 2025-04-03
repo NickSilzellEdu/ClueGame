@@ -10,15 +10,11 @@ public class HumanPlayer extends Player {
 	public HumanPlayer(String name, Color color, int row, int col) {
 		super(name, color, row, col);
 	}
-	
-	@Override
-	public void updateHand(Card card) {
-		getHand().add(card);
-	}
-	
+
 	// Selects matching cards at random if one or more exist
     @Override
     public Card disproveSuggestion(Solution suggestion) {
+    	// Add all matching cards to matching array
         List<Card> matching = new ArrayList<>();
         for (Card card : getHand()) {
             if (card.equals(suggestion.getPerson()) ||
@@ -28,6 +24,7 @@ public class HumanPlayer extends Player {
             }
         }
         
+        // Pick a random card if there exists a match, return null if not
         if (matching.isEmpty())
             return null;
         Random rand = new Random();
