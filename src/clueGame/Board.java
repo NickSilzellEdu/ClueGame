@@ -526,7 +526,7 @@ public class Board {
 	public ArrayList<Card> getDeck(){
 		return this.deck;
 	}
-
+	
 	// Get numbers of cards for testing
 	public int getNumRooms() {
 		return numRooms;

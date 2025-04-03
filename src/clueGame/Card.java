@@ -32,7 +32,7 @@ public class Card {
 		if (target == null) return false;
 		if (this == target) return true;
 		Card cardTarget = (Card)target;
-		return (cardName == cardTarget.getCardName() && type == cardTarget.getType());
+		return (cardName.equals(cardTarget.getCardName()) && type == cardTarget.getType());
 		}
 	
 	// Returns a string respresentation of the card

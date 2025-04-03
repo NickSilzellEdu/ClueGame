@@ -124,7 +124,7 @@ public class ComputerPlayer extends Player{
             }
         }
         
-        // If the target room has not been seen, then the room target is rnadomly chosen
+        // If the target room has not been seen, then the room target is randomly chosen
         Random rand = new Random();
         if (!roomTargets.isEmpty()) {
             return roomTargets.get(rand.nextInt(roomTargets.size()));

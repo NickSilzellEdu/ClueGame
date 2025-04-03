@@ -48,4 +48,13 @@ public abstract class Player {
     public int getCol() {
     	return col;
     }
+    
+    // For testing, not to be used in game code
+    public void setRow(int row) {
+    	this.row = row;
+    }
+    
+    public void setCol(int col) {
+    	this.col = col;
+    }
 }

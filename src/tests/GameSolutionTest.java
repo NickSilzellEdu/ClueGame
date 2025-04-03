@@ -5,23 +5,23 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.awt.Color;
 import java.util.ArrayList;
 
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
 
 import clueGame.*;
 
 public class GameSolutionTest {
-	public Board board;
+	public static Board board;
 	static Card person1, person2, person3, person4;
 	static Card room1, room2, room3, room4;
 	static Card weapon1, weapon2, weapon3, weapon4;
 
 	@BeforeAll
-	public void setup(){
+	public static void setup(){
 		board = Board.getInstance();
 		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
 		board.initialize();	
