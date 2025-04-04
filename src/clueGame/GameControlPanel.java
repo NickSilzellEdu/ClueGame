@@ -15,6 +15,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 /*
+ * Created by Nick Silzell and Andrew Grimes
  * This class sets up the panel for the bottom part of the window, the game's control panel
  */
 

@@ -1,7 +1,7 @@
 package clueGame;
 
 /*
- * Designed by Nick Silzell and Andrew Grimes
+ * Created by Nick Silzell and Andrew Grimes
  * this class is used to store the game solution, which varies between games
  */
 
