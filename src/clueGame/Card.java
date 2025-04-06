@@ -27,6 +27,8 @@ public class Card {
 		return type;
 	}
 	
+	
+	
 	// Return whether this card is equal to another
 	@Override
 	public boolean equals(Object target) {
