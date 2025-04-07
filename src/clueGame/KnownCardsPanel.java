@@ -77,13 +77,6 @@ public class KnownCardsPanel extends JPanel {
 			// Handle section
 			if(inHand) sectionPanel = peopleInHand;
 			else sectionPanel = peopleSeen;
-
-			// If the card is a person, add the color
-			Color cardColor = Color.white; // white for default
-			for(Player player : board.getPlayers()) {
-				if (player.getName().equals(card.getCardName())) cardColor = player.getColor();	
-			}
-			cardField.setBackground(cardColor);
 			break;
 		case CardType.ROOM:
 			if(inHand) sectionPanel = roomsInHand;
@@ -99,6 +92,18 @@ public class KnownCardsPanel extends JPanel {
 
 		if (sectionPanel != null)
 		{
+			// If the card is seen, update the color to the player who has it
+			if(!inHand) {
+				Color cardColor = null;
+				for(Player player : board.getPlayers()) {
+					if(player.getHand().contains(card)) { 
+						cardColor = player.getColor();
+						break;
+					}
+				}
+				if(cardColor != null) cardField.setBackground(cardColor);
+			}
+
 			cardField.setEditable(false);
 			sectionPanel.add(cardField);
 			sectionPanel.revalidate();
@@ -111,22 +116,21 @@ public class KnownCardsPanel extends JPanel {
 		KnownCardsPanel panel = new KnownCardsPanel();  // create the panel
 		JFrame frame = new JFrame();  // create the frame 
 		frame.setContentPane(panel); // put the panel in the frame
-		frame.setSize(200, 800);  // size the frame
+		frame.setSize(200, 900);  // size the frame
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // allow it to close
 		frame.setVisible(true); // make it visible
-		
+
 		// Test using board values, it was initialized in KnownCards constructor
 		Board board = Board.getInstance();		
-		
-		Collections.shuffle(board.getDeck());
-		// Add 4 random cards to in hand
-		for(int i = 0; i < 4; i++) {
-			panel.addCard(board.getDeck().get(i), true);
+
+		// Add all cards that are not the solution
+		for(Card card : board.getPlayers().get(0).getHand()) {
+			panel.addCard(card, true);
 		}
-		
-		// Add 8 random cards to seen, starting from 4 so there is no repeats
-		for(int i = 4; i < 12; i++) {
-			panel.addCard(board.getDeck().get(i), false);
+		for(int i = 1; i < 6; i++) {
+			for(Card card : board.getPlayers().get(i).getHand()) {
+				panel.addCard(card, false);
+			}
 		}
 
 	}
