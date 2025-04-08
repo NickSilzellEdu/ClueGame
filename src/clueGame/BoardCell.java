@@ -1,5 +1,8 @@
 package clueGame;
 
+import java.awt.Color;
+import java.awt.Graphics;
+
 /*
  * Created by Nick Silzell and Andrew Grimes
  * This class represents one cell in the Game Board
@@ -31,6 +34,26 @@ public class BoardCell {
 		this.isRoomCenter = false;
 		this.secretPassage = '\0';
 		this.adjList = new HashSet<BoardCell>();
+	}
+	
+	// Draw this cell on the board
+	public void draw(Graphics g, int row, int col, int cellWidth, int cellHeight) {
+	    int x = col * cellWidth;
+	    int y = row * cellHeight;
+
+	    // Set a color based on cell type
+	    if (initial == 'W') {
+	        g.setColor(new Color(31, 255, 94)); // Light green for grass
+	    } else if(initial == 'X') {
+	        g.setColor(Color.DARK_GRAY); // Brown for wooden walls
+	    }
+	    else if (isRoom()) {
+	        g.setColor(new Color(0, 94, 27)); // Dark green for rooms
+	    }
+
+	    g.fillRect(x, y, cellWidth, cellHeight);
+	    g.setColor(Color.BLACK); // Outline
+	    g.drawRect(x, y, cellWidth, cellHeight);
 	}
 
 	// Returns the row index of the cell

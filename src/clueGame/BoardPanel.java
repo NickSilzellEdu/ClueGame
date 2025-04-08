@@ -22,7 +22,7 @@ public class BoardPanel extends JPanel {
 		super.paintComponent(g);
 		
 		// Cell sized, based on panel size
-		int numRoms = board.getNumRows();
+		int numRows = board.getNumRows();
 		int numCols = board.getNumColumns();
 		int cellWidth = getWidth() / numCols;
 		int cellHeight = getHeight() / numRows;
@@ -43,7 +43,8 @@ public class BoardPanel extends JPanel {
 			int col = player.getCol();
 			int x = col * cellWidth;
 			int y = row * cellHeight;
-			g.setColor(x, y, cellWidth, cellHeight);
+			g.setColor(player.getColor());
+			g.fillOval(x, y, cellWidth, cellHeight);
 		});
 	}
 }
