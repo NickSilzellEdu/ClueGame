@@ -89,11 +89,11 @@ public class GameControlPanel extends JPanel{
 		guessResultField.setEditable(false);
 		
 		// Add colors to buttons
-		accuseButton.setBackground(Color.CYAN);
+		accuseButton.setBackground(Color.LIGHT_GRAY);
 		accuseButton.setOpaque(true);
 		accuseButton.setBorderPainted(false);
 		
-		nextButton.setBackground(Color.CYAN);
+		nextButton.setBackground(Color.LIGHT_GRAY);
 		nextButton.setOpaque(true);
 		nextButton.setBorderPainted(false);
 

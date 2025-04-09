@@ -38,6 +38,7 @@ public class BoardPanel extends JPanel {
 		
 		// Draw the room names (will do later)
 		
+		
 		// Draw the players
 		board.getPlayers().forEach(player -> {
 			int row = player.getRow();
