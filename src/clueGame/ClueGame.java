@@ -1,14 +1,13 @@
 package clueGame;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
-import javax.swing.JFrame;
-
 /*
  * Created by Nick Silzell and Andrew Grimes
  * This class sets up the ClueGame board into a GUI 
  */
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import javax.swing.JFrame;
 
 public class ClueGame extends JFrame {
 	private BoardPanel boardPanel;

@@ -1,5 +1,10 @@
 package clueGame;
 
+/*
+ * Created by Nick Silzell and Andrew Grimes
+ * This class sets up the panel for the bottom part of the window, the game's control panel
+ */
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Color;
@@ -12,10 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-/*
- * Created by Nick Silzell and Andrew Grimes
- * This class sets up the panel for the bottom part of the window, the game's control panel
- */
 
 public class GameControlPanel extends JPanel{
 

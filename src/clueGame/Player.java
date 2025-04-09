@@ -1,5 +1,10 @@
 package clueGame;
 
+/*
+ * Created by Nick Silzell and Andrew Grimes
+ * This class is used to create a players habits
+ */
+
 import java.util.HashSet;
 import java.util.Set;
 import java.awt.Color;

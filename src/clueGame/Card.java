@@ -1,11 +1,11 @@
 package clueGame;
 
-import java.util.Objects;
-
 /*
  * Created by Nick Silzell and Andrew Grimes
  * This class represents a card in the game of clue, either a player, weapon, or room
  */
+
+import java.util.Objects;
  
 public class Card {
 	private String cardName;

@@ -1,5 +1,10 @@
 package clueGame;
 
+/*
+ * Created by Nick Silzell and Andrew Grimes
+ * This class sets up the panel for the known cards panel
+ */
+
 import java.awt.GridLayout;
 import java.util.Collections;
 import java.awt.Color;
@@ -11,11 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-
-/*
- * Created by Nick Silzell and Andrew Grimes
- * This class sets up the panel for the known cards panel
- */
 
 public class KnownCardsPanel extends JPanel {
 	private static Board board;

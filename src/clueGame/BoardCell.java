@@ -1,5 +1,10 @@
 package clueGame;
 
+/*
+ * Created by Nick Silzell and Andrew Grimes on Mar 2 2025
+ * This class represents the Clue Game board cells
+ */
+
 import java.awt.Color;
 import java.awt.Graphics;
 

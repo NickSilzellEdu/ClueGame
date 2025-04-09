@@ -1,13 +1,14 @@
 package clueGame;
 
-import javax.swing.JPanel;
-import java.awt.Graphics;
-import java.awt.Color;
-
 /*
  * Created by Nick Silzell and Andrew Grimes on Mar 2 2025
  * This class represents the ClueGame board panel, a singleton class
  */
+
+import javax.swing.JPanel;
+import java.awt.Graphics;
+import java.awt.Color;
+
 
 public class BoardPanel extends JPanel {
 	private Board board;
