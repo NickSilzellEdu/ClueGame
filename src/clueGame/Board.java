@@ -527,6 +527,11 @@ public class Board {
 		return this.deck;
 	}
 	
+	// Getter for room map
+	public Map<Character, Room> getRoomMap() {
+		return roomMap;
+	}
+	
 	// Get numbers of cards for testing
 	public int getNumRooms() {
 		return numRooms;

@@ -36,7 +36,20 @@ public class BoardPanel extends JPanel {
 			}
 		}
 		
+		// Styling the room names text
+		java.awt.Font clashFont = new java.awt.Font("Old English Text MT", java.awt.Font.BOLD, 20);
+	    g.setFont(clashFont);
+		
 		// Draw the room names (will do later)
+		board.getRoomMap().forEach((initial, room) -> {
+            BoardCell labelCell = room.getLabelCell();
+            if (labelCell != null) {
+                int x = labelCell.getCol() * cellWidth;
+                int y = labelCell.getRow() * cellHeight;
+                g.setColor(Color.BLACK);
+                g.drawString(room.getName(), x-15, y+25);
+            }
+        });
 		
 		
 		// Draw the players
