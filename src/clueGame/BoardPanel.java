@@ -12,23 +12,23 @@ import java.awt.Color;
 
 public class BoardPanel extends JPanel {
 	private Board board;
-	
+
 	public BoardPanel() {
 		// Singleton board instance
 		board = Board.getInstance();
 	}
-	
+
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
+
 		// Cell sized, based on panel size
 		int numRows = board.getNumRows();
 		int numCols = board.getNumColumns();
 		int cellWidth = getWidth() / numCols;
 		int cellHeight = getHeight() / numRows;
-		
-		// Draw the cells
+
+		// Draw the cells and doors
 		for (int row = 0; row < numRows; row++) {
 			for (int col = 0; col < numCols; col++) {
 				BoardCell cell = board.getCell(row, col);
@@ -36,30 +36,63 @@ public class BoardPanel extends JPanel {
 			}
 		}
 		
-		// Styling the room names text
-		java.awt.Font clashFont = new java.awt.Font("Old English Text MT", java.awt.Font.BOLD, 20);
-	    g.setFont(clashFont);
-		
-		// Draw the room names (will do later)
-		board.getRoomMap().forEach((initial, room) -> {
-            BoardCell labelCell = room.getLabelCell();
-            if (labelCell != null) {
-                int x = labelCell.getCol() * cellWidth;
-                int y = labelCell.getRow() * cellHeight;
-                g.setColor(Color.BLACK);
-                g.drawString(room.getName(), x-15, y+25);
-            }
-        });
-		
-		
-		// Draw the players
-		board.getPlayers().forEach(player -> {
-			int row = player.getRow();
-			int col = player.getCol();
-			int x = col * cellWidth;
-			int y = row * cellHeight;
-			g.setColor(player.getColor());
-			g.fillOval(x, y, cellWidth, cellHeight);
-		});
+		// Draw all doors over the cells
+		for(int row = 0; row < numRows; row++) {
+			for(int col = 0; col < numCols; col++) {
+				// Draw door if necessary
+				DoorDirection direction = board.getCell(row, col).getDoorDirection();	
+				if(direction != DoorDirection.NONE) {
+					int x = col * cellWidth;
+					int y = row * cellHeight;
+					g.setColor(new Color(101, 67, 33)); // Brown doors
+					switch(direction) {
+					case DoorDirection.UP:
+						g.fillRect(x, y - cellHeight/5, cellWidth, cellHeight/5);
+						g.drawRect(x, y - cellHeight/5, cellWidth, cellHeight/5);
+						break;
+					case DoorDirection.DOWN:
+						g.fillRect(x, y + cellHeight, cellWidth, cellHeight/5);
+						g.drawRect(x, y + cellHeight, cellWidth, cellHeight/5);
+						break;
+					case DoorDirection.RIGHT:
+						g.fillRect(x + cellWidth, y, cellWidth/5, cellHeight);
+						g.drawRect(x + cellWidth, y, cellWidth/5, cellHeight);						break;
+					case DoorDirection.LEFT:
+						g.fillRect(x - cellWidth/5, y, cellWidth/5, cellHeight);
+						g.drawRect(x - cellWidth/5, y, cellWidth/5, cellHeight);	
+						break;
+					default: // If direction is none to nothing
+						break;
+					}
+				}
+			}
+		}
+
+			// Styling the room names text
+			java.awt.Font clashFont = new java.awt.Font("Old English Text MT", java.awt.Font.BOLD, 15);
+			g.setFont(clashFont);
+
+			// Draw the room names 
+			board.getRoomMap().forEach((initial, room) -> {
+				BoardCell labelCell = room.getLabelCell();
+				if (labelCell != null) {
+					int x = labelCell.getCol() * cellWidth;
+					int y = labelCell.getRow() * cellHeight;
+					g.setColor(Color.BLACK);
+					g.drawString(room.getName(), x - cellWidth + 5, y + cellHeight);
+				}
+			});
+
+
+			// Draw the players
+			board.getPlayers().forEach(player -> {
+				int row = player.getRow();
+				int col = player.getCol();
+				int x = col * cellWidth;
+				int y = row * cellHeight;
+				g.setColor(player.getColor());
+				g.fillOval(x, y, cellWidth, cellHeight);
+			});
+
+		}
 	}
-}

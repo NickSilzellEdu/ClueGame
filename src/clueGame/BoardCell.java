@@ -40,26 +40,26 @@ public class BoardCell {
 		this.secretPassage = '\0';
 		this.adjList = new HashSet<BoardCell>();
 	}
-	
+
 	// Draw this cell on the board
 	public void draw(Graphics g, int row, int col, int cellWidth, int cellHeight) {
-	    int x = col * cellWidth;
-	    int y = row * cellHeight;
+		int x = col * cellWidth;
+		int y = row * cellHeight;
 
-	    // Set a color based on cell type
-	    if (initial == 'W') {
-	        g.setColor(new Color(154, 205, 50)); // Green for grass
-	    } else if(initial == 'X') {
-	        g.setColor(new Color(101, 67, 33)); // Brown for walls
-	    }
-	    else if (isRoom()) {
-	        g.setColor(new Color(222, 184, 135)); // Beige for rooms
-	    }
+		// Set a color based on cell type
+		if (initial == 'W') {
+			g.setColor(new Color(154, 205, 50)); // Green for grass
+		} else if(initial == 'X') {
+			g.setColor(new Color(101, 67, 33)); // Brown for walls
+		}
+		else if (isRoom()) {
+			g.setColor(new Color(222, 184, 135)); // Beige for rooms
+		}
 
-	    g.fillRect(x, y, cellWidth, cellHeight);
-	    g.setColor(Color.BLACK); // Outline
-	    g.drawRect(x, y, cellWidth, cellHeight);
-	    
+		g.fillRect(x, y, cellWidth, cellHeight);
+		g.setColor(Color.BLACK); // Outline
+		g.drawRect(x, y, cellWidth, cellHeight);
+
 	}
 
 	// Returns the row index of the cell
