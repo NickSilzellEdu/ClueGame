@@ -87,16 +87,15 @@ public class GameControlPanel extends JPanel{
 		rollField.setEditable(false);
 		guessField.setEditable(false);
 		guessResultField.setEditable(false);
-		
+
 		// Add colors to buttons
 		accuseButton.setBackground(Color.LIGHT_GRAY);
 		accuseButton.setOpaque(true);
 		accuseButton.setBorderPainted(false);
-		
+
 		nextButton.setBackground(Color.LIGHT_GRAY);
 		nextButton.setOpaque(true);
 		nextButton.setBorderPainted(false);
-
 
 		// Add labels to bottom panels
 		bottomGuessPanel.setLayout(new BorderLayout());
@@ -106,6 +105,15 @@ public class GameControlPanel extends JPanel{
 		bottomGuessResultPanel.setLayout(new BorderLayout());
 		bottomGuessResultPanel.setBorder(BorderFactory.createTitledBorder("Guess Result"));
 		bottomGuessResultPanel.add(guessResultField, BorderLayout.CENTER);
+
+		// Add action listeners
+		accuseButton.addActionListener(e -> {
+			// Do something, to be implemented
+		});
+
+		nextButton.addActionListener(e -> {
+			// Do something, to be implemented
+		});
 
 	}
 

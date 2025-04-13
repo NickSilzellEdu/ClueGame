@@ -464,6 +464,11 @@ public class Board {
 		}
 		return null;// If no one can disprove it, return null
 	}
+	
+	// Play the game
+	public void playClue(ClueGame game) {
+		
+	}
 
 	// Make sure row and column are in bounds
 	private boolean isValidIndex(int row, int col){
