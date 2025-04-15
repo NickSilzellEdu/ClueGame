@@ -63,7 +63,6 @@ public class Board {
 		numRooms = 0;
 		deckSize = 0;
 		currentPlayerIndex = 0;
-		currentPlayer = null;
 
 		gameFrame = null;
 		controlPanel = null;
@@ -96,6 +95,9 @@ public class Board {
 
 		// Deal the rest of cards
 		deal();
+		
+		currentPlayer = players.get(0);
+		isHumanTurn = true;
 	}
 
 	// Return the only instance of Board
@@ -498,8 +500,10 @@ public class Board {
 		controlPanel.setTurn(currentPlayer, roll);
 
 		if(currentPlayer instanceof HumanPlayer) {
+			isHumanTurn = true;
 			makeHumanTurn((HumanPlayer)currentPlayer);
 		} else {
+			isHumanTurn = false;
 			makeComputerTurn((ComputerPlayer)currentPlayer);
 		}
 
@@ -518,6 +522,15 @@ public class Board {
 		// -not done
 		
 		currentPlayer.setTurnFinished(true);
+	}
+	
+	// Make the first turn of the game
+	public void startFirstTurn() {
+		int roll = rollDice();
+		calcTargets(getCell(currentPlayer.getRow(), currentPlayer.getCol()), roll);
+		controlPanel.setTurn(currentPlayer, roll);
+		isHumanTurn = true;
+		makeHumanTurn((HumanPlayer)currentPlayer);
 	}
 
 	// Make sure row and column are in bounds

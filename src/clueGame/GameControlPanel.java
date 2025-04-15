@@ -110,7 +110,7 @@ public class GameControlPanel extends JPanel{
 
 //				// Add action listeners
 //				accuseButton.addActionListener(e -> {
-//					// shit
+//					// not done
 //				});
 
 		nextButton.addActionListener(e -> Board.getInstance().handleTurn()); 

@@ -25,7 +25,7 @@ public abstract class Player {
 		this.col = col;
 		this.hand = new HashSet<Card>();
 		this.seen = new HashSet<Card>();
-		this.turnFinished = false;
+		this.turnFinished = true;
 	}
 	
 	// Each player adds a card to their hand
