@@ -98,7 +98,7 @@ public class BoardPanel extends JPanel {
 				int x = labelCell.getCol() * cellWidth;
 				int y = labelCell.getRow() * cellHeight;
 				g.setColor(Color.BLACK);
-				g.drawString(room.getName(), x - cellWidth + 5, y + cellHeight);
+				g.drawString(room.getName(), x - cellWidth + 5, y + cellHeight + 7);
 			}
 		});
 
