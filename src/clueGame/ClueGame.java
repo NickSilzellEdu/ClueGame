@@ -18,7 +18,7 @@ public class ClueGame extends JFrame {
 	public ClueGame() {
 		// Setup the main window
 		setTitle("Clash of Clans Clue Game");
-		setSize(1000, 8000);
+		setSize(900, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 
