@@ -6,6 +6,11 @@ package clueGame;
  */
 
 import java.util.Set;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.io.FileNotFoundException;
@@ -36,6 +41,13 @@ public class Board {
 	private ArrayList<Card> deck;
 	private Solution theAnswer;
 	private ArrayList<Player> players;
+	private int currentPlayerIndex;
+	private Player currentPlayer;
+	private ClueGame gameFrame;
+	private GameControlPanel controlPanel;
+	private BoardPanel boardPanel;
+	private KnownCardsPanel cardsPanel;
+	private boolean isHumanTurn;
 
 
 	private Board() {
@@ -50,6 +62,12 @@ public class Board {
 		numWeapons = 0;
 		numRooms = 0;
 		deckSize = 0;
+		currentPlayerIndex = 0;
+
+		gameFrame = null;
+		controlPanel = null;
+		boardPanel = null;
+		cardsPanel = null;
 
 		// Initialize sets for targets algorithm
 		targets = new HashSet<BoardCell>();
@@ -77,6 +95,9 @@ public class Board {
 
 		// Deal the rest of cards
 		deal();
+		
+		currentPlayer = players.get(0);
+		isHumanTurn = true;
 	}
 
 	// Return the only instance of Board
@@ -464,10 +485,52 @@ public class Board {
 		}
 		return null;// If no one can disprove it, return null
 	}
+
+	// Handle a turn when the button is clicked
+	public void handleTurn() {
+		// make sure current player's turn is finished
+		if(!currentPlayer.isTurnFinished()) {
+			JOptionPane.showMessageDialog(gameFrame, "Please finish your turn before clicking next");
+			return;
+		}
+
+		advancePlayer();
+		int roll = rollDice();
+		calcTargets(getCell(currentPlayer.getRow(), currentPlayer.getCol()), roll);
+		controlPanel.setTurn(currentPlayer, roll);
+
+		if(currentPlayer instanceof HumanPlayer) {
+			isHumanTurn = true;
+			makeHumanTurn((HumanPlayer)currentPlayer);
+		} else {
+			isHumanTurn = false;
+			makeComputerTurn((ComputerPlayer)currentPlayer);
+		}
+
+	}
 	
-	// Play the game
-	public void playClue(ClueGame game) {
+	// Make a human's turn
+	public void makeHumanTurn(HumanPlayer currentPlayer) {
+		// Highlight available targets to click
+		// - make function
+		currentPlayer.setTurnFinished(false); // wait for a board click
+	}
+
+	// Make a computer's turn
+	public void makeComputerTurn(ComputerPlayer currentPlayer) {
+		// do computer player things
+		// -not done
 		
+		currentPlayer.setTurnFinished(true);
+	}
+	
+	// Make the first turn of the game
+	public void startFirstTurn() {
+		int roll = rollDice();
+		calcTargets(getCell(currentPlayer.getRow(), currentPlayer.getCol()), roll);
+		controlPanel.setTurn(currentPlayer, roll);
+		isHumanTurn = true;
+		makeHumanTurn((HumanPlayer)currentPlayer);
 	}
 
 	// Make sure row and column are in bounds
@@ -531,12 +594,12 @@ public class Board {
 	public ArrayList<Card> getDeck(){
 		return this.deck;
 	}
-	
+
 	// Getter for room map
 	public Map<Character, Room> getRoomMap() {
 		return roomMap;
 	}
-	
+
 	// Get numbers of cards for testing
 	public int getNumRooms() {
 		return numRooms;
@@ -559,5 +622,45 @@ public class Board {
 	// Used for testing
 	public void setPlayersArrayList(ArrayList<Player> players) {
 		this.players = players;
+	}
+
+	// Get a random dice roll 1-6
+	public int rollDice() {
+		Random rand = new Random();
+		return rand.nextInt(6) + 1;
+	}
+
+	// Advance to the next player
+	public void advancePlayer() {
+		currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+		currentPlayer = players.get(currentPlayerIndex);
+	}
+
+	public void setFrame(ClueGame frame){
+		this.gameFrame = frame;
+	}
+
+	public void setControlPanel(GameControlPanel panel) {
+		this.controlPanel = panel;
+	}
+	
+	public void setBoardPanel(BoardPanel panel) {
+		this.boardPanel = panel;
+	}
+	
+	public void setCardsPanel(KnownCardsPanel panel) {
+		this.cardsPanel = panel;
+	}
+	
+	public boolean isHumanTurn() {
+		return isHumanTurn;
+	}
+	
+	public void setHumanTurn(boolean isHumanTurn) {
+		this.isHumanTurn = isHumanTurn;
+	}
+	
+	public Player getCurrentPlayer() {
+		return currentPlayer;
 	}
 }

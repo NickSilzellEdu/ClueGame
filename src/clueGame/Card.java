@@ -28,7 +28,6 @@ public class Card {
 	}
 	
 	
-	
 	// Return whether this card is equal to another
 	@Override
 	public boolean equals(Object target) {

@@ -11,9 +11,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class ClueGame extends JFrame {
-	private BoardPanel boardPanel;
-	private GameControlPanel controlPanel;
-	private KnownCardsPanel cardsPanel;
+	private static BoardPanel boardPanel;
+	private static GameControlPanel controlPanel;
+	private static KnownCardsPanel cardsPanel;
 
 	public ClueGame() {
 		// Setup the main window
@@ -42,15 +42,18 @@ public class ClueGame extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		ClueGame game = new ClueGame();
 		Board board = Board.getInstance();
 		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
 		board.initialize();	
 		
+		ClueGame game = new ClueGame();
+		board.setFrame(game);
+		board.setControlPanel(controlPanel);
+		board.setBoardPanel(boardPanel);
+		board.setCardsPanel(cardsPanel);
+		
 		// Present a welcome screen
 		JOptionPane.showMessageDialog(game, "You are the " + board.getPlayers().get(0).getName() + ". Can you find the solution before the Computer Players?", "Welcome to Clue", JOptionPane.INFORMATION_MESSAGE);
-		
-		board.playClue(game); // Play the game
+		board.startFirstTurn(); // Start off with the first player
 	}
-
 }

@@ -7,6 +7,7 @@ package clueGame;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.Random;
 import java.awt.Color;
 import java.awt.FlowLayout;
 
@@ -15,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 
@@ -106,14 +108,12 @@ public class GameControlPanel extends JPanel{
 		bottomGuessResultPanel.setBorder(BorderFactory.createTitledBorder("Guess Result"));
 		bottomGuessResultPanel.add(guessResultField, BorderLayout.CENTER);
 
-		// Add action listeners
-		accuseButton.addActionListener(e -> {
-			// Do something, to be implemented
-		});
+//				// Add action listeners
+//				accuseButton.addActionListener(e -> {
+//					// not done
+//				});
 
-		nextButton.addActionListener(e -> {
-			// Do something, to be implemented
-		});
+		nextButton.addActionListener(e -> Board.getInstance().handleTurn()); 
 
 	}
 

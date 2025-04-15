@@ -16,6 +16,7 @@ public abstract class Player {
 	private int row;
 	private int col;
 	private Set<Card> seen;
+	private boolean turnFinished;
 	
 	public Player(String name, Color color, int row, int col) {
 		this.name = name;
@@ -24,6 +25,7 @@ public abstract class Player {
 		this.col = col;
 		this.hand = new HashSet<Card>();
 		this.seen = new HashSet<Card>();
+		this.turnFinished = true;
 	}
 	
 	// Each player adds a card to their hand
@@ -72,4 +74,12 @@ public abstract class Player {
     public void setCol(int col) {
     	this.col = col;
     }
+    
+    public void setTurnFinished(boolean finished) {
+		this.turnFinished = finished;
+	}
+	
+	public boolean isTurnFinished() {
+		return turnFinished;
+	}
 }
