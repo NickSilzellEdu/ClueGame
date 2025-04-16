@@ -12,6 +12,8 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.awt.Color;
 
 
@@ -55,15 +57,36 @@ public class BoardPanel extends JPanel {
 		}
 		
 		// highlight target cells if necessary
-		//TODO C23 make it so entire rooms are highlighted
 		if (board.isHumanTurn()) {
+			Set<Character> validRoomTargets = new HashSet<>();
+			
 			for (BoardCell cell : board.getTargets()) {
-				int x = cell.getCol() * cellWidth;
-				int y = cell.getRow() * cellHeight;
-				g.setColor(Color.CYAN); 
-				g.fillRect(x, y, cellWidth, cellHeight);
-				g.setColor(Color.BLACK);
-				g.drawRect(x, y, cellWidth, cellHeight);
+				if (cell.isRoom()) {
+					int x = cell.getCol() * cellWidth;
+					int y = cell.getRow() * cellHeight;
+					g.setColor(new Color(0, 175, 0)); // darker green for highlight
+					g.fillRect(x, y, cellWidth, cellHeight);
+					g.setColor(Color.BLACK);
+					g.drawRect(x, y, cellWidth, cellHeight);
+				} else if (cell.isDoorway()) {
+		            validRoomTargets.add(cell.getInitial());
+		        }
+			}
+			
+			for (Character roomInitial : validRoomTargets) {
+				for (int row = 0; row < numRows; row++) {
+			        for (int col = 0; col < numCols; col++) {
+			            BoardCell cell = board.getCell(row, col);
+			            if (cell.isRoom() && cell.getInitial() == roomInitial) {
+			                int x = col * cellWidth;
+			                int y = row * cellHeight;
+			                g.setColor(new Color(0, 175, 0)); // highlight color
+			                g.fillRect(x, y, cellWidth, cellHeight);
+			                g.setColor(Color.BLACK);
+			                g.drawRect(x, y, cellWidth, cellHeight);
+			            }
+			        }
+			    }
 			}
 		}
 
@@ -132,10 +155,17 @@ public class BoardPanel extends JPanel {
 		// Find row and column of cell
 		int row = y / cellHeight;
 		int col = x / cellWidth;
-
 		BoardCell clickedCell = board.getCell(row, col);
+		
+		Set<Character> validRoomTargets = new HashSet<>();
+	    for (BoardCell cell : board.getTargets()) {
+	        if (cell.isRoom()) {
+	            validRoomTargets.add(cell.getInitial());
+	        }
+	    }
+		
 		// If it is a valid cell and the human's turn
-		if(board.isHumanTurn() && board.getTargets().contains(clickedCell)) {
+		if(board.isHumanTurn() && (board.getTargets().contains(clickedCell) || (clickedCell.isRoom() && validRoomTargets.contains(clickedCell.getInitial())))) {
 			movePlayer(row, col);
 			board.setHumanTurn(false);
 			board.getCurrentPlayer().setTurnFinished(true);
