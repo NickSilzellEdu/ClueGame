@@ -96,8 +96,14 @@ public class Board {
 		// Deal the rest of cards
 		deal();
 		
+		// Get turns correct for first human player
 		currentPlayer = players.get(0);
 		isHumanTurn = true;
+		
+		// occupy cells of all starting players
+		for(Player player : players) {
+			getCell(player.getRow(), player.getCol()).setOccupied(true);
+		}
 	}
 
 	// Return the only instance of Board
@@ -511,7 +517,7 @@ public class Board {
 	
 	// Make a human's turn
 	public void makeHumanTurn(HumanPlayer currentPlayer) {
-		// Highlight available targets to click
+		boardPanel.repaint(); // show highlighted cells
 		// - make function
 		currentPlayer.setTurnFinished(false); // wait for a board click
 	}

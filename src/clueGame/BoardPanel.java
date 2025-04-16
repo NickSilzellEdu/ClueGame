@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.awt.Color;
 
 
@@ -40,7 +41,6 @@ public class BoardPanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
 		numRows = board.getNumRows();
 		numCols = board.getNumColumns();
 		cellWidth = getWidth() / numCols;
@@ -51,6 +51,18 @@ public class BoardPanel extends JPanel {
 			for (int col = 0; col < numCols; col++) {
 				BoardCell cell = board.getCell(row, col);
 				cell.draw(g, row, col, cellWidth, cellHeight);
+			}
+		}
+		
+		// highlight target cells if necessary
+		if (board.isHumanTurn()) {
+			for (BoardCell cell : board.getTargets()) {
+				int x = cell.getCol() * cellWidth;
+				int y = cell.getRow() * cellHeight;
+				g.setColor(Color.CYAN); 
+				g.fillRect(x, y, cellWidth, cellHeight);
+				g.setColor(Color.BLACK);
+				g.drawRect(x, y, cellWidth, cellHeight);
 			}
 		}
 
@@ -125,24 +137,26 @@ public class BoardPanel extends JPanel {
 		if(board.isHumanTurn() && board.getTargets().contains(clickedCell)) {
 			movePlayer(row, col);
 			board.getCurrentPlayer().setTurnFinished(true);
+			board.setHumanTurn(false);
 			repaint();
 			}
 		// Invalid click
 		else if(board.isHumanTurn()) {
-			JOptionPane.showMessageDialog(this, "Invalid cell, please click a highlited move");
+			JOptionPane.showMessageDialog(this, "Invalid cell, please click a highlighted move");
 		}
 		// Not the player's turn
-		else JOptionPane.showMessageDialog(this, "It is not your turn");
+		else JOptionPane.showMessageDialog(this, "It is not your turn, please click next");
 	}
 
 	private void movePlayer(int newRow, int newCol) {
 		Player player = board.getCurrentPlayer();
+		board.getCell(player.getRow(), player.getCol()).setOccupied(false);;
+		board.getCell(newRow, newCol).setOccupied(true);
 		player.setRow(newRow);
 		player.setCol(newCol);
 
 		// add an animation to move the player TODO
 
 	}
-	
 	
 }
