@@ -518,15 +518,21 @@ public class Board {
 	// Make a human's turn
 	public void makeHumanTurn(HumanPlayer currentPlayer) {
 		boardPanel.repaint(); // show highlighted cells
-		// - make function
 		currentPlayer.setTurnFinished(false); // wait for a board click
+		
+		// TODO C25 if in a room, make a suggestion
+		// TODO C23 add slow moving animation
+		
+		
 	}
 
 	// Make a computer's turn
 	public void makeComputerTurn(ComputerPlayer currentPlayer) {
-		// do computer player things
-		// -not done
-		
+		currentPlayer.setTurnFinished(false);
+		// Make the computer move
+		BoardCell selectedMove = currentPlayer.selectTarget(targets);
+		boardPanel.movePlayer(selectedMove.getRow(), selectedMove.getCol());
+		boardPanel.repaint();
 		currentPlayer.setTurnFinished(true);
 	}
 	

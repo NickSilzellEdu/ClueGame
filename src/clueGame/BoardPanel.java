@@ -55,6 +55,7 @@ public class BoardPanel extends JPanel {
 		}
 		
 		// highlight target cells if necessary
+		//TODO C23 make it so entire rooms are highlighted
 		if (board.isHumanTurn()) {
 			for (BoardCell cell : board.getTargets()) {
 				int x = cell.getCol() * cellWidth;
@@ -136,8 +137,8 @@ public class BoardPanel extends JPanel {
 		// If it is a valid cell and the human's turn
 		if(board.isHumanTurn() && board.getTargets().contains(clickedCell)) {
 			movePlayer(row, col);
-			board.getCurrentPlayer().setTurnFinished(true);
 			board.setHumanTurn(false);
+			board.getCurrentPlayer().setTurnFinished(true);
 			repaint();
 			}
 		// Invalid click
@@ -148,7 +149,7 @@ public class BoardPanel extends JPanel {
 		else JOptionPane.showMessageDialog(this, "It is not your turn, please click next");
 	}
 
-	private void movePlayer(int newRow, int newCol) {
+	public void movePlayer(int newRow, int newCol) {
 		Player player = board.getCurrentPlayer();
 		board.getCell(player.getRow(), player.getCol()).setOccupied(false);;
 		board.getCell(newRow, newCol).setOccupied(true);
