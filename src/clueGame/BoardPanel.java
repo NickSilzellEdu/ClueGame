@@ -12,6 +12,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.awt.Color;
 
 
@@ -53,19 +54,10 @@ public class BoardPanel extends JPanel {
 				cell.draw(g, row, col, cellWidth, cellHeight);
 			}
 		}
-		
+
 		// highlight target cells if necessary
-		//TODO C23 make it so entire rooms are highlighted
-		if (board.isHumanTurn()) {
-			for (BoardCell cell : board.getTargets()) {
-				int x = cell.getCol() * cellWidth;
-				int y = cell.getRow() * cellHeight;
-				g.setColor(Color.CYAN); 
-				g.fillRect(x, y, cellWidth, cellHeight);
-				g.setColor(Color.BLACK);
-				g.drawRect(x, y, cellWidth, cellHeight);
-			}
-		}
+		if(board.isHumanTurn()) highlightTargets(g);
+
 
 		// Draw all doors over the cells
 		for(int row = 0; row < numRows; row++) {
@@ -140,6 +132,14 @@ public class BoardPanel extends JPanel {
 			board.setHumanTurn(false);
 			board.getCurrentPlayer().setTurnFinished(true);
 			repaint();
+		}
+		// If cell clicked is in a room, and the room's center is a target, move the player to the room center
+		else if(board.isHumanTurn() && clickedCell.isRoom() && board.getTargets().contains(board.getRoom(clickedCell).getCenterCell())) {
+			BoardCell centerCell = board.getRoom(clickedCell).getCenterCell();
+			movePlayer(centerCell.getRow(), centerCell.getCol());
+			board.setHumanTurn(false);
+			board.getCurrentPlayer().setTurnFinished(true);
+			repaint();
 			}
 		// Invalid click
 		else if(board.isHumanTurn()) {
@@ -159,5 +159,35 @@ public class BoardPanel extends JPanel {
 		// add an animation to move the player TODO
 
 	}
-	
+
+	// Highlight all walkway targets, and valid rooms
+	public void highlightTargets(Graphics g) {
+		HashSet<BoardCell> targetedCenters = new HashSet<BoardCell>();
+
+		// Highlight each target cell, and add valid room centers
+		for (BoardCell cell : board.getTargets()) {
+			int x = cell.getCol() * cellWidth;
+			int y = cell.getRow() * cellHeight;
+			g.setColor(new Color(0, 175, 0)); // Dark green highlighted rooms
+			g.fillRect(x, y, cellWidth, cellHeight);
+			g.setColor(Color.BLACK);
+			g.drawRect(x, y, cellWidth, cellHeight);
+			if(cell.isRoomCenter()) targetedCenters.add(cell);
+		}
+
+		// Highlight all cells of a room based off it's room center
+		for(BoardCell cell : targetedCenters) {
+			Character roomChar = cell.getInitial();
+			for(BoardCell roomCell : board.getRoomMap().get(roomChar).getRoomCells()) {
+				int x = roomCell.getCol() * cellWidth;
+				int y = roomCell.getRow() * cellHeight;
+				g.setColor(new Color(0, 175, 0)); // Dark green highlighted rooms
+				g.fillRect(x, y, cellWidth, cellHeight);
+				g.setColor(Color.BLACK);
+				g.drawRect(x, y, cellWidth, cellHeight);
+			}
+			
+		}
+	}
 }
+

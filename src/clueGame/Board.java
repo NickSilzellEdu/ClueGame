@@ -95,11 +95,11 @@ public class Board {
 
 		// Deal the rest of cards
 		deal();
-		
+
 		// Get turns correct for first human player
 		currentPlayer = players.get(0);
 		isHumanTurn = true;
-		
+
 		// occupy cells of all starting players
 		for(Player player : players) {
 			getCell(player.getRow(), player.getCol()).setOccupied(true);
@@ -256,7 +256,10 @@ public class Board {
 				if (roomMap != null && !roomMap.containsKey(initial)) {
 					throw new BadConfigFormatException("unknown room initial '" + initial + "' at row " + r + ", column " + c);
 				}
-				else if(roomMap != null && roomMap.containsKey(initial)) cell.setIsRoom(true); // Set to a room cell if true
+				else if(roomMap != null && roomMap.containsKey(initial)) {
+					cell.setIsRoom(true); // Set to a room cell if true
+					roomMap.get(initial).getRoomCells().add(cell);
+				}
 
 				// Process extra character if exists
 				if (token.length() > 1) {
@@ -514,16 +517,16 @@ public class Board {
 		}
 
 	}
-	
+
 	// Make a human's turn
 	public void makeHumanTurn(HumanPlayer currentPlayer) {
 		boardPanel.repaint(); // show highlighted cells
 		currentPlayer.setTurnFinished(false); // wait for a board click
-		
+
 		// TODO C25 if in a room, make a suggestion
 		// TODO C23 add slow moving animation
-		
-		
+
+
 	}
 
 	// Make a computer's turn
@@ -535,7 +538,7 @@ public class Board {
 		boardPanel.repaint();
 		currentPlayer.setTurnFinished(true);
 	}
-	
+
 	// Make the first turn of the game
 	public void startFirstTurn() {
 		int roll = rollDice();
@@ -655,23 +658,23 @@ public class Board {
 	public void setControlPanel(GameControlPanel panel) {
 		this.controlPanel = panel;
 	}
-	
+
 	public void setBoardPanel(BoardPanel panel) {
 		this.boardPanel = panel;
 	}
-	
+
 	public void setCardsPanel(KnownCardsPanel panel) {
 		this.cardsPanel = panel;
 	}
-	
+
 	public boolean isHumanTurn() {
 		return isHumanTurn;
 	}
-	
+
 	public void setHumanTurn(boolean isHumanTurn) {
 		this.isHumanTurn = isHumanTurn;
 	}
-	
+
 	public Player getCurrentPlayer() {
 		return currentPlayer;
 	}
