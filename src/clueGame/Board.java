@@ -100,10 +100,11 @@ public class Board {
 		currentPlayer = players.get(0);
 		isHumanTurn = true;
 
-		// occupy cells of all starting players
+		// occupy cells of all starting players, and initialize pixel coordinates
 		for(Player player : players) {
 			getCell(player.getRow(), player.getCol()).setOccupied(true);
 		}
+		
 	}
 
 	// Return the only instance of Board

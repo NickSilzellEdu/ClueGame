@@ -9,10 +9,13 @@ import javax.swing.JOptionPane;
 
 import javax.swing.JPanel;
 import java.awt.Graphics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
+import javax.swing.Timer;
 import java.awt.Color;
 
 
@@ -35,6 +38,21 @@ public class BoardPanel extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				handleBoardClick(e.getX(), e.getY());
+			}
+		});
+
+		// Wait until board is resized to initialize/set player x and y coordinates
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				cellWidth = getWidth() / numCols;
+				cellHeight = getHeight() / numRows;
+
+				for (Player player : board.getPlayers()) {
+					player.setX(player.getCol() * cellWidth);
+					player.setY(player.getRow() * cellHeight);
+				}
+				repaint();
 			}
 		});
 	}
@@ -85,12 +103,20 @@ public class BoardPanel extends JPanel {
 						g.fillRect(x - cellWidth/5, y, cellWidth/5, cellHeight);
 						g.drawRect(x - cellWidth/5, y, cellWidth/5, cellHeight);	
 						break;
-					default: // If direction is none to nothing
+					default: // If direction is none do nothing
 						break;
 					}
 				}
 			}
 		}
+
+		// Draw the players
+		board.getPlayers().forEach(player -> {
+			int x = player.getX();
+			int y = player.getY();
+			g.setColor(player.getColor());
+			g.fillOval(x, y, cellWidth, cellHeight);
+		});
 
 		// Styling the room names text
 		java.awt.Font clashFont = new java.awt.Font("Old English Text MT", java.awt.Font.BOLD, 15);
@@ -105,17 +131,6 @@ public class BoardPanel extends JPanel {
 				g.setColor(Color.BLACK);
 				g.drawString(room.getName(), x - cellWidth + 5, y + cellHeight + 7);
 			}
-		});
-
-
-		// Draw the players
-		board.getPlayers().forEach(player -> {
-			int row = player.getRow();
-			int col = player.getCol();
-			int x = col * cellWidth;
-			int y = row * cellHeight;
-			g.setColor(player.getColor());
-			g.fillOval(x, y, cellWidth, cellHeight);
 		});
 
 	}
@@ -140,7 +155,7 @@ public class BoardPanel extends JPanel {
 			board.setHumanTurn(false);
 			board.getCurrentPlayer().setTurnFinished(true);
 			repaint();
-			}
+		}
 		// Invalid click
 		else if(board.isHumanTurn()) {
 			JOptionPane.showMessageDialog(this, "Invalid cell, please click a highlighted move");
@@ -149,15 +164,46 @@ public class BoardPanel extends JPanel {
 		else JOptionPane.showMessageDialog(this, "It is not your turn, please click next");
 	}
 
+	// Animate player movement and update location
 	public void movePlayer(int newRow, int newCol) {
 		Player player = board.getCurrentPlayer();
-		board.getCell(player.getRow(), player.getCol()).setOccupied(false);;
+		int startX = player.getCol() * cellWidth;
+		int startY = player.getRow() * cellHeight;
+		int endX = newCol * cellWidth;
+		int endY = newRow * cellHeight;
+		int steps = 30; // Number of frames for movement
+		int delay = 10; // Delay between frames in ms
+
+		// Find change in x and y
+		double dx = (endX - startX) / (double) steps;
+		double dy = (endY - startY) / (double) steps;
+
+		// Update occupied cells
+		board.getCell(player.getRow(), player.getCol()).setOccupied(false);
 		board.getCell(newRow, newCol).setOccupied(true);
-		player.setRow(newRow);
-		player.setCol(newCol);
 
-		// add an animation to move the player TODO
+		// Use timer to space out steps
+		Timer timer = new Timer(delay, null);
+		final int[] count = {0};
 
+		timer.addActionListener(e -> {
+			if (count[0] < steps) {
+				player.setX((int) (startX + dx * count[0]));
+				player.setY((int) (startY + dy * count[0]));
+				count[0]++;
+				repaint();
+			} else {
+				// Finish movement at exact location
+				player.setRow(newRow);
+				player.setCol(newCol);
+				player.setX(endX);
+				player.setY(endY);
+				repaint();
+				timer.stop();
+			}
+		});
+
+		timer.start();
 	}
 
 	// Highlight all walkway targets, and valid rooms
@@ -186,7 +232,7 @@ public class BoardPanel extends JPanel {
 				g.setColor(Color.BLACK);
 				g.drawRect(x, y, cellWidth, cellHeight);
 			}
-			
+
 		}
 	}
 }
