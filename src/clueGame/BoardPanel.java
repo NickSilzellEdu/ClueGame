@@ -9,11 +9,13 @@ import javax.swing.JOptionPane;
 
 import javax.swing.JPanel;
 import java.awt.Graphics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.HashSet;
+import javax.swing.Timer;
 import java.awt.Color;
 
 
@@ -38,6 +40,21 @@ public class BoardPanel extends JPanel {
 				handleBoardClick(e.getX(), e.getY());
 			}
 		});
+
+		// Wait until board is resized to initialize/set player x and y coordinates
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				cellWidth = getWidth() / numCols;
+				cellHeight = getHeight() / numRows;
+
+				for (Player player : board.getPlayers()) {
+					player.setX(player.getCol() * cellWidth);
+					player.setY(player.getRow() * cellHeight);
+				}
+				repaint();
+			}
+		});
 	}
 
 	@Override
@@ -55,40 +72,10 @@ public class BoardPanel extends JPanel {
 				cell.draw(g, row, col, cellWidth, cellHeight);
 			}
 		}
-		
+
 		// highlight target cells if necessary
-		if (board.isHumanTurn()) {
-			Set<Character> validRoomTargets = new HashSet<>();
-			
-			for (BoardCell cell : board.getTargets()) {
-				if (cell.isRoom()) {
-					int x = cell.getCol() * cellWidth;
-					int y = cell.getRow() * cellHeight;
-					g.setColor(new Color(0, 175, 0)); // darker green for highlight
-					g.fillRect(x, y, cellWidth, cellHeight);
-					g.setColor(Color.BLACK);
-					g.drawRect(x, y, cellWidth, cellHeight);
-				} else if (cell.isDoorway()) {
-		            validRoomTargets.add(cell.getInitial());
-		        }
-			}
-			
-			for (Character roomInitial : validRoomTargets) {
-				for (int row = 0; row < numRows; row++) {
-			        for (int col = 0; col < numCols; col++) {
-			            BoardCell cell = board.getCell(row, col);
-			            if (cell.isRoom() && cell.getInitial() == roomInitial) {
-			                int x = col * cellWidth;
-			                int y = row * cellHeight;
-			                g.setColor(new Color(0, 175, 0)); // highlight color
-			                g.fillRect(x, y, cellWidth, cellHeight);
-			                g.setColor(Color.BLACK);
-			                g.drawRect(x, y, cellWidth, cellHeight);
-			            }
-			        }
-			    }
-			}
-		}
+		if(board.isHumanTurn()) highlightTargets(g);
+
 
 		// Draw all doors over the cells
 		for(int row = 0; row < numRows; row++) {
@@ -116,12 +103,20 @@ public class BoardPanel extends JPanel {
 						g.fillRect(x - cellWidth/5, y, cellWidth/5, cellHeight);
 						g.drawRect(x - cellWidth/5, y, cellWidth/5, cellHeight);	
 						break;
-					default: // If direction is none to nothing
+					default: // If direction is none do nothing
 						break;
 					}
 				}
 			}
 		}
+
+		// Draw the players
+		board.getPlayers().forEach(player -> {
+			int x = player.getX();
+			int y = player.getY();
+			g.setColor(player.getColor());
+			g.fillOval(x, y, cellWidth, cellHeight);
+		});
 
 		// Styling the room names text
 		java.awt.Font clashFont = new java.awt.Font("Old English Text MT", java.awt.Font.BOLD, 15);
@@ -138,39 +133,29 @@ public class BoardPanel extends JPanel {
 			}
 		});
 
-
-		// Draw the players
-		board.getPlayers().forEach(player -> {
-			int row = player.getRow();
-			int col = player.getCol();
-			int x = col * cellWidth;
-			int y = row * cellHeight;
-			g.setColor(player.getColor());
-			g.fillOval(x, y, cellWidth, cellHeight);
-		});
-
 	}
 
 	private void handleBoardClick(int x, int y) {
 		// Find row and column of cell
 		int row = y / cellHeight;
 		int col = x / cellWidth;
+
 		BoardCell clickedCell = board.getCell(row, col);
-		
-		Set<Character> validRoomTargets = new HashSet<>();
-	    for (BoardCell cell : board.getTargets()) {
-	        if (cell.isRoom()) {
-	            validRoomTargets.add(cell.getInitial());
-	        }
-	    }
-		
 		// If it is a valid cell and the human's turn
-		if(board.isHumanTurn() && (board.getTargets().contains(clickedCell) || (clickedCell.isRoom() && validRoomTargets.contains(clickedCell.getInitial())))) {
+		if(board.isHumanTurn() && board.getTargets().contains(clickedCell)) {
 			movePlayer(row, col);
 			board.setHumanTurn(false);
 			board.getCurrentPlayer().setTurnFinished(true);
 			repaint();
-			}
+		}
+		// If cell clicked is in a room, and the room's center is a target, move the player to the room center
+		else if(board.isHumanTurn() && clickedCell.isRoom() && board.getTargets().contains(board.getRoom(clickedCell).getCenterCell())) {
+			BoardCell centerCell = board.getRoom(clickedCell).getCenterCell();
+			movePlayer(centerCell.getRow(), centerCell.getCol());
+			board.setHumanTurn(false);
+			board.getCurrentPlayer().setTurnFinished(true);
+			repaint();
+		}
 		// Invalid click
 		else if(board.isHumanTurn()) {
 			JOptionPane.showMessageDialog(this, "Invalid cell, please click a highlighted move");
@@ -179,15 +164,76 @@ public class BoardPanel extends JPanel {
 		else JOptionPane.showMessageDialog(this, "It is not your turn, please click next");
 	}
 
+	// Animate player movement and update location
 	public void movePlayer(int newRow, int newCol) {
 		Player player = board.getCurrentPlayer();
-		board.getCell(player.getRow(), player.getCol()).setOccupied(false);;
+		int startX = player.getCol() * cellWidth;
+		int startY = player.getRow() * cellHeight;
+		int endX = newCol * cellWidth;
+		int endY = newRow * cellHeight;
+		int steps = 30; // Number of frames for movement
+		int delay = 10; // Delay between frames in ms
+
+		// Find change in x and y
+		double dx = (endX - startX) / (double) steps;
+		double dy = (endY - startY) / (double) steps;
+
+		// Update occupied cells
+		board.getCell(player.getRow(), player.getCol()).setOccupied(false);
 		board.getCell(newRow, newCol).setOccupied(true);
-		player.setRow(newRow);
-		player.setCol(newCol);
 
-		// add an animation to move the player TODO
+		// Use timer to space out steps
+		Timer timer = new Timer(delay, null);
+		final int[] count = {0};
 
+		timer.addActionListener(e -> {
+			if (count[0] < steps) {
+				player.setX((int) (startX + dx * count[0]));
+				player.setY((int) (startY + dy * count[0]));
+				count[0]++;
+				repaint();
+			} else {
+				// Finish movement at exact location
+				player.setRow(newRow);
+				player.setCol(newCol);
+				player.setX(endX);
+				player.setY(endY);
+				repaint();
+				timer.stop();
+			}
+		});
+
+		timer.start();
 	}
-	
+
+	// Highlight all walkway targets, and valid rooms
+	public void highlightTargets(Graphics g) {
+		HashSet<BoardCell> targetedCenters = new HashSet<BoardCell>();
+
+		// Highlight each target cell, and add valid room centers
+		for (BoardCell cell : board.getTargets()) {
+			int x = cell.getCol() * cellWidth;
+			int y = cell.getRow() * cellHeight;
+			g.setColor(new Color(0, 175, 0)); // Dark green highlighted rooms
+			g.fillRect(x, y, cellWidth, cellHeight);
+			g.setColor(Color.BLACK);
+			g.drawRect(x, y, cellWidth, cellHeight);
+			if(cell.isRoomCenter()) targetedCenters.add(cell);
+		}
+
+		// Highlight all cells of a room based off it's room center
+		for(BoardCell cell : targetedCenters) {
+			Character roomChar = cell.getInitial();
+			for(BoardCell roomCell : board.getRoomMap().get(roomChar).getRoomCells()) {
+				int x = roomCell.getCol() * cellWidth;
+				int y = roomCell.getRow() * cellHeight;
+				g.setColor(new Color(0, 175, 0)); // Dark green highlighted rooms
+				g.fillRect(x, y, cellWidth, cellHeight);
+				g.setColor(Color.BLACK);
+				g.drawRect(x, y, cellWidth, cellHeight);
+			}
+
+		}
+	}
 }
+
