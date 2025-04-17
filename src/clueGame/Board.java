@@ -422,6 +422,7 @@ public class Board {
 		case "light_gray": return Color.LIGHT_GRAY;
 		case "magenta": return Color.MAGENTA;
 		case "orange": return Color.ORANGE;
+		case "bright_pink": return new Color(219, 112, 147);
 		case "pink": return Color.PINK;
 		case "red": return Color.RED;
 		case "white": return Color.WHITE;

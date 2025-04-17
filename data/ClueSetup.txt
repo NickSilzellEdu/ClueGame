@@ -14,7 +14,7 @@ Space, Walkway, W
 // Players for the game
 Player, Barbarian King, Yellow, 30, 14
 Player, Archer Queen, Magenta, 30, 17
-Player, Grand Warden, Pink, 1, 14
+Player, Grand Warden, Bright_Pink, 1, 14
 Player, Royal Champion, Blue, 1, 17
 Player, Giant, Orange, 14, 2
 Player, Wizard, Red, 17, 29
