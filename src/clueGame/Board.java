@@ -97,7 +97,7 @@ public class Board {
 		deal();
 
 		// Get turns correct for first human player
-		currentPlayer = players.get(0);
+		if (!players.isEmpty()) currentPlayer = players.get(0);
 		isHumanTurn = true;
 
 		// occupy cells of all starting players, and initialize pixel coordinates

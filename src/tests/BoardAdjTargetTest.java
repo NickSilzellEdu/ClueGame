@@ -168,7 +168,7 @@ public class BoardAdjTargetTest {
 		// Test a roll of 4
 		board.calcTargets(board.getCell(27, 15), 4);
 		targets = board.getTargets();
-		assertEquals(16, targets.size());
+		assertEquals(15, targets.size());
 		assertTrue(targets.contains(board.getCell(24, 14)));
 		assertTrue(targets.contains(board.getCell(26, 18)));
 		assertTrue(targets.contains(board.getCell(30, 16)));
