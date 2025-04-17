@@ -19,6 +19,11 @@ import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.FontMetrics;
 
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
+
+
 
 public class BoardPanel extends JPanel {
 	private Board board;
@@ -169,7 +174,7 @@ public class BoardPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "Invalid cell, please click a highlighted move");
 		}
 		// Not the player's turn
-		else JOptionPane.showMessageDialog(this, "It is not your turn, please click next");
+		else JOptionPane.showMessageDialog(this, "It is not your turn, please click NEXT!");
 	}
 
 	// Animate player movement and update location
@@ -240,6 +245,11 @@ public class BoardPanel extends JPanel {
 			if(cell.isRoomCenter()) targetedCenters.add(cell);
 		}
 
+		// add thick outline when player can move into room
+		Graphics2D g2 = (Graphics2D) g;
+		Stroke oldStroke = g2.getStroke();
+		g2.setStroke(new BasicStroke(3));
+		
 		// Highlight all cells of a room based off it's room center
 		for(BoardCell cell : targetedCenters) {
 			Character roomChar = cell.getInitial();
@@ -251,8 +261,9 @@ public class BoardPanel extends JPanel {
 				g.setColor(Color.BLACK);
 				g.drawRect(x, y, cellWidth, cellHeight);
 			}
-
 		}
+		// restore the original stroke
+		g2.setStroke(oldStroke);
 	}
 
 	// Draw the symbol for a secret passage door
