@@ -248,7 +248,7 @@ public class BoardPanel extends JPanel {
 		// add thick outline when player can move into room
 		Graphics2D g2 = (Graphics2D) g;
 		Stroke oldStroke = g2.getStroke();
-		g2.setStroke(new BasicStroke(3));
+		g2.setStroke(new BasicStroke(2));
 		
 		// Highlight all cells of a room based off it's room center
 		for(BoardCell cell : targetedCenters) {
