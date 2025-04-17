@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import javax.swing.Timer;
 import java.awt.Color;
+import java.awt.FontMetrics;
 
 
 public class BoardPanel extends JPanel {
@@ -65,11 +66,15 @@ public class BoardPanel extends JPanel {
 		cellWidth = getWidth() / numCols;
 		cellHeight = getHeight() / numRows;
 
-		// Draw the cells and doors
+		// Draw the cells and secret passages
 		for (int row = 0; row < numRows; row++) {
 			for (int col = 0; col < numCols; col++) {
 				BoardCell cell = board.getCell(row, col);
-				cell.draw(g, row, col, cellWidth, cellHeight);
+				// draw an S character in secret passage cells
+				if(cell.getSecretPassage() != '\0') {
+					drawSecretDoor(g, row, col);
+				}
+				else cell.draw(g, row, col, cellWidth, cellHeight); // normal cell
 			}
 		}
 
@@ -234,6 +239,34 @@ public class BoardPanel extends JPanel {
 			}
 
 		}
+	}
+
+	// Draw the symbol for a secret passage door
+	public void drawSecretDoor(Graphics g, int row, int col) {
+		int x = col * cellWidth;
+		int y = row * cellHeight;
+
+		// Draw beige room background
+		g.setColor(new Color(222, 184, 135));
+		g.fillRect(x, y, cellWidth, cellHeight);
+
+		// Draw black border
+		g.setColor(Color.BLACK);
+		g.drawRect(x, y, cellWidth, cellHeight);
+
+		// Draw black door opening on right and top
+		g.fillRect(x + cellWidth - cellWidth / 5, y, cellWidth / 5, cellHeight); // right bar
+		int[] xPoints = { x + cellWidth, x + cellWidth, x + cellWidth / 2 };
+		int[] yPoints = { y, y + cellHeight / 5, y };
+		g.fillPolygon(xPoints, yPoints, 3);
+		
+		// Draw black 'S' centered
+		g.setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 15));
+		FontMetrics fm = g.getFontMetrics();
+		String text = "S";
+		int textWidth = fm.stringWidth(text);
+		int textHeight = fm.getAscent();
+		g.drawString("S", x + (cellWidth - textWidth) / 2, y + (cellHeight + textHeight) / 2 - 1);
 	}
 }
 
