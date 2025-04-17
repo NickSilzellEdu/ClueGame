@@ -19,12 +19,11 @@ public class HumanPlayer extends Player {
 	// Selects matching cards at random if one or more exist
     @Override
     public Card disproveSuggestion(Solution suggestion) {
+		
     	// Add all matching cards to matching array
         List<Card> matching = new ArrayList<>();
         for (Card card : getHand()) {
-            if (card.equals(suggestion.getPerson()) ||
-                card.equals(suggestion.getWeapon()) ||
-                card.equals(suggestion.getRoom())) {
+            if (card.equals(suggestion.getPerson()) || card.equals(suggestion.getWeapon()) || card.equals(suggestion.getRoom())) {
                 matching.add(card);
             }
         }
@@ -32,7 +31,7 @@ public class HumanPlayer extends Player {
         // Pick a random card if there exists a match, return null if not
         if (matching.isEmpty())
             return null;
-        Random rand = new Random();
+            
         return matching.get(rand.nextInt(matching.size()));
     }
 }

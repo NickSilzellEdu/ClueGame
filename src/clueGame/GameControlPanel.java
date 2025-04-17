@@ -10,7 +10,6 @@ import java.awt.GridLayout;
 import java.util.Random;
 import java.awt.Color;
 import java.awt.FlowLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-
 
 public class GameControlPanel extends JPanel{
 
@@ -76,7 +74,6 @@ public class GameControlPanel extends JPanel{
 		// Bottom panels
 		bottomGuessPanel.add(guessField);
 		bottomGuessResultPanel.add(guessResultField);
-
 		bottomPanel.add(bottomGuessPanel);
 		bottomPanel.add(bottomGuessResultPanel);
 
@@ -94,7 +91,6 @@ public class GameControlPanel extends JPanel{
 		accuseButton.setBackground(Color.LIGHT_GRAY);
 		accuseButton.setOpaque(true);
 		accuseButton.setBorderPainted(false);
-
 		nextButton.setBackground(Color.LIGHT_GRAY);
 		nextButton.setOpaque(true);
 		nextButton.setBorderPainted(false);
@@ -103,12 +99,11 @@ public class GameControlPanel extends JPanel{
 		bottomGuessPanel.setLayout(new BorderLayout());
 		bottomGuessPanel.setBorder(BorderFactory.createTitledBorder("Guess"));
 		bottomGuessPanel.add(guessField, BorderLayout.CENTER);
-
 		bottomGuessResultPanel.setLayout(new BorderLayout());
 		bottomGuessResultPanel.setBorder(BorderFactory.createTitledBorder("Guess Result"));
 		bottomGuessResultPanel.add(guessResultField, BorderLayout.CENTER);
 
-		//TODO: add accuseButton action listener
+		//TODO25: add accuseButton action listener
 
 		nextButton.addActionListener(e -> Board.getInstance().handleTurn()); 
 

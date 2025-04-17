@@ -15,14 +15,16 @@ public class Solution {
 		this.person = person;
 		this.weapon = weapon;
 	}
+	
 	public Card getRoom() {
 		return room;
 	}
+	
 	public Card getPerson() {
 		return person;
 	}
+	
 	public Card getWeapon() {
 		return weapon;
 	}
-	
 }

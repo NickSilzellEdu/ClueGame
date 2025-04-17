@@ -16,6 +16,7 @@ public class ClueGame extends JFrame {
 	private static KnownCardsPanel cardsPanel;
 
 	public ClueGame() {
+		
 		// Setup the main window
 		setTitle("Clash of Clans Clue Game");
 		setSize(900, 800);
@@ -50,7 +51,6 @@ public class ClueGame extends JFrame {
 		board.setFrame(game);
 		board.setControlPanel(controlPanel);
 		board.setBoardPanel(boardPanel);
-		board.setCardsPanel(cardsPanel);
 		
 		// Present a welcome screen
 		JOptionPane.showMessageDialog(game, "You are the " + board.getPlayers().get(0).getName() + ". Can you find the solution before the Computer Players?", "Welcome to Clue", JOptionPane.INFORMATION_MESSAGE);

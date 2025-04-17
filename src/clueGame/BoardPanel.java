@@ -1,12 +1,11 @@
 package clueGame;
 
-import javax.swing.JOptionPane;
-
 /*
- * Created by Nick Silzell and Andrew Grimes on Mar 2 2025
+ * Created by Nick Silzell and Andrew Grimes
  * This class represents the ClueGame board panel, a singleton class
  */
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
@@ -18,19 +17,21 @@ import java.util.HashSet;
 import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.FontMetrics;
-
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
-
-
 public class BoardPanel extends JPanel {
-	private Board board;
-	private int cellWidth, cellHeight;
-	private int numRows, numCols;
-	
+	private static Board board;
+	private int cellWidth; 
+	private int cellHeight;
+	private int numRows;
+	private int numCols;
+
+// TODO25: make it so where if screen size changes board panel remains the same size
+
 	public BoardPanel() {
+
 		// Singleton board instance
 		board = Board.getInstance();
 
@@ -49,6 +50,7 @@ public class BoardPanel extends JPanel {
 
 		// Wait until board is resized to initialize/set player x and y coordinates
 		addComponentListener(new ComponentAdapter() {
+
 			@Override
 			public void componentResized(ComponentEvent e) {
 				cellWidth = getWidth() / numCols;
@@ -86,12 +88,12 @@ public class BoardPanel extends JPanel {
 		// highlight target cells if necessary
 		if(board.isHumanTurn()) highlightTargets(g);
 
-
 		// Draw all doors over the cells
 		for(int row = 0; row < numRows; row++) {
 			for(int col = 0; col < numCols; col++) {
 				// Draw door if necessary
 				DoorDirection direction = board.getCell(row, col).getDoorDirection();	
+
 				if(direction != DoorDirection.NONE) {
 					int x = col * cellWidth;
 					int y = row * cellHeight;
@@ -101,18 +103,22 @@ public class BoardPanel extends JPanel {
 						g.fillRect(x, y - cellHeight/5, cellWidth, cellHeight/5);
 						g.drawRect(x, y - cellHeight/5, cellWidth, cellHeight/5);
 						break;
+
 					case DoorDirection.DOWN:
 						g.fillRect(x, y + cellHeight, cellWidth, cellHeight/5);
 						g.drawRect(x, y + cellHeight, cellWidth, cellHeight/5);
 						break;
+
 					case DoorDirection.RIGHT:
 						g.fillRect(x + cellWidth, y, cellWidth/5, cellHeight);
 						g.drawRect(x + cellWidth, y, cellWidth/5, cellHeight);
 						break;
+
 					case DoorDirection.LEFT:
 						g.fillRect(x - cellWidth/5, y, cellWidth/5, cellHeight);
 						g.drawRect(x - cellWidth/5, y, cellWidth/5, cellHeight);	
 						break;
+
 					default: // If direction is none do nothing
 						break;
 					}
@@ -123,7 +129,7 @@ public class BoardPanel extends JPanel {
 		// Draw the players in order of how recent they arrived in a room if necessary
 		ArrayList<Player> playersToDraw = new ArrayList<>(board.getPlayers());
 		playersToDraw.sort((p1, p2) -> Integer.compare(p1.getDrawPriority(), p2.getDrawPriority()));
-		
+
 		playersToDraw.forEach(player -> {
 			int x = player.getX();
 			int y = player.getY();
@@ -136,7 +142,7 @@ public class BoardPanel extends JPanel {
 		g.setFont(clashFont);
 
 		// Draw the room names 
-		board.getRoomMap().forEach((initial, room) -> {
+		board.getRoomMap().forEach((_, room) -> {
 			BoardCell labelCell = room.getLabelCell();
 			if (labelCell != null) {
 				int x = labelCell.getCol() * cellWidth;
@@ -145,15 +151,15 @@ public class BoardPanel extends JPanel {
 				g.drawString(room.getName(), x - cellWidth + 5, y + cellHeight + 7);
 			}
 		});
-
 	}
 
 	private void handleBoardClick(int x, int y) {
+
 		// Find row and column of cell
 		int row = y / cellHeight;
 		int col = x / cellWidth;
-
 		BoardCell clickedCell = board.getCell(row, col);
+
 		// If it is a valid cell and the human's turn
 		if(board.isHumanTurn() && board.getTargets().contains(clickedCell)) {
 			movePlayer(row, col);
@@ -161,6 +167,7 @@ public class BoardPanel extends JPanel {
 			board.getCurrentPlayer().setTurnFinished(true);
 			repaint();
 		}
+
 		// If cell clicked is in a room, and the room's center is a target, move the player to the room center
 		else if(board.isHumanTurn() && clickedCell.isRoom() && board.getTargets().contains(board.getRoom(clickedCell).getCenterCell())) {
 			BoardCell centerCell = board.getRoom(clickedCell).getCenterCell();
@@ -169,10 +176,12 @@ public class BoardPanel extends JPanel {
 			board.getCurrentPlayer().setTurnFinished(true);
 			repaint();
 		}
+
 		// Invalid click
 		else if(board.isHumanTurn()) {
 			JOptionPane.showMessageDialog(this, "Invalid cell, please click a highlighted move");
 		}
+
 		// Not the player's turn
 		else JOptionPane.showMessageDialog(this, "It is not your turn, please click NEXT!");
 	}
@@ -186,16 +195,16 @@ public class BoardPanel extends JPanel {
 		int endY = newRow * cellHeight;
 		int steps = 30; // Number of frames for movement
 		int delay = 10; // Delay between frames in ms
-		
+
 		// If new cell is an occupied room center, offshift x appropriately so they don't cover eachother
 		if(board.getCell(newRow, newCol).isRoomCenter()) {
 			Room occupiedRoom = board.getRoom(board.getCell(newRow, newCol));
 			endX[0] = endX[0] + 5 * (occupiedRoom.getNumPlayers());
 			occupiedRoom.addPlayer();
 		}
-		
+
 		// If a player is leaving a room, subtract the amount of players
-		if(board.getCell(player.getRow(), player.getCol()).isRoomCenter()) board.getRoom(board.getCell(player.getRow(), player.getCol())).removePlayer();;
+		if(board.getCell(player.getRow(), player.getCol()).isRoomCenter()) board.getRoom(board.getCell(player.getRow(), player.getCol())).removePlayer();
 
 		// Find change in x and y
 		double dx = (endX[0] - startX) / (double) steps;
@@ -215,8 +224,8 @@ public class BoardPanel extends JPanel {
 				player.setY((int) (startY + dy * count[0]));
 				count[0]++;
 				repaint();
-			} else {
-				// Finish movement at exact location
+
+			} else { // Finish movement at exact location
 				player.setRow(newRow);
 				player.setCol(newCol);
 				player.setX(endX[0]);
@@ -226,7 +235,6 @@ public class BoardPanel extends JPanel {
 				timer.stop();
 			}
 		});
-
 		timer.start();
 	}
 
@@ -249,7 +257,7 @@ public class BoardPanel extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		Stroke oldStroke = g2.getStroke();
 		g2.setStroke(new BasicStroke(2));
-		
+
 		// Highlight all cells of a room based off it's room center
 		for(BoardCell cell : targetedCenters) {
 			Character roomChar = cell.getInitial();
@@ -262,7 +270,8 @@ public class BoardPanel extends JPanel {
 				g.drawRect(x, y, cellWidth, cellHeight);
 			}
 		}
-		// restore the original stroke
+
+		// Restore the original stroke
 		g2.setStroke(oldStroke);
 	}
 
@@ -284,7 +293,7 @@ public class BoardPanel extends JPanel {
 		int[] xPoints = { x + cellWidth, x + cellWidth, x + cellWidth / 2 };
 		int[] yPoints = { y, y + cellHeight / 5, y };
 		g.fillPolygon(xPoints, yPoints, 3);
-		
+
 		// Draw black 'S' centered
 		g.setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 15));
 		FontMetrics fm = g.getFontMetrics();
@@ -294,4 +303,3 @@ public class BoardPanel extends JPanel {
 		g.drawString("S", x + (cellWidth - textWidth) / 2, y + (cellHeight + textHeight) / 2 - 1);
 	}
 }
-

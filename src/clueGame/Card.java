@@ -27,7 +27,6 @@ public class Card {
 		return type;
 	}
 	
-	
 	// Return whether this card is equal to another
 	@Override
 	public boolean equals(Object target) {
@@ -48,5 +47,4 @@ public class Card {
 	public int hashCode() {
 		return Objects.hash(cardName, type);
 	}
-
 }

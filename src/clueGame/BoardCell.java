@@ -1,18 +1,12 @@
 package clueGame;
 
 /*
- * Created by Nick Silzell and Andrew Grimes on Mar 2 2025
+ * Created by Nick Silzell and Andrew Grimes
  * This class represents the Clue Game board cells
  */
 
 import java.awt.Color;
 import java.awt.Graphics;
-
-/*
- * Created by Nick Silzell and Andrew Grimes
- * This class represents one cell in the Game Board
- */
-
 import java.util.HashSet;
 import java.util.Set;
 

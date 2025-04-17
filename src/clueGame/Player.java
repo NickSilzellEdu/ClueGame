@@ -6,6 +6,7 @@ package clueGame;
  */
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import java.awt.Color;
 
@@ -18,9 +19,9 @@ public abstract class Player {
 	private Set<Card> seen;
 	private boolean turnFinished;
 	private int x, y;
-	// For drawing priority when stacked
-	private static int drawCounter = 0;
-	private int drawPriority = 0;
+	protected Random rand; 
+	private static int drawCounter = 0; // For drawing priority when stacked
+	private int drawPriority = 0; // For drawing priority when stacked
 	
 	public Player(String name, Color color, int row, int col) {
 		this.name = name;
@@ -30,6 +31,7 @@ public abstract class Player {
 		this.hand = new HashSet<Card>();
 		this.seen = new HashSet<Card>();
 		this.turnFinished = true;
+		rand = new Random();
 	}
 	
 	// Each player adds a card to their hand

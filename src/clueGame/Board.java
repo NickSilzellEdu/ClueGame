@@ -6,11 +6,7 @@ package clueGame;
  */
 
 import java.util.Set;
-
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.io.FileNotFoundException;
@@ -46,15 +42,15 @@ public class Board {
 	private ClueGame gameFrame;
 	private GameControlPanel controlPanel;
 	private BoardPanel boardPanel;
-	private KnownCardsPanel cardsPanel;
 	private boolean isHumanTurn;
-
+	private Random rand;
 
 	private Board() {
 		super();
 	}
 
 	public void initialize() {
+		
 		// Initialize variables
 		this.players = new ArrayList<Player>(); 
 		this.deck = new ArrayList<Card>(); 
@@ -63,11 +59,11 @@ public class Board {
 		numRooms = 0;
 		deckSize = 0;
 		currentPlayerIndex = 0;
+		rand = new Random();
 
 		gameFrame = null;
 		controlPanel = null;
 		boardPanel = null;
-		cardsPanel = null;
 
 		// Initialize sets for targets algorithm
 		targets = new HashSet<BoardCell>();
@@ -78,14 +74,11 @@ public class Board {
 			this.loadSetupConfig();
 			this.loadLayoutConfig();
 		}
-		catch(FileNotFoundException e) {
+		catch(Exception e) {
 			System.out.println(e.getMessage());
 			return; // Exit 
 		}
-		catch(BadConfigFormatException e) {
-			System.out.println(e.getMessage());
-			return; // Exit
-		}
+		
 
 		// Set up adjacency list for each cell
 		calcAdjacencies();
@@ -104,7 +97,6 @@ public class Board {
 		for(Player player : players) {
 			getCell(player.getRow(), player.getCol()).setOccupied(true);
 		}
-		
 	}
 
 	// Return the only instance of Board
@@ -122,12 +114,14 @@ public class Board {
 
 	// Recursively add proper targets to targets set
 	private void calcTargetsRecursive(BoardCell currentCell, int stepsRemaining) {
+		
 		// Iterate through each adjacency
 		for (BoardCell adjCell : currentCell.getAdjList()) {
 			if (visited.contains(adjCell) || (adjCell.getOccupied() && !adjCell.isRoomCenter())) {
 				continue; // Skip visited cells or occupied cells unless they're room centers
 			}
 			visited.add(adjCell);
+			
 			// If we have one more step, this cell is a target so add it unless it is a room center
 			if (stepsRemaining == 1 || adjCell.isRoomCenter()) {
 				targets.add(adjCell);
@@ -150,9 +144,10 @@ public class Board {
 			// Read setup file line by line, and add to roomMap if valid
 			// For now: spaces are considered rooms
 			String currentLine = "";
+			
 			while(scan.hasNextLine()) {
 				currentLine = scan.nextLine();
-				String [] splitLine = currentLine.split("[,]"); // Split on commas
+				String [] splitLine = currentLine.split(","); // Split on commas
 
 				// Handle spaces that require room initials
 				if(splitLine[0].trim().equals("Room") || splitLine[0].trim().equals("Space")) { // Add all rooms and spaces to roomMap
@@ -167,24 +162,28 @@ public class Board {
 						numRooms++;
 					}
 				}
+				
 				// If card is a weapon, add it to deck
 				else if(splitLine[0].trim().equals("Weapon")) {
 					deck.add(new Card(splitLine[1].trim(), CardType.WEAPON));
 					numWeapons++;
 				}
+				
 				// If card is a player add it to deck
-
 				else if(splitLine[0].trim().equals("Player")) {
 					// Make sure Color read in is valid
 					Color playerColor = getColorFromName(splitLine[2].trim()); // make sure color is valid
-					if(playerColor == null) throw new BadConfigFormatException("Error: invalid color");	
+					if(playerColor == null) throw new BadConfigFormatException("Error: invalid color");
+						
 					// Load the first player as a human player
 					if(playersLoaded == 0) players.add(new HumanPlayer(splitLine[1].trim(), playerColor, Integer.parseInt(splitLine[3].trim()), Integer.parseInt(splitLine[4].trim())));
 					else players.add(new ComputerPlayer(splitLine[1].trim(), playerColor, Integer.parseInt(splitLine[3].trim()), Integer.parseInt(splitLine[4].trim())));
+					
 					deck.add(new Card(splitLine[1].trim(), CardType.PERSON));
 					playersLoaded++;
 					numPlayers++;
 				}
+				
 				// If line does not start with //, Room, or Space, throw an error
 				else if(!splitLine[0].startsWith("//")) throw new BadConfigFormatException("Error: \"" + this.setupConfigFile + "\" is not properly configured for setup");
 			}
@@ -199,7 +198,8 @@ public class Board {
 	}
 
 	// Use scanner to read in grid layout
-	public void loadLayoutConfig() throws FileNotFoundException, BadConfigFormatException {		
+	public void loadLayoutConfig() throws FileNotFoundException, BadConfigFormatException {	
+			
 		// Make sure roomMap gets initialized during testing:
 		if(roomMap == null) roomMap = new HashMap<Character, Room>();
 
@@ -311,11 +311,11 @@ public class Board {
 
 	// Populate adjacency for a cell
 	private void calcAdjacencies() {
+		
 		// Go through each cell, and check walkways and doorways. 
 		BoardCell cell = null;
 		for (int row = 0; row < rows; row++) {
 			for (int col = 0; col < cols; col++) {
-
 				cell = grid[row][col];
 
 				// If the cell is a walkway
@@ -356,6 +356,7 @@ public class Board {
 				}
 			}
 		}
+		
 		// Loop through each room to connect its center cell to the center cell of the secret room
 		for (Room room : roomMap.values()) {
 			// Get the room's center cell and check if it has a secret passage
@@ -384,24 +385,28 @@ public class Board {
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
+			
 		case DOWN:
 			if(isValidIndex(row + 1, col)) {
 				char roomChar = grid[row + 1][col].getInitial();
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
+			
 		case LEFT:
 			if(isValidIndex(row, col - 1)) {
 				char roomChar = grid[row][col - 1].getInitial();
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
+			
 		case RIGHT:
 			if(isValidIndex(row, col + 1)) {
 				char roomChar = grid[row][col + 1].getInitial();
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
+			
 		default:
 			break;	
 		}
@@ -434,19 +439,18 @@ public class Board {
 	// Helper function to get a random solution from the deck
 	// Public for testing purposes
 	public void getRandomSolution() {
+		
 		// Make sure card setup was correct
 		if(numRooms == 0 || numPlayers == 0 || numWeapons == 0) {
 			theAnswer = null;
 		}
 		else {
-			Random rand = new Random();
 			// Make sure deck is in order Room, Person, Weapon
 			Collections.sort(deck, Comparator.comparing(Card::getType));
 			// Sort into type lists
 			List<Card> roomCards = deck.subList(0, numRooms);
 			List<Card> playerCards = deck.subList(numRooms, numRooms + numPlayers);
 			List<Card> weaponCards = deck.subList(numRooms + numPlayers, deck.size());
-
 			theAnswer = new Solution(roomCards.get(rand.nextInt(roomCards.size())), playerCards.get(rand.nextInt(playerCards.size())), weaponCards.get(rand.nextInt((weaponCards.size()))));
 		}
 	}
@@ -494,11 +498,12 @@ public class Board {
 				if(cardToReturn != null) return cardToReturn;
 			}
 		}
-		return null;// If no one can disprove it, return null
+		return null; // If no one can disprove it, return null
 	}
 
 	// Handle a turn when the button is clicked
 	public void handleTurn() {
+		
 		// make sure current player's turn is finished
 		if(!currentPlayer.isTurnFinished()) {
 			JOptionPane.showMessageDialog(gameFrame, "Please finish your turn before clicking next");
@@ -513,11 +518,11 @@ public class Board {
 		if(currentPlayer instanceof HumanPlayer) {
 			isHumanTurn = true;
 			makeHumanTurn((HumanPlayer)currentPlayer);
+			
 		} else {
 			isHumanTurn = false;
 			makeComputerTurn((ComputerPlayer)currentPlayer);
 		}
-
 	}
 
 	// Make a human's turn
@@ -526,8 +531,6 @@ public class Board {
 		currentPlayer.setTurnFinished(false); // wait for a board click
 
 		// TODO C25 if in a room, make a suggestion
-		// TODO C23 add slow moving animation
-
 
 	}
 
@@ -643,7 +646,6 @@ public class Board {
 
 	// Get a random dice roll 1-6
 	public int rollDice() {
-		Random rand = new Random();
 		return rand.nextInt(6) + 1;
 	}
 
@@ -663,10 +665,6 @@ public class Board {
 
 	public void setBoardPanel(BoardPanel panel) {
 		this.boardPanel = panel;
-	}
-
-	public void setCardsPanel(KnownCardsPanel panel) {
-		this.cardsPanel = panel;
 	}
 
 	public boolean isHumanTurn() {

@@ -8,14 +8,12 @@ package clueGame;
 import java.awt.GridLayout;
 import java.util.Collections;
 import java.awt.Color;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
 
 public class KnownCardsPanel extends JPanel {
 	private static Board board;
@@ -27,7 +25,6 @@ public class KnownCardsPanel extends JPanel {
 	private JPanel roomsSeen = new JPanel();
 	private JPanel weaponsInHand = new JPanel();
 	private JPanel weaponsSeen = new JPanel();
-
 
 	// Setup Panel
 	public KnownCardsPanel() {
@@ -45,7 +42,6 @@ public class KnownCardsPanel extends JPanel {
 		board = Board.getInstance();
 		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
 		board.initialize();
-
 	}
 
 	// Helper function to build a type panel with a dynamic layout
@@ -61,10 +57,8 @@ public class KnownCardsPanel extends JPanel {
 		// Add labels 
 		inHandPanel.add(new JLabel("In Hand:"));
 		seenPanel.add(new JLabel("Seen:"));
-
 		typePanel.add(inHandPanel);
 		typePanel.add(seenPanel);
-
 		return typePanel;
 	}
 
@@ -73,25 +67,28 @@ public class KnownCardsPanel extends JPanel {
 		JPanel sectionPanel;
 		JTextField cardField = new JTextField(card.getCardName());
 		switch(card.getType()) {
+			
 		case CardType.PERSON:
 			// Handle section
 			if(inHand) sectionPanel = peopleInHand;
 			else sectionPanel = peopleSeen;
 			break;
+			
 		case CardType.ROOM:
 			if(inHand) sectionPanel = roomsInHand;
 			else sectionPanel = roomsSeen;
 			break;
+			
 		case CardType.WEAPON:
 			if(inHand) sectionPanel = weaponsInHand;
 			else sectionPanel = weaponsSeen;
 			break;
+			
 		default:
 			sectionPanel = null;
-		}
-
-		if (sectionPanel != null)
-		{
+		}	
+		if (sectionPanel != null) {
+			
 			// If the card is seen, update the color to the player who has it
 			if(!inHand) {
 				Color cardColor = null;
@@ -101,6 +98,7 @@ public class KnownCardsPanel extends JPanel {
 						break;
 					}
 				}
+				
 				if(cardColor != null) cardField.setBackground(cardColor);
 			}
 
@@ -127,11 +125,11 @@ public class KnownCardsPanel extends JPanel {
 		for(Card card : board.getPlayers().get(0).getHand()) {
 			panel.addCard(card, true);
 		}
+		
 		for(int i = 1; i < 6; i++) {
 			for(Card card : board.getPlayers().get(i).getHand()) {
 				panel.addCard(card, false);
 			}
 		}
-
 	}
 }
