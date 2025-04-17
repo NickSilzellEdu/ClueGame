@@ -24,7 +24,7 @@ public class BoardPanel extends JPanel {
 	private Board board;
 	private int cellWidth, cellHeight;
 	private int numRows, numCols;
-
+	
 	public BoardPanel() {
 		// Singleton board instance
 		board = Board.getInstance();
@@ -115,8 +115,11 @@ public class BoardPanel extends JPanel {
 			}
 		}
 
-		// Draw the players
-		board.getPlayers().forEach(player -> {
+		// Draw the players in order of how recent they arrived in a room if necessary
+		ArrayList<Player> playersToDraw = new ArrayList<>(board.getPlayers());
+		playersToDraw.sort((p1, p2) -> Integer.compare(p1.getDrawPriority(), p2.getDrawPriority()));
+		
+		playersToDraw.forEach(player -> {
 			int x = player.getX();
 			int y = player.getY();
 			g.setColor(player.getColor());
@@ -174,13 +177,23 @@ public class BoardPanel extends JPanel {
 		Player player = board.getCurrentPlayer();
 		int startX = player.getCol() * cellWidth;
 		int startY = player.getRow() * cellHeight;
-		int endX = newCol * cellWidth;
+		final int[] endX = {newCol * cellWidth}; // Use a final array to get around java's complaints for possible change
 		int endY = newRow * cellHeight;
 		int steps = 30; // Number of frames for movement
 		int delay = 10; // Delay between frames in ms
+		
+		// If new cell is an occupied room center, offshift x appropriately so they don't cover eachother
+		if(board.getCell(newRow, newCol).isRoomCenter()) {
+			Room occupiedRoom = board.getRoom(board.getCell(newRow, newCol));
+			endX[0] = endX[0] + 5 * (occupiedRoom.getNumPlayers());
+			occupiedRoom.addPlayer();
+		}
+		
+		// If a player is leaving a room, subtract the amount of players
+		if(board.getCell(player.getRow(), player.getCol()).isRoomCenter()) board.getRoom(board.getCell(player.getRow(), player.getCol())).removePlayer();;
 
 		// Find change in x and y
-		double dx = (endX - startX) / (double) steps;
+		double dx = (endX[0] - startX) / (double) steps;
 		double dy = (endY - startY) / (double) steps;
 
 		// Update occupied cells
@@ -201,8 +214,9 @@ public class BoardPanel extends JPanel {
 				// Finish movement at exact location
 				player.setRow(newRow);
 				player.setCol(newCol);
-				player.setX(endX);
+				player.setX(endX[0]);
 				player.setY(endY);
+				player.bumpDrawPriority();
 				repaint();
 				timer.stop();
 			}

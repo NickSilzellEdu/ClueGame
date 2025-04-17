@@ -108,10 +108,7 @@ public class GameControlPanel extends JPanel{
 		bottomGuessResultPanel.setBorder(BorderFactory.createTitledBorder("Guess Result"));
 		bottomGuessResultPanel.add(guessResultField, BorderLayout.CENTER);
 
-//				// Add action listeners
-//				accuseButton.addActionListener(e -> {
-//					// not done
-//				});
+		//TODO: add accuseButton action listener
 
 		nextButton.addActionListener(e -> Board.getInstance().handleTurn()); 
 

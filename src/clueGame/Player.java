@@ -18,6 +18,9 @@ public abstract class Player {
 	private Set<Card> seen;
 	private boolean turnFinished;
 	private int x, y;
+	// For drawing priority when stacked
+	private static int drawCounter = 0;
+	private int drawPriority = 0;
 	
 	public Player(String name, Color color, int row, int col) {
 		this.name = name;
@@ -105,5 +108,13 @@ public abstract class Player {
 		this.col = col;
 		this.x = col * cellWidth;
 		this.y = row * cellHeight;
+	}
+
+	public void bumpDrawPriority() {
+		this.drawPriority = drawCounter++;
+	}
+
+	public int getDrawPriority() {
+		return drawPriority;
 	}
 }

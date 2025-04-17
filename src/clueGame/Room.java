@@ -21,11 +21,15 @@ public class Room {
 
 	// Set of all the cells in this room
 	private Set<BoardCell> roomCells;
+	
+	// number of players inside this room
+	private int playersInRoom;
 
 	// Constructor to create a room with the given name
 	public Room(String name) {
 		this.name = name;
 		roomCells = new HashSet<BoardCell>();
+		playersInRoom = 0;
 	}
 
 	// Returns the name of the room
@@ -61,5 +65,20 @@ public class Room {
 	// Get the room cell set
 	public Set<BoardCell> getRoomCells(){
 		return roomCells;
+	}
+	
+	// add a player to this room
+	public void addPlayer() {
+		playersInRoom++;
+	}
+	
+	// Remove a player form this room
+	public void removePlayer() {
+		playersInRoom--;
+	}
+	
+	// get number of players in a room
+	public int getNumPlayers() {
+		return playersInRoom;
 	}
 }
