@@ -67,28 +67,28 @@ public class KnownCardsPanel extends JPanel {
 		JPanel sectionPanel;
 		JTextField cardField = new JTextField(card.getCardName());
 		switch(card.getType()) {
-			
+
 		case CardType.PERSON:
 			// Handle section
 			if(inHand) sectionPanel = peopleInHand;
 			else sectionPanel = peopleSeen;
 			break;
-			
+
 		case CardType.ROOM:
 			if(inHand) sectionPanel = roomsInHand;
 			else sectionPanel = roomsSeen;
 			break;
-			
+
 		case CardType.WEAPON:
 			if(inHand) sectionPanel = weaponsInHand;
 			else sectionPanel = weaponsSeen;
 			break;
-			
+
 		default:
 			sectionPanel = null;
 		}	
 		if (sectionPanel != null) {
-			
+
 			// If the card is seen, update the color to the player who has it
 			if(!inHand) {
 				Color cardColor = null;
@@ -98,7 +98,7 @@ public class KnownCardsPanel extends JPanel {
 						break;
 					}
 				}
-				
+
 				if(cardColor != null) cardField.setBackground(cardColor);
 			}
 
@@ -125,7 +125,7 @@ public class KnownCardsPanel extends JPanel {
 		for(Card card : board.getPlayers().get(0).getHand()) {
 			panel.addCard(card, true);
 		}
-		
+
 		for(int i = 1; i < 6; i++) {
 			for(Card card : board.getPlayers().get(i).getHand()) {
 				panel.addCard(card, false);

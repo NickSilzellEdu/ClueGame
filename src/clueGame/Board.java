@@ -50,7 +50,7 @@ public class Board {
 	}
 
 	public void initialize() {
-		
+
 		// Initialize variables
 		this.players = new ArrayList<Player>(); 
 		this.deck = new ArrayList<Card>(); 
@@ -78,7 +78,7 @@ public class Board {
 			System.out.println(e.getMessage());
 			return; // Exit 
 		}
-		
+
 
 		// Set up adjacency list for each cell
 		calcAdjacencies();
@@ -114,14 +114,14 @@ public class Board {
 
 	// Recursively add proper targets to targets set
 	private void calcTargetsRecursive(BoardCell currentCell, int stepsRemaining) {
-		
+
 		// Iterate through each adjacency
 		for (BoardCell adjCell : currentCell.getAdjList()) {
 			if (visited.contains(adjCell) || (adjCell.getOccupied() && !adjCell.isRoomCenter())) {
 				continue; // Skip visited cells or occupied cells unless they're room centers
 			}
 			visited.add(adjCell);
-			
+
 			// If we have one more step, this cell is a target so add it unless it is a room center
 			if (stepsRemaining == 1 || adjCell.isRoomCenter()) {
 				targets.add(adjCell);
@@ -144,7 +144,7 @@ public class Board {
 			// Read setup file line by line, and add to roomMap if valid
 			// For now: spaces are considered rooms
 			String currentLine = "";
-			
+
 			while(scan.hasNextLine()) {
 				currentLine = scan.nextLine();
 				String [] splitLine = currentLine.split(","); // Split on commas
@@ -162,28 +162,28 @@ public class Board {
 						numRooms++;
 					}
 				}
-				
+
 				// If card is a weapon, add it to deck
 				else if(splitLine[0].trim().equals("Weapon")) {
 					deck.add(new Card(splitLine[1].trim(), CardType.WEAPON));
 					numWeapons++;
 				}
-				
+
 				// If card is a player add it to deck
 				else if(splitLine[0].trim().equals("Player")) {
 					// Make sure Color read in is valid
 					Color playerColor = getColorFromName(splitLine[2].trim()); // make sure color is valid
 					if(playerColor == null) throw new BadConfigFormatException("Error: invalid color");
-						
+
 					// Load the first player as a human player
 					if(playersLoaded == 0) players.add(new HumanPlayer(splitLine[1].trim(), playerColor, Integer.parseInt(splitLine[3].trim()), Integer.parseInt(splitLine[4].trim())));
 					else players.add(new ComputerPlayer(splitLine[1].trim(), playerColor, Integer.parseInt(splitLine[3].trim()), Integer.parseInt(splitLine[4].trim())));
-					
+
 					deck.add(new Card(splitLine[1].trim(), CardType.PERSON));
 					playersLoaded++;
 					numPlayers++;
 				}
-				
+
 				// If line does not start with //, Room, or Space, throw an error
 				else if(!splitLine[0].startsWith("//")) throw new BadConfigFormatException("Error: \"" + this.setupConfigFile + "\" is not properly configured for setup");
 			}
@@ -199,7 +199,7 @@ public class Board {
 
 	// Use scanner to read in grid layout
 	public void loadLayoutConfig() throws FileNotFoundException, BadConfigFormatException {	
-			
+
 		// Make sure roomMap gets initialized during testing:
 		if(roomMap == null) roomMap = new HashMap<Character, Room>();
 
@@ -311,7 +311,7 @@ public class Board {
 
 	// Populate adjacency for a cell
 	private void calcAdjacencies() {
-		
+
 		// Go through each cell, and check walkways and doorways. 
 		BoardCell cell = null;
 		for (int row = 0; row < rows; row++) {
@@ -356,7 +356,7 @@ public class Board {
 				}
 			}
 		}
-		
+
 		// Loop through each room to connect its center cell to the center cell of the secret room
 		for (Room room : roomMap.values()) {
 			// Get the room's center cell and check if it has a secret passage
@@ -385,28 +385,28 @@ public class Board {
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
-			
+
 		case DOWN:
 			if(isValidIndex(row + 1, col)) {
 				char roomChar = grid[row + 1][col].getInitial();
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
-			
+
 		case LEFT:
 			if(isValidIndex(row, col - 1)) {
 				char roomChar = grid[row][col - 1].getInitial();
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
-			
+
 		case RIGHT:
 			if(isValidIndex(row, col + 1)) {
 				char roomChar = grid[row][col + 1].getInitial();
 				return roomMap.get(roomChar).getCenterCell();
 			}
 			break;
-			
+
 		default:
 			break;	
 		}
@@ -439,7 +439,7 @@ public class Board {
 	// Helper function to get a random solution from the deck
 	// Public for testing purposes
 	public void getRandomSolution() {
-		
+
 		// Make sure card setup was correct
 		if(numRooms == 0 || numPlayers == 0 || numWeapons == 0) {
 			theAnswer = null;
@@ -503,7 +503,7 @@ public class Board {
 
 	// Handle a turn when the button is clicked
 	public void handleTurn() {
-		
+
 		// make sure current player's turn is finished
 		if(!currentPlayer.isTurnFinished()) {
 			JOptionPane.showMessageDialog(gameFrame, "Please finish your turn before clicking next");
@@ -518,7 +518,7 @@ public class Board {
 		if(currentPlayer instanceof HumanPlayer) {
 			isHumanTurn = true;
 			makeHumanTurn((HumanPlayer)currentPlayer);
-			
+
 		} else {
 			isHumanTurn = false;
 			makeComputerTurn((ComputerPlayer)currentPlayer);

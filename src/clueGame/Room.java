@@ -52,22 +52,22 @@ public class Room {
 	public void setLabelCell(BoardCell labelCell) {
 		this.labelCell = labelCell;
 	}
-	
+
 	// Get the room cell set
 	public Set<BoardCell> getRoomCells(){
 		return roomCells;
 	}
-	
+
 	// add a player to this room
 	public void addPlayer() {
 		playersInRoom++;
 	}
-	
+
 	// Remove a player form this room
 	public void removePlayer() {
 		playersInRoom--;
 	}
-	
+
 	// get number of players in a room
 	public int getNumPlayers() {
 		return playersInRoom;

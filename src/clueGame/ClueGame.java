@@ -28,7 +28,7 @@ public class ClueGame extends JFrame {
 		// BoardPanel
 		boardPanel = new BoardPanel();
 		boardPanel.setPreferredSize(new Dimension(500, 500));
-		JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 50));
+		JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 25));
 		centerWrapper.setBackground(Color.BLACK);
 		centerWrapper.add(boardPanel);
 		add(centerWrapper, BorderLayout.CENTER);
@@ -45,7 +45,8 @@ public class ClueGame extends JFrame {
 
 		// Everything is shown at once
 		pack();
-	    setMinimumSize(getSize());
+//	    setMinimumSize(getSize());
+		setSize(1000, 1000);
 	    setLocationRelativeTo(null);
 		setVisible(true);
 	}
