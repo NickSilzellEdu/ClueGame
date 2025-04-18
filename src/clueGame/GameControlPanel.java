@@ -129,23 +129,8 @@ public class GameControlPanel extends JPanel{
 	public void setGuessResult(String message) {
 		guessResultField.setText(message);
 	}
-
-	public static void main(String[] args) {
-		GameControlPanel panel = new GameControlPanel();  // create the panel
-		JFrame frame = new JFrame();  // create the frame 
-		frame.setContentPane(panel); // put the panel in the frame
-		frame.setSize(750, 180);  // size the frame
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // allow it to close
-		frame.setVisible(true); // make it visible
-
-		// Initialize Fields with board info
-		board = Board.getInstance();
-		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
-		board.initialize();
-		panel.setTurn(board.getPlayers().get(0), 6);// Get the first player and set roll to 6
-
-		// test filling in the data
-		panel.setGuess( "I have no guess!");
-		panel.setGuessResult("So you have nothing?");
+	public void hideGuessResult() {
+		guessResultField.setText("SECRET!");
+		guessResultField.setBackground(Color.WHITE);
 	}
 }

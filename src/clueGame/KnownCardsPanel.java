@@ -42,6 +42,10 @@ public class KnownCardsPanel extends JPanel {
 		board = Board.getInstance();
 		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
 		board.initialize();
+		
+		for(Card card : board.getCurrentPlayer().getHand()) {
+			addCard(card, true);
+		}
 	}
 
 	// Helper function to build a type panel with a dynamic layout

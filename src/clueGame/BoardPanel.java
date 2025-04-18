@@ -90,8 +90,8 @@ public class BoardPanel extends JPanel {
 		super.paintComponent(g);
 
 		// add a spacer
-	    g.setColor(new Color(140, 180, 100));
-	    g.fillRect(0, 0, getWidth(), getHeight());
+		g.setColor(new Color(140, 180, 100));
+		g.fillRect(0, 0, getWidth(), getHeight());
 
 		g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -190,18 +190,18 @@ public class BoardPanel extends JPanel {
 
 		// Find row and column of cell
 		int numRows = board.getNumRows();
-	    int numCols = board.getNumColumns();
-	    int cellW = getWidth()  / numCols;
-	    int cellH = getHeight() / numRows;
+		int numCols = board.getNumColumns();
+		int cellW = getWidth()  / numCols;
+		int cellH = getHeight() / numRows;
 
-	    // avoid division by zero
-	    if (cellW == 0 || cellH == 0) return;
+		// avoid division by zero
+		if (cellW == 0 || cellH == 0) return;
 
-	    int col = x / cellW;
-	    int row = y / cellH;
+		int col = x / cellW;
+		int row = y / cellH;
 
-	    // guard against clicks in the “gutter” or off‑board
-	    if (row < 0 || row >= numRows || col < 0 || col >= numCols) return;
+		// guard against clicks in the “gutter” or off‑board
+		if (row < 0 || row >= numRows || col < 0 || col >= numCols) return;
 		BoardCell clickedCell = board.getCell(row, col);
 
 		// If it is a valid cell and the human's turn
@@ -230,7 +230,7 @@ public class BoardPanel extends JPanel {
 		else JOptionPane.showMessageDialog(this, "It is not your turn, please click NEXT!");
 	}
 
-	// Animate player movement and update location
+	// Animate player movement and update location, make suggestion if necessary
 	public void movePlayer(int newRow, int newCol) {
 		Player player = board.getCurrentPlayer();
 		int startX = player.getCol() * cellWidth;
@@ -279,7 +279,15 @@ public class BoardPanel extends JPanel {
 				timer.stop();
 
 				// If player is in a room, make a suggestion
-				if(player instanceof HumanPlayer && board.getCell(newRow, newCol).isRoomCenter()) makeSuggestion();
+				if(board.getCell(newRow, newCol).isRoomCenter()) {
+					if(player instanceof HumanPlayer) board.makeSuggestion();
+					else board.makeComputerSuggestion();
+				}
+				else {
+					board.getGameControlPanel().setGuess("None");
+					board.getGameControlPanel().setGuessResult("None");
+				}
+
 			}
 		});
 		timer.start();
@@ -379,23 +387,5 @@ public class BoardPanel extends JPanel {
 		else return null; // If user hit cancel
 	}
 
-	// Update board proplerly after suggestion
-	public void makeSuggestion() {
-		Player currentPlayer = board.getCurrentPlayer();
-		GameControlPanel controlPanel = board.getControlPanel();
-		if(board.getCell(currentPlayer.getRow(), currentPlayer.getCol()).isRoomCenter()) {
-			Solution suggestion = showSuggestion();
-			if(suggestion != null) {
-				Card disprovingCard = board.handleSuggestion(suggestion, currentPlayer);
-				controlPanel.setGuess(suggestion.getRoom().getCardName() + ", " + suggestion.getPerson().getCardName() + ", " + suggestion.getWeapon().getCardName());
-				// Update guess result based on whether or not there is a disproving card
-				if(disprovingCard == null) {
-					controlPanel.setGuessResult("No one can disprove your suggestion!");
-				}
-				else {
-					controlPanel.setGuessResult(disprovingCard);
-				}
-			}
-		}
-	}
+
 }

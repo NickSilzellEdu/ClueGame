@@ -541,7 +541,6 @@ public class Board {
 	public void makeHumanTurn(HumanPlayer currentPlayer) {
 		boardPanel.repaint(); // show highlighted cells
 		currentPlayer.setTurnFinished(false); // wait for a board click
-
 	}
 
 	// Make a computer's turn
@@ -561,6 +560,40 @@ public class Board {
 		controlPanel.setTurn(currentPlayer, roll);
 		isHumanTurn = true;
 		makeHumanTurn((HumanPlayer)currentPlayer);
+	}
+
+	// Make a computer suggestion
+	public void makeComputerSuggestion() {
+		ComputerPlayer computerPlayer = (ComputerPlayer)currentPlayer;
+		Solution suggestion = computerPlayer.createSuggestion();
+		if(suggestion != null) {
+			Card disprovingCard = handleSuggestion(suggestion, currentPlayer);
+			controlPanel.hideGuessResult();
+			controlPanel.setGuess(suggestion.getRoom().getCardName() + ", " + suggestion.getPerson().getCardName() + ", " + suggestion.getWeapon().getCardName());
+			// Update guess result based on whether or not there is a disproving card
+			if(disprovingCard != null) {
+				currentPlayer.addSeen(disprovingCard);
+			}
+		}
+	}
+
+	// Make a human suggestion
+	public void makeSuggestion() {
+		Solution suggestion = boardPanel.showSuggestion();
+		if(suggestion != null) {
+			Card disprovingCard = handleSuggestion(suggestion, currentPlayer);
+			controlPanel.setGuess(suggestion.getRoom().getCardName() + ", " + suggestion.getPerson().getCardName() + ", " + suggestion.getWeapon().getCardName());
+			// Update guess result based on whether or not there is a disproving card
+			if(disprovingCard == null) {
+				controlPanel.setGuessResult("No one can disprove your suggestion!");
+				controlPanel.setBackground(Color.WHITE);
+			}
+			else {
+				controlPanel.setGuessResult(disprovingCard);
+				currentPlayer.addSeen(disprovingCard);
+				getknownCardsPanel().addCard(disprovingCard, false);
+			}
+		}
 	}
 
 	// Make sure row and column are in bounds
@@ -681,8 +714,18 @@ public class Board {
 	public void setBoardPanel(BoardPanel panel) {
 		this.boardPanel = panel;
 	}
+
+	public void setKnownCardsPanel(KnownCardsPanel panel) {
+		this.knownCardsPanel = panel;
+	}
 	public GameControlPanel getControlPanel() {
 		return controlPanel;
+	}
+	public KnownCardsPanel getknownCardsPanel() {
+		return knownCardsPanel;
+	}
+	public GameControlPanel getGameControlPanel() {
+		return this.controlPanel;
 	}
 
 	public boolean isHumanTurn() {

@@ -59,6 +59,7 @@ public class ClueGame extends JFrame {
 		board.setFrame(game);
 		board.setControlPanel(controlPanel);
 		board.setBoardPanel(boardPanel);
+		board.setKnownCardsPanel(cardsPanel);
 		
 		// Present a welcome screen
 		JOptionPane.showMessageDialog(game, "You are the " + board.getPlayers().get(0).getName() + ". Can you find the solution before the Computer Players?", "Welcome to Clue", JOptionPane.INFORMATION_MESSAGE);
