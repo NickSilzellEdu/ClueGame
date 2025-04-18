@@ -69,7 +69,7 @@ public class BoardPanel extends JPanel {
 	// Board sizing
 	@Override
 	public Dimension getPreferredSize() {
-	    return new Dimension(700, 700);
+	    return new Dimension(600, 600);
 	}
 	@Override
 	public Dimension getMinimumSize() {
