@@ -8,7 +8,10 @@ package clueGame;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JOptionPane;
+import java.awt.FlowLayout;
+import java.awt.Color;
 
 public class ClueGame extends JFrame {
 	private static BoardPanel boardPanel;
@@ -19,14 +22,16 @@ public class ClueGame extends JFrame {
 		
 		// Setup the main window
 		setTitle("Clash of Clans Clue Game");
-		setSize(900, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 
 		// BoardPanel
 		boardPanel = new BoardPanel();
-		boardPanel.setPreferredSize(new Dimension(600, 600));
-		add(boardPanel, BorderLayout.CENTER);
+		boardPanel.setPreferredSize(new Dimension(500, 500));
+		JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 50));
+		centerWrapper.setBackground(Color.BLACK);
+		centerWrapper.add(boardPanel);
+		add(centerWrapper, BorderLayout.CENTER);
 
 		// GameControlPanel
 		controlPanel = new GameControlPanel();
@@ -39,6 +44,9 @@ public class ClueGame extends JFrame {
 		add(cardsPanel, BorderLayout.EAST);
 
 		// Everything is shown at once
+		pack();
+	    setMinimumSize(getSize());
+	    setLocationRelativeTo(null);
 		setVisible(true);
 	}
 

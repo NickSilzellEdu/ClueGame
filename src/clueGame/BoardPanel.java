@@ -8,6 +8,7 @@ package clueGame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.Graphics;
+import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -64,10 +65,35 @@ public class BoardPanel extends JPanel {
 			}
 		});
 	}
+	
+	// Board sizing
+	@Override
+	public Dimension getPreferredSize() {
+	    return new Dimension(700, 700);
+	}
+	@Override
+	public Dimension getMinimumSize() {
+	    return getPreferredSize();
+	}
+	@Override
+	public Dimension getMaximumSize() {
+	    return getPreferredSize();
+	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		
+		// cover any “extra” area in solid black
+	    g.setColor(Color.BLACK);
+	    g.fillRect(0, 0, getWidth(), getHeight());
+
+	    // now go on to draw your 600×600 board in the top‑left corner…
+	    int boardW = getPreferredSize().width;
+	    int boardH = getPreferredSize().height;
+	    int cellW = boardW / numCols;
+	    int cellH = boardH / numRows;
+	    
 		numRows = board.getNumRows();
 		numCols = board.getNumColumns();
 		cellWidth = getWidth() / numCols;
