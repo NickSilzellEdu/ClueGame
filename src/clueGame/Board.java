@@ -42,8 +42,11 @@ public class Board {
 	private ClueGame gameFrame;
 	private GameControlPanel controlPanel;
 	private BoardPanel boardPanel;
+	private KnownCardsPanel knownCardsPanel;
 	private boolean isHumanTurn;
 	private Random rand;
+	private ArrayList<Card> weaponCards;
+	private ArrayList<Card> personCards;
 
 	private Board() {
 		super();
@@ -54,6 +57,9 @@ public class Board {
 		// Initialize variables
 		this.players = new ArrayList<Player>(); 
 		this.deck = new ArrayList<Card>(); 
+		this.weaponCards = new ArrayList<Card>();
+		this.personCards = new ArrayList<Card>();
+
 		numPlayers = 0;
 		numWeapons = 0;
 		numRooms = 0;
@@ -64,6 +70,7 @@ public class Board {
 		gameFrame = null;
 		controlPanel = null;
 		boardPanel = null;
+		knownCardsPanel = null;
 
 		// Initialize sets for targets algorithm
 		targets = new HashSet<BoardCell>();
@@ -165,7 +172,9 @@ public class Board {
 
 				// If card is a weapon, add it to deck
 				else if(splitLine[0].trim().equals("Weapon")) {
-					deck.add(new Card(splitLine[1].trim(), CardType.WEAPON));
+					Card cardToAdd = new Card(splitLine[1].trim(), CardType.WEAPON);
+					deck.add(cardToAdd);
+					weaponCards.add(cardToAdd);
 					numWeapons++;
 				}
 
@@ -179,7 +188,10 @@ public class Board {
 					if(playersLoaded == 0) players.add(new HumanPlayer(splitLine[1].trim(), playerColor, Integer.parseInt(splitLine[3].trim()), Integer.parseInt(splitLine[4].trim())));
 					else players.add(new ComputerPlayer(splitLine[1].trim(), playerColor, Integer.parseInt(splitLine[3].trim()), Integer.parseInt(splitLine[4].trim())));
 
-					deck.add(new Card(splitLine[1].trim(), CardType.PERSON));
+					Card cardToAdd = new Card(splitLine[1].trim(), CardType.PERSON);
+					deck.add(cardToAdd);
+					personCards.add(cardToAdd);
+
 					playersLoaded++;
 					numPlayers++;
 				}
@@ -530,8 +542,6 @@ public class Board {
 		boardPanel.repaint(); // show highlighted cells
 		currentPlayer.setTurnFinished(false); // wait for a board click
 
-		// TODO C25 if in a room, make a suggestion
-
 	}
 
 	// Make a computer's turn
@@ -575,6 +585,11 @@ public class Board {
 	// Return the room based on it's symbol
 	public Room getRoom(Character roomChar) {
 		return roomMap.get(roomChar);
+	}
+
+	// Return the room a player is in
+	public Room getRoom(Player player) {
+		return getRoom(getCell(player.getRow(), player.getCol()));
 	}
 
 	// Return the room based on it's cell
@@ -666,6 +681,9 @@ public class Board {
 	public void setBoardPanel(BoardPanel panel) {
 		this.boardPanel = panel;
 	}
+	public GameControlPanel getControlPanel() {
+		return controlPanel;
+	}
 
 	public boolean isHumanTurn() {
 		return isHumanTurn;
@@ -677,5 +695,17 @@ public class Board {
 
 	public Player getCurrentPlayer() {
 		return currentPlayer;
+	}
+	public ArrayList<Card> getWeapons(){
+		return weaponCards;
+	}
+	public ArrayList<Card> getPersonCards(){
+		return personCards;
+	}
+	public Card getRoomCard(Room room) {
+		for(int i = 0; i < numRooms; i++) {
+			if(deck.get(i).getCardName() == room.getName()) return deck.get(i);
+		}
+		return null;
 	}
 }

@@ -1,5 +1,8 @@
 package clueGame;
 
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+
 /*
  * Created by Nick Silzell and Andrew Grimes
  * This class represents the ClueGame board panel, a singleton class
@@ -7,6 +10,9 @@ package clueGame;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
 import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
@@ -20,6 +26,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Stroke;
 
 public class BoardPanel extends JPanel {
@@ -28,8 +35,6 @@ public class BoardPanel extends JPanel {
 	private int cellHeight;
 	private int numRows;
 	private int numCols;
-
-// TODO25: make it so where if screen size changes board panel remains the same size
 
 	public BoardPanel() {
 
@@ -65,35 +70,35 @@ public class BoardPanel extends JPanel {
 			}
 		});
 	}
-	
+
 	// Board sizing
 	@Override
 	public Dimension getPreferredSize() {
-	    return new Dimension(600, 600);
+		return new Dimension(600, 600);
 	}
 	@Override
 	public Dimension getMinimumSize() {
-	    return getPreferredSize();
+		return getPreferredSize();
 	}
 	@Override
 	public Dimension getMaximumSize() {
-	    return getPreferredSize();
+		return getPreferredSize();
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
-		// cover any “extra” area in solid black
-	    g.setColor(Color.BLACK);
-	    g.fillRect(0, 0, getWidth(), getHeight());
 
-	    // now go on to draw your 600×600 board in the top‑left corner…
-	    int boardW = getPreferredSize().width;
-	    int boardH = getPreferredSize().height;
-	    int cellW = boardW / numCols;
-	    int cellH = boardH / numRows;
-	    
+		// cover any “extra” area in solid black
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, getWidth(), getHeight());
+
+		// now go on to draw your 600×600 board in the top‑left corner…
+		int boardW = getPreferredSize().width;
+		int boardH = getPreferredSize().height;
+		int cellW = boardW / numCols;
+		int cellH = boardH / numRows;
+
 		numRows = board.getNumRows();
 		numCols = board.getNumColumns();
 		cellWidth = getWidth() / numCols;
@@ -259,6 +264,9 @@ public class BoardPanel extends JPanel {
 				player.bumpDrawPriority();
 				repaint();
 				timer.stop();
+
+				// If player is in a room, make a suggestion
+				if(player instanceof HumanPlayer && board.getCell(newRow, newCol).isRoomCenter()) makeSuggestion();
 			}
 		});
 		timer.start();
@@ -327,5 +335,54 @@ public class BoardPanel extends JPanel {
 		int textWidth = fm.stringWidth(text);
 		int textHeight = fm.getAscent();
 		g.drawString("S", x + (cellWidth - textWidth) / 2, y + (cellHeight + textHeight) / 2 - 1);
+	}
+
+	// Prompt user for a suggestion
+	public Solution showSuggestion() {
+		JPanel suggestionPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+
+		// Add room field, fixed
+		suggestionPanel.add(new JLabel("Current Room:"));
+		JTextField roomField = new JTextField(board.getRoom(board.getCurrentPlayer()).getName()); // Get the name of the room player is in
+		roomField.setEditable(false);
+		suggestionPanel.add(roomField);
+
+		// Add person field, dropdown
+		suggestionPanel.add(new JLabel("Person:"));
+		JComboBox<Card> personDropDown = new JComboBox<Card>(board.getPersonCards().toArray(new Card[0]));
+		suggestionPanel.add(personDropDown);
+
+		// Add weapon field
+		suggestionPanel.add(new JLabel("Weapon:"));
+		JComboBox<Card> weaponDropDown = new JComboBox<Card>(board.getWeapons().toArray(new Card[0]));
+		suggestionPanel.add(weaponDropDown);
+
+		int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), suggestionPanel, "Make a suggestion", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+		// Process user suggesiton input
+		if(result == JOptionPane.OK_OPTION) {
+			return new Solution(board.getRoomCard(board.getRoom(board.getCurrentPlayer())), (Card)personDropDown.getSelectedItem(), (Card)weaponDropDown.getSelectedItem());
+		}
+		else return null; // If user hit cancel
+	}
+
+	// Update board proplerly after suggestion
+	public void makeSuggestion() {
+		Player currentPlayer = board.getCurrentPlayer();
+		GameControlPanel controlPanel = board.getControlPanel();
+		if(board.getCell(currentPlayer.getRow(), currentPlayer.getCol()).isRoomCenter()) {
+			Solution suggestion = showSuggestion();
+			if(suggestion != null) {
+				Card disprovingCard = board.handleSuggestion(suggestion, currentPlayer);
+				controlPanel.setGuess(suggestion.getRoom().getCardName() + ", " + suggestion.getPerson().getCardName() + ", " + suggestion.getWeapon().getCardName());
+				// Update guess result based on whether or not there is a disproving card
+				if(disprovingCard == null) {
+					controlPanel.setGuessResult("No one can disprove your suggestion!");
+				}
+				else {
+					controlPanel.setGuessResult(disprovingCard);
+				}
+			}
+		}
 	}
 }

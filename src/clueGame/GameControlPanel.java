@@ -118,12 +118,16 @@ public class GameControlPanel extends JPanel{
 
 	// Set the guess field
 	public void setGuess(String message) {
-		guessField.setText(message);	
+		guessField.setText(message);
 	}
 
 	// Set the guess result field
+	public void setGuessResult(Card card) {
+		guessResultField.setText(card.getCardName());	
+		KnownCardsPanel.setFieldBackgroundFromCard(guessResultField, card);
+	}
 	public void setGuessResult(String message) {
-		guessResultField.setText(message);	
+		guessResultField.setText(message);
 	}
 
 	public static void main(String[] args) {
@@ -142,6 +146,6 @@ public class GameControlPanel extends JPanel{
 
 		// test filling in the data
 		panel.setGuess( "I have no guess!");
-		panel.setGuessResult( "So you have nothing?");
+		panel.setGuessResult("So you have nothing?");
 	}
 }

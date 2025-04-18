@@ -39,7 +39,7 @@ public class Card {
 	// Returns a string respresentation of the card
 	@Override
 	public String toString() {
-		return cardName + " (" + type + ")";
+		return cardName;
 	}	
 
 	// Used for hashmap

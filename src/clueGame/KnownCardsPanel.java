@@ -90,17 +90,7 @@ public class KnownCardsPanel extends JPanel {
 		if (sectionPanel != null) {
 
 			// If the card is seen, update the color to the player who has it
-			if(!inHand) {
-				Color cardColor = null;
-				for(Player player : board.getPlayers()) {
-					if(player.getHand().contains(card)) { 
-						cardColor = player.getColor();
-						break;
-					}
-				}
-
-				if(cardColor != null) cardField.setBackground(cardColor);
-			}
+			if(!inHand) setFieldBackgroundFromCard(cardField, card);
 
 			cardField.setEditable(false);
 			sectionPanel.add(cardField);
@@ -109,27 +99,15 @@ public class KnownCardsPanel extends JPanel {
 		}
 	}
 
-	// Update the 
-	public static void main(String[] args) {
-		KnownCardsPanel panel = new KnownCardsPanel();  // create the panel
-		JFrame frame = new JFrame();  // create the frame 
-		frame.setContentPane(panel); // put the panel in the frame
-		frame.setSize(200, 900);  // size the frame
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // allow it to close
-		frame.setVisible(true); // make it visible
-
-		// Test using board values, it was initialized in KnownCards constructor
-		Board board = Board.getInstance();		
-
-		// Add all cards that are not the solution
-		for(Card card : board.getPlayers().get(0).getHand()) {
-			panel.addCard(card, true);
-		}
-
-		for(int i = 1; i < 6; i++) {
-			for(Card card : board.getPlayers().get(i).getHand()) {
-				panel.addCard(card, false);
+	public static void setFieldBackgroundFromCard(JTextField cardField, Card card) {
+		Color cardColor = null;
+		for(Player player : board.getPlayers()) {
+			if(player.getHand().contains(card)) { 
+				cardColor = player.getColor();
+				break;
 			}
 		}
+
+		if(cardColor != null) cardField.setBackground(cardColor);
 	}
 }
