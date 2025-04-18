@@ -84,8 +84,8 @@ public class BoardPanel extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		// cover any “extra” area in solid black
-	    g.setColor(Color.BLACK);
+		// add a spacer
+	    g.setColor(new Color(140, 180, 100));
 	    g.fillRect(0, 0, getWidth(), getHeight());
 
 	    // now go on to draw your 600×600 board in the top‑left corner…
@@ -182,8 +182,19 @@ public class BoardPanel extends JPanel {
 	private void handleBoardClick(int x, int y) {
 
 		// Find row and column of cell
-		int row = y / cellHeight;
-		int col = x / cellWidth;
+		int numRows = board.getNumRows();
+	    int numCols = board.getNumColumns();
+	    int cellW = getWidth()  / numCols;
+	    int cellH = getHeight() / numRows;
+
+	    // avoid division by zero
+	    if (cellW == 0 || cellH == 0) return;
+
+	    int col = x / cellW;
+	    int row = y / cellH;
+
+	    // guard against clicks in the “gutter” or off‑board
+	    if (row < 0 || row >= numRows || col < 0 || col >= numCols) return;
 		BoardCell clickedCell = board.getCell(row, col);
 
 		// If it is a valid cell and the human's turn

@@ -29,7 +29,7 @@ public class ClueGame extends JFrame {
 		boardPanel = new BoardPanel();
 		boardPanel.setPreferredSize(new Dimension(500, 500));
 		JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 25));
-		centerWrapper.setBackground(Color.BLACK);
+		centerWrapper.setBackground(new Color(140, 180, 100));
 		centerWrapper.add(boardPanel);
 		add(centerWrapper, BorderLayout.CENTER);
 
