@@ -45,7 +45,7 @@ public class ClueGame extends JFrame {
 
 		// Everything is shown at once
 		pack();
-		setSize(1000, 1000);
+		setSize(950, 825);
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
