@@ -28,6 +28,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Stroke;
+import clueGame.Solution;
 
 public class BoardPanel extends JPanel {
 	private static Board board;
@@ -206,7 +207,7 @@ public class BoardPanel extends JPanel {
 
 		// If it is a valid cell and the human's turn
 		if(board.isHumanTurn() && board.getTargets().contains(clickedCell)) {
-			movePlayer(row, col);
+			movePlayer(row, col, board.getCurrentPlayer());
 			board.setHumanTurn(false);
 			board.getCurrentPlayer().setTurnFinished(true);
 			repaint();
@@ -215,7 +216,7 @@ public class BoardPanel extends JPanel {
 		// If cell clicked is in a room, and the room's center is a target, move the player to the room center
 		else if(board.isHumanTurn() && clickedCell.isRoom() && board.getTargets().contains(board.getRoom(clickedCell).getCenterCell())) {
 			BoardCell centerCell = board.getRoom(clickedCell).getCenterCell();
-			movePlayer(centerCell.getRow(), centerCell.getCol());
+			movePlayer(centerCell.getRow(), centerCell.getCol(), board.getCurrentPlayer());
 			board.setHumanTurn(false);
 			board.getCurrentPlayer().setTurnFinished(true);
 			repaint();
@@ -231,8 +232,7 @@ public class BoardPanel extends JPanel {
 	}
 
 	// Animate player movement and update location, make suggestion if necessary
-	public void movePlayer(int newRow, int newCol) {
-		Player player = board.getCurrentPlayer();
+	public void movePlayer(int newRow, int newCol, Player player) {
 		int startX = player.getCol() * cellWidth;
 		int startY = player.getRow() * cellHeight;
 		final int[] endX = {newCol * cellWidth}; // Use a final array to get around java's complaints for possible change
@@ -278,12 +278,21 @@ public class BoardPanel extends JPanel {
 				repaint();
 				timer.stop();
 
-				// If player is in a room, make a suggestion
-				if(board.getCell(newRow, newCol).isRoomCenter()) {
-					if(player instanceof HumanPlayer) board.makeSuggestion();
-					else board.makeComputerSuggestion();
+				// If player is in a room and it is their turn make a suggestion
+				if(board.getCell(newRow, newCol).isRoomCenter() && board.getCurrentPlayer() == player) {
+					Solution suggestion = null;
+					if(player instanceof HumanPlayer) suggestion = board.makeSuggestion();
+					else suggestion = board.makeComputerSuggestion();
+					// Find the suggested player
+					for(Player p : board.getPlayers()) {
+						if(suggestion.getPerson().getCardName().equals(p.getName())) {
+							movePlayer(newRow, newCol, p); // Move the suggested player to this room
+							p.setCanStayInRoom(true);// Make it so the player can stay in this room
+							break;
+						}
+					}
 				}
-				else {
+				else if(board.getCurrentPlayer() == player){
 					board.getGameControlPanel().setGuess("None");
 					board.getGameControlPanel().setGuessResult("None");
 				}

@@ -22,6 +22,7 @@ public abstract class Player {
 	protected Random rand; 
 	private static int drawCounter = 0; // For drawing priority when stacked
 	private int drawPriority = 0; // For drawing priority when stacked
+	private boolean canStayInRoom = false; // the option to stay in a room if moved because of another players suggestion
 
 	public Player(String name, Color color, int row, int col) {
 		this.name = name;
@@ -118,5 +119,13 @@ public abstract class Player {
 
 	public int getDrawPriority() {
 		return drawPriority;
+	}
+	
+	public boolean getCanStayInRoom() {
+		return canStayInRoom;
+	}
+	
+	public void setCanStayInRoom(boolean canStay) {
+		this.canStayInRoom = canStay;
 	}
 }

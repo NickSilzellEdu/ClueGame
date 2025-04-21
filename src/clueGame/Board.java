@@ -525,6 +525,7 @@ public class Board {
 		advancePlayer();
 		int roll = rollDice();
 		calcTargets(getCell(currentPlayer.getRow(), currentPlayer.getCol()), roll);
+		if(currentPlayer.getCanStayInRoom()) targets.add(getRoom(currentPlayer).getCenterCell()); // If a player was moved from a suggestion, they can stay in the room
 		controlPanel.setTurn(currentPlayer, roll);
 
 		if(currentPlayer instanceof HumanPlayer) {
@@ -535,6 +536,7 @@ public class Board {
 			isHumanTurn = false;
 			makeComputerTurn((ComputerPlayer)currentPlayer);
 		}
+		currentPlayer.setCanStayInRoom(false);
 	}
 
 	// Make a human's turn
@@ -548,7 +550,7 @@ public class Board {
 		currentPlayer.setTurnFinished(false);
 		// Make the computer move
 		BoardCell selectedMove = currentPlayer.selectTarget(targets);
-		boardPanel.movePlayer(selectedMove.getRow(), selectedMove.getCol());
+		boardPanel.movePlayer(selectedMove.getRow(), selectedMove.getCol(), currentPlayer);
 		boardPanel.repaint();
 		currentPlayer.setTurnFinished(true);
 	}
@@ -563,22 +565,25 @@ public class Board {
 	}
 
 	// Make a computer suggestion
-	public void makeComputerSuggestion() {
+	public Solution makeComputerSuggestion() {
 		ComputerPlayer computerPlayer = (ComputerPlayer)currentPlayer;
 		Solution suggestion = computerPlayer.createSuggestion();
 		if(suggestion != null) {
 			Card disprovingCard = handleSuggestion(suggestion, currentPlayer);
 			controlPanel.hideGuessResult();
 			controlPanel.setGuess(suggestion.getRoom().getCardName() + ", " + suggestion.getPerson().getCardName() + ", " + suggestion.getWeapon().getCardName());
+			
 			// Update guess result based on whether or not there is a disproving card
 			if(disprovingCard != null) {
 				currentPlayer.addSeen(disprovingCard);
 			}
+			return suggestion;
 		}
+		return null;
 	}
 
 	// Make a human suggestion
-	public void makeSuggestion() {
+	public Solution makeSuggestion() {
 		Solution suggestion = boardPanel.showSuggestion();
 		if(suggestion != null) {
 			Card disprovingCard = handleSuggestion(suggestion, currentPlayer);
@@ -593,7 +598,9 @@ public class Board {
 				currentPlayer.addSeen(disprovingCard);
 				getknownCardsPanel().addCard(disprovingCard, false);
 			}
-		}
+			return suggestion;
+		} 
+		return null;
 	}
 
 	// Make sure row and column are in bounds

@@ -10,11 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
+import clueGame.Board;
 public class ComputerPlayer extends Player{
+	Room targetRoom;
+	List<Room> rooms;
 
 	public ComputerPlayer(String name, Color color, int row, int col) {
 		super(name, color, row, col);
+		targetRoom = null;
+		rooms = new ArrayList<Room>(Board.getInstance().getRoomMap().values());// Get all unseen Rooms
 	}
 
 	// Disprove a suggestion, kinda like it does in HumanPlayer.java
@@ -102,6 +106,10 @@ public class ComputerPlayer extends Player{
 	public BoardCell selectTarget(Set<BoardCell> targets) {
 		List<BoardCell> roomTargets = new ArrayList<>();
 		Board board = Board.getInstance();
+		// Update unseenRooms
+		for(Card card : getSeen()) {
+			
+		}
 
 		// If a room within roll distance is unseen, add it to room targets
 		for (BoardCell cell : targets) {
@@ -123,7 +131,7 @@ public class ComputerPlayer extends Player{
 			}
 		}
 
-		// If the target room has not been seen, then the room target is randomly chosen
+		// If the target room has not been seen, then pick a random target
 		if (!roomTargets.isEmpty()) {
 			return roomTargets.get(rand.nextInt(roomTargets.size()));
 		}
