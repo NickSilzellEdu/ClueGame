@@ -29,11 +29,11 @@ public class Card {
 
 	// Return whether this card is equal to another
 	@Override
-	public boolean equals(Object target) {
-		if (target == null) return false;
-		if (this == target) return true;
-		Card cardTarget = (Card)target;
-		return (cardName.equals(cardTarget.getCardName()) && type == cardTarget.getType());
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null || getClass() != obj.getClass()) return false;
+		Card card = (Card) obj;
+		return cardName.equals(card.cardName) && type == card.type;
 	}
 
 	// Returns a string respresentation of the card

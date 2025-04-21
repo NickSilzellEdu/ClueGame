@@ -38,6 +38,9 @@ public class ComputerAITest {
 	// Test computer's createSuggestion function
 	@Test
 	public void testCreateSuggestion() {
+		
+		// Empty player's hands because board deals cards automatically
+		computerPlayer.getHand().clear();
 
 		// Make sure a player's suggestion reflects the room they are in
 		computerPlayer.setRow(11);

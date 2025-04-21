@@ -67,8 +67,8 @@ public class ComputerPlayer extends Player{
 		}
 
 		// For the person and weapon, choose a random unseen card/or not in hand
-		Card personCard;
-		Card weaponCard;
+		Card personCard = null;
+		Card weaponCard = null;
 
 		if (!unseenPersons.isEmpty()) {
 			personCard = unseenPersons.get(rand.nextInt(unseenPersons.size()));
