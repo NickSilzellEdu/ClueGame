@@ -1,11 +1,14 @@
 package clueGame;
 
+import java.util.ArrayList;
+
 /*
  * Created by Nick Silzell and Andrew Grimes
  * This class represents a room in the game board
  */
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Room {
@@ -14,13 +17,13 @@ public class Room {
 	private BoardCell centerCell; // The cell where players will stand
 	private BoardCell labelCell; // The cell where the room label will be displayed
 	private Set<BoardCell> roomCells; // Set of all the cells in this room
-	private int playersInRoom; // number of players inside this room
+	private List<Player> playersInRoom; // number of players inside this room
 
 	// Constructor to create a room with the given name
 	public Room(String name) {
 		this.name = name;
 		roomCells = new HashSet<BoardCell>();
-		playersInRoom = 0;
+		playersInRoom = new ArrayList<Player>();
 	}
 
 	// Returns the name of the room
@@ -59,17 +62,21 @@ public class Room {
 	}
 
 	// add a player to this room
-	public void addPlayer() {
-		playersInRoom++;
+	public void addPlayer(Player p) {
+		if(!playersInRoom.contains(p)) playersInRoom.add(p);
 	}
 
 	// Remove a player form this room
-	public void removePlayer() {
-		playersInRoom--;
-	}
+	public void removePlayer(Player p) {
+		playersInRoom.remove(p);
+}
 
 	// get number of players in a room
 	public int getNumPlayers() {
-		return playersInRoom;
+		return playersInRoom.size();
+	}
+	
+	public int getPlayerIndex(Player p) {
+		return playersInRoom.indexOf(p);
 	}
 }

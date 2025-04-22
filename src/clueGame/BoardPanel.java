@@ -202,7 +202,11 @@ public class BoardPanel extends JPanel {
 		int row = y / cellH;
 
 		// guard against clicks in the “gutter” or off‑board
-		if (row < 0 || row >= numRows || col < 0 || col >= numCols) return;
+		if (row < 0 || row >= numRows || col < 0 || col >= numCols) {
+			JOptionPane.showMessageDialog(this, "Please click somwewhere on the board");
+			return;
+		}
+		
 		BoardCell clickedCell = board.getCell(row, col);
 
 		// If it is a valid cell and the human's turn
@@ -240,15 +244,24 @@ public class BoardPanel extends JPanel {
 		int steps = 30; // Number of frames for movement
 		int delay = 10; // Delay between frames in ms
 
-		// If new cell is an occupied room center, offshift x appropriately so they don't cover eachother
-		if(board.getCell(newRow, newCol).isRoomCenter()) {
-			Room occupiedRoom = board.getRoom(board.getCell(newRow, newCol));
-			endX[0] = endX[0] + 5 * (occupiedRoom.getNumPlayers());
-			occupiedRoom.addPlayer();
+		// If player is leaving a room, remove from old room list
+		if (board.getCell(player.getRow(), player.getCol()).isRoomCenter()) {
+			Room oldRoom = board.getRoom(board.getCell(player.getRow(), player.getCol()));
+			oldRoom.removePlayer(player);
 		}
 
-		// If a player is leaving a room, subtract the amount of players
-		if(board.getCell(player.getRow(), player.getCol()).isRoomCenter()) board.getRoom(board.getCell(player.getRow(), player.getCol())).removePlayer();
+		// Add to new room after leaving the old one
+		Room targetRoom = null;
+		if(board.getCell(newRow, newCol).isRoomCenter()) {
+			targetRoom = board.getRoom(board.getCell(newRow, newCol));
+			targetRoom.addPlayer(player);
+		}
+
+		// Calculate offset based on player index in the new room
+		if (targetRoom != null) {
+			int playerIndex = targetRoom.getPlayerIndex(player);
+			endX[0] += 5 * playerIndex;
+		}
 
 		// Find change in x and y
 		double dx = (endX[0] - startX) / (double) steps;
@@ -285,7 +298,7 @@ public class BoardPanel extends JPanel {
 					else suggestion = board.makeComputerSuggestion();
 					// Find the suggested player
 					for(Player p : board.getPlayers()) {
-						if(suggestion.getPerson().getCardName().equals(p.getName())) {
+						if(!suggestion.getPerson().getCardName().equals(board.getCurrentPlayer().getName()) && suggestion.getPerson().getCardName().equals(p.getName())) {
 							movePlayer(newRow, newCol, p); // Move the suggested player to this room
 							p.setCanStayInRoom(true);// Make it so the player can stay in this room
 							break;
