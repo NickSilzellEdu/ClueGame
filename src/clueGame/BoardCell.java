@@ -43,16 +43,19 @@ public class BoardCell {
 		// Set a color based on cell type
 		if (initial == 'W') {
 			g.setColor(new Color(154, 205, 50)); // Green for grass
+			g.fillRect(x, y, cellWidth, cellHeight);
+			g.setColor(Color.BLACK); // Outline
+			g.drawRect(x, y, cellWidth, cellHeight);
 		} else if(initial == 'X') {
 			g.setColor(new Color(101, 67, 33)); // Brown for walls
+			g.fillRect(x, y, cellWidth, cellHeight);
 		}
 		else if (isRoom()) {
 			g.setColor(new Color(222, 184, 135)); // Beige for rooms
+			g.fillRect(x, y, cellWidth, cellHeight);
 		}
 
-		g.fillRect(x, y, cellWidth, cellHeight);
-		g.setColor(Color.BLACK); // Outline
-		g.drawRect(x, y, cellWidth, cellHeight);
+
 
 	}
 
