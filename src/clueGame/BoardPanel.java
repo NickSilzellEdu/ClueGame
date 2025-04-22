@@ -330,11 +330,6 @@ public class BoardPanel extends JPanel {
 			if(cell.isRoomCenter()) targetedCenters.add(cell);
 		}
 
-		// add thick outline when player can move into room
-//		Graphics2D g2 = (Graphics2D) g;
-//		Stroke oldStroke = g2.getStroke();
-//		g2.setStroke(new BasicStroke(2));
-
 		// Highlight all cells of a room based off it's room center
 		for(BoardCell cell : targetedCenters) {
 			Character roomChar = cell.getInitial();
@@ -343,13 +338,10 @@ public class BoardPanel extends JPanel {
 				int y = roomCell.getRow() * cellHeight;
 				g.setColor(new Color(0, 175, 0)); // Dark green highlighted rooms
 				g.fillRect(x, y, cellWidth, cellHeight);
-//				g.setColor(Color.BLACK);
-//				g.drawRect(x, y, cellWidth, cellHeight);
 			}
 		}
 
-//		// Restore the original stroke
-//		g2.setStroke(oldStroke);
+
 	}
 
 	// Draw the symbol for a secret passage door
@@ -363,7 +355,6 @@ public class BoardPanel extends JPanel {
 
 		// Draw black border
 		g.setColor(Color.BLACK);
-		g.drawRect(x, y, cellWidth, cellHeight);
 
 		// Draw black door opening on right and top
 		g.fillRect(x + cellWidth - cellWidth / 5, y, cellWidth / 5, cellHeight); // right bar
