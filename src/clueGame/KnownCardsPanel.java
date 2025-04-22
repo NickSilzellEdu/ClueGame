@@ -40,8 +40,6 @@ public class KnownCardsPanel extends JPanel {
 
 		// Initialize board for player list
 		board = Board.getInstance();
-		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
-		board.initialize();
 		
 		for(Card card : board.getCurrentPlayer().getHand()) {
 			addCard(card, true);

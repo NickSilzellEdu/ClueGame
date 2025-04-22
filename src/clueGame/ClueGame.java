@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import java.awt.FlowLayout;
 import java.awt.Color;
-
 public class ClueGame extends JFrame {
 	private static BoardPanel boardPanel;
 	private static GameControlPanel controlPanel;
@@ -50,7 +49,7 @@ public class ClueGame extends JFrame {
 		setVisible(true);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException{
 		Board board = Board.getInstance();
 		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
 		board.initialize();	
@@ -64,5 +63,6 @@ public class ClueGame extends JFrame {
 		// Present a welcome screen
 		JOptionPane.showMessageDialog(game, "You are the " + board.getPlayers().get(0).getName() + ". Can you find the solution before the Computer Players?", "Welcome to Clue", JOptionPane.INFORMATION_MESSAGE);
 		board.startFirstTurn();
+
 	}
 }

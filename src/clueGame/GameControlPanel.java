@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -27,6 +28,9 @@ public class GameControlPanel extends JPanel{
 	private JTextField rollField;
 	private JTextField guessField;
 	private JTextField guessResultField;
+	
+	JButton nextButton;
+	JButton accuseButton;
 
 	// for access to board's info
 	private static Board board;
@@ -67,8 +71,8 @@ public class GameControlPanel extends JPanel{
 		rollField.setMargin(new Insets(0, 5, 0, 0));
 
 		// Accuse and Next button
-		JButton accuseButton = new JButton("Make Accusation");
-		JButton nextButton = new JButton("NEXT!");
+		accuseButton = new JButton("Make Accusation");
+		nextButton = new JButton("NEXT!");
 		
 
 		guessField = new JTextField(20);
@@ -157,5 +161,9 @@ public class GameControlPanel extends JPanel{
 	public void hideGuessResult() {
 		guessResultField.setText("SECRET!");
 		guessResultField.setBackground(Color.WHITE);
+	}
+
+	public JComponent getNextButton() {
+		return nextButton;
 	}
 }

@@ -506,48 +506,61 @@ public class Board {
 	public boolean checkAccusation(Solution solution) {
 		return(theAnswer.getPerson() == solution.getPerson() && theAnswer.getRoom() == solution.getRoom() && theAnswer.getWeapon() == solution.getWeapon());
 	}
-	
+
 	// Handles all accusations
 	public void handleAccusation() {
 		JPanel accusePanel = new JPanel(new GridLayout(3,2,10,10));
-		
+
 		accusePanel.add(new JLabel("Room: "));
 		JComboBox<Card> roomCombo = new JComboBox<>(
-			deck.stream().filter(c -> c.getType() == CardType.ROOM).toArray(Card[]::new));
+				deck.stream().filter(c -> c.getType() == CardType.ROOM).toArray(Card[]::new));
 		accusePanel.add(roomCombo);
-		
+
 		accusePanel.add(new JLabel("Person: "));
 		JComboBox<Card> personCombo = new JComboBox<>(
-			personCards.toArray(new Card[0]));
+				personCards.toArray(new Card[0]));
 		accusePanel.add(personCombo);
-		
+
 		accusePanel.add(new JLabel("Weapon: "));
 		JComboBox<Card> weaponCombo = new JComboBox<>(
-			weaponCards.toArray(new Card[0]));
+				weaponCards.toArray(new Card[0]));
 		accusePanel.add(weaponCombo);
-		
+
 		// Dialog panels for correct and wrong
 		int result = JOptionPane.showConfirmDialog(gameFrame, accusePanel, "Make an accusation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		
+
 		if (result == JOptionPane.OK_OPTION) {
 			Solution accusation = new Solution((Card)roomCombo.getSelectedItem(),(Card)personCombo.getSelectedItem(),(Card)weaponCombo.getSelectedItem());
-			
+
 			if (checkAccusation(accusation)) {
-				JOptionPane.showMessageDialog(gameFrame, "Congrats! You solved the mystry!", "Accusation Result", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(gameFrame, "Congrats! You solved the mystery!", "Accusation Result", JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				// Show correct answer if wrong too
 				String reveal = String.format("The correct answer is:\nThe %s, The %s, and The %s.", 
-					theAnswer.getPerson().getCardName(),
-					theAnswer.getWeapon().getCardName(),
-					theAnswer.getRoom().getCardName());
-				
+						theAnswer.getPerson().getCardName(),
+						theAnswer.getWeapon().getCardName(),
+						theAnswer.getRoom().getCardName());
+
 				JOptionPane.showMessageDialog(gameFrame, "Your accusation is incorrect, game over! "+reveal, "Accusation Result", JOptionPane.ERROR_MESSAGE);
-				
-				// Close the entire game if user loses
-				gameFrame.dispose();
-				System.exit(0);
+
+
 			}
+			// Close the entire game regardless of win or loss
+			gameFrame.dispose();
+			System.exit(0);
 		}
+	}
+
+	// Handle a computer accusation(meaning the game is over)
+	public void makeComputerAccusation() {
+		String reveal = String.format("The correct answer is:\nThe %s, The %s, and The %s.", 
+				theAnswer.getPerson().getCardName(),
+				theAnswer.getWeapon().getCardName(),
+				theAnswer.getRoom().getCardName());
+		JOptionPane.showMessageDialog(gameFrame, "The " + currentPlayer.getName() + " Won! " + reveal, "You Lose", JOptionPane.ERROR_MESSAGE);
+		// Close the entire game
+		gameFrame.dispose();
+		System.exit(0);
 	}
 
 	// Go through each player and see if they can disprove the suggestion made
@@ -599,7 +612,8 @@ public class Board {
 		currentPlayer.setTurnFinished(false);
 		// Make the computer move
 		BoardCell selectedMove = currentPlayer.selectTarget(targets);
-		boardPanel.movePlayer(selectedMove.getRow(), selectedMove.getCol(), currentPlayer);
+		if(selectedMove != null) boardPanel.movePlayer(selectedMove.getRow(), selectedMove.getCol(), currentPlayer);
+		if(currentPlayer.solvedMystery()) makeComputerAccusation();
 		boardPanel.repaint();
 		currentPlayer.setTurnFinished(true);
 	}
@@ -621,7 +635,7 @@ public class Board {
 			Card disprovingCard = handleSuggestion(suggestion, currentPlayer);
 			controlPanel.hideGuessResult();
 			controlPanel.setGuess(suggestion.getRoom().getCardName() + ", " + suggestion.getPerson().getCardName() + ", " + suggestion.getWeapon().getCardName());
-			
+
 			// Update guess result based on whether or not there is a disproving card
 			if(disprovingCard != null) {
 				currentPlayer.addSeen(disprovingCard);

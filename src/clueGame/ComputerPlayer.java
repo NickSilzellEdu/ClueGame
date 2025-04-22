@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.Set;
 import clueGame.Board;
 public class ComputerPlayer extends Player{
-
+	private boolean mysterySolved = false;
 
 	public ComputerPlayer(String name, Color color, int row, int col) {
 		super(name, color, row, col);
@@ -97,6 +97,10 @@ public class ComputerPlayer extends Player{
 			}
 			weaponCard = allWeapons.get(rand.nextInt(allWeapons.size()));
 		}    
+		
+		// If there is only one card of each type left, make the accusation
+		if(this.getSeen().size() == Board.getInstance().getDeckSize() - 3 - this.getHand().size()) mysterySolved = true;
+		
 		return new Solution(roomCard, personCard, weaponCard);
 	}
 
@@ -107,7 +111,7 @@ public class ComputerPlayer extends Player{
 
 		// If a room within roll distance is unseen, add it to room targets
 		for (BoardCell cell : targets) {
-			if (cell.isRoom()) {
+			if (cell != null && cell.isRoom()) {
 				Room room = board.getRoom(cell);
 				Card roomCard = null;
 
@@ -131,6 +135,9 @@ public class ComputerPlayer extends Player{
 		}
 
 		// A random target is selected if there is no rooms
+		
+		// If there is no targets, stay put
+		if(targets.size() == 0) return board.getCell(getRow(), getCol());
 		int index = rand.nextInt(targets.size());
 		int i = 0;
 		for (BoardCell cell : targets) {
@@ -138,6 +145,10 @@ public class ComputerPlayer extends Player{
 				return cell;
 			i++;
 		}
-		return null; 
+		return null;
+	}
+	
+	public boolean solvedMystery() {
+		return mysterySolved;
 	}
 }

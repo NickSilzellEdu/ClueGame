@@ -206,7 +206,7 @@ public class BoardPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, "Please click somwewhere on the board");
 			return;
 		}
-		
+
 		BoardCell clickedCell = board.getCell(row, col);
 
 		// If it is a valid cell and the human's turn
@@ -275,6 +275,8 @@ public class BoardPanel extends JPanel {
 		Timer timer = new Timer(delay, null);
 		final int[] count = {0};
 
+
+
 		timer.addActionListener(e -> {
 			if (count[0] < steps) {
 				player.setX((int) (startX + dx * count[0]));
@@ -309,11 +311,15 @@ public class BoardPanel extends JPanel {
 					board.getGameControlPanel().setGuess("None");
 					board.getGameControlPanel().setGuessResult("None");
 				}
-
+				board.getControlPanel().getNextButton().setEnabled(true);
 			}
 		});
+		board.getControlPanel().getNextButton().setEnabled(false);
 		timer.start();
+
+
 	}
+
 
 	// Highlight all walkway targets, and valid rooms
 	public void highlightTargets(Graphics g) {
