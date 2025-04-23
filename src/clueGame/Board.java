@@ -12,6 +12,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.GridLayout;
+import javax.sound.sampled.AudioInputStream; // win and lose music
+import javax.sound.sampled.AudioSystem; // win and lose music
+import javax.sound.sampled.Clip; // win and lose music
+import javax.swing.ImageIcon; // img to win/lose panel
+import javax.swing.BoxLayout; // what it says below
+import javax.swing.Box; // same
+import java.awt.Component; // also sick img
+
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -513,38 +521,82 @@ public class Board {
 
 		accusePanel.add(new JLabel("Room: "));
 		JComboBox<Card> roomCombo = new JComboBox<>(
-				deck.stream().filter(c -> c.getType() == CardType.ROOM).toArray(Card[]::new));
+			deck.stream().filter(c -> c.getType() == CardType.ROOM).toArray(Card[]::new));
 		accusePanel.add(roomCombo);
 
 		accusePanel.add(new JLabel("Person: "));
-		JComboBox<Card> personCombo = new JComboBox<>(
-				personCards.toArray(new Card[0]));
+		JComboBox<Card> personCombo = new JComboBox<>(personCards.toArray(new Card[0]));
 		accusePanel.add(personCombo);
 
 		accusePanel.add(new JLabel("Weapon: "));
-		JComboBox<Card> weaponCombo = new JComboBox<>(
-				weaponCards.toArray(new Card[0]));
+		JComboBox<Card> weaponCombo = new JComboBox<>(weaponCards.toArray(new Card[0]));
 		accusePanel.add(weaponCombo);
 
 		// Dialog panels for correct and wrong
 		int result = JOptionPane.showConfirmDialog(gameFrame, accusePanel, "Make an Accusation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
 		if (result == JOptionPane.OK_OPTION) {
-			ClueGame.stopMusic(); // Stop music
+			ClueGame.stopMusic(); // Stop bg music
 			Solution accusation = new Solution((Card)roomCombo.getSelectedItem(),(Card)personCombo.getSelectedItem(),(Card)weaponCombo.getSelectedItem());
 
+			// Win message
 			if (checkAccusation(accusation)) {
-				JOptionPane.showMessageDialog(gameFrame, "Victory! Total damage: 100%", "Accusation Result", JOptionPane.INFORMATION_MESSAGE);
+				// Winning music
+				try {
+                    AudioInputStream ais = AudioSystem.getAudioInputStream(
+                        getClass().getResource("capital_battle_end.wav")
+                    );
+                    
+                    Clip sfx = AudioSystem.getClip();
+                    sfx.open(ais);
+                    sfx.start();
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+				
+				// Win message plus sick image
+				ImageIcon icon = new ImageIcon(getClass().getResource("clashwin.png"));
+				JLabel textLabel = new JLabel("Wow! .. you raided this base faster than a maxed Town Hall 13 Electro Drag push!");
+				JLabel imageLabel = new JLabel(icon);
+				JPanel panel = new JPanel();
+				
+				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+				textLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+				imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+				panel.add(textLabel);
+				panel.add(Box.createVerticalStrut(10));
+				panel.add(imageLabel);
+
+				// Show sick image
+				JOptionPane.showMessageDialog(gameFrame, panel, "Accusation Result", JOptionPane.INFORMATION_MESSAGE);
+				
+			// Losing message
 			} else {
+				// Losing music
+				try {
+                    AudioInputStream ais = AudioSystem.getAudioInputStream(
+                        getClass().getResource("battle_lost_02.wav")
+                    );
+                    
+                    Clip sfx = AudioSystem.getClip();
+                    sfx.open(ais);
+                    sfx.start();
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+				
 				// Show correct answer if wrong too
 				String reveal = String.format("The Correct Answer:\nThe %s used the %s in the %s.", 
-						theAnswer.getPerson().getCardName(),
-						theAnswer.getWeapon().getCardName(),
-						theAnswer.getRoom().getCardName());
+					theAnswer.getPerson().getCardName(),
+					theAnswer.getWeapon().getCardName(),
+					theAnswer.getRoom().getCardName());
 
 				JOptionPane.showMessageDialog(gameFrame, "Your accusation is incorrect, Game Over! "+reveal, "Accusation Result", JOptionPane.ERROR_MESSAGE);
-
 			}
+			
 			// Close the entire game regardless of win or loss
 			gameFrame.dispose();
 			System.exit(0);
@@ -554,10 +606,12 @@ public class Board {
 	// Handle a computer accusation(meaning the game is over)
 	public void makeComputerAccusation() {
 		String reveal = String.format("The correct answer is:\nThe %s, The %s, and The %s.", 
-				theAnswer.getPerson().getCardName(),
-				theAnswer.getWeapon().getCardName(),
-				theAnswer.getRoom().getCardName());
+			theAnswer.getPerson().getCardName(),
+			theAnswer.getWeapon().getCardName(),
+			theAnswer.getRoom().getCardName());
+		
 		JOptionPane.showMessageDialog(gameFrame, "The " + currentPlayer.getName() + " Won! " + reveal, "You Lose", JOptionPane.ERROR_MESSAGE);
+		
 		// Close the entire game
 		gameFrame.dispose();
 		System.exit(0);
