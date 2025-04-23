@@ -12,6 +12,11 @@ import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import java.awt.FlowLayout;
 import java.awt.Color;
+import java.util.Random;
+import javax.sound.sampled.AudioInputStream; // for bg music
+import javax.sound.sampled.AudioSystem; // for bg music
+import javax.sound.sampled.Clip; // for bg music
+
 public class ClueGame extends JFrame {
 	private static BoardPanel boardPanel;
 	private static GameControlPanel controlPanel;
@@ -47,6 +52,28 @@ public class ClueGame extends JFrame {
 		setSize(950, 825);
 		setLocationRelativeTo(null);
 		setVisible(true);
+		
+		// Add bg music -- can play any of 3 songs
+		String[] tracks = {
+		    "home_music_part_1.wav",
+		    "home_music_part_2.wav",
+		    "home_music_part_3.wav"
+		};
+		
+		// Randomize the played song
+		String selected = tracks[new Random().nextInt(tracks.length)];
+		try {
+		    AudioInputStream ais = AudioSystem.getAudioInputStream(
+		        getClass().getResource(selected)
+		    );
+		    
+		    Clip clip = AudioSystem.getClip();
+		    clip.open(ais);
+		    clip.loop(Clip.LOOP_CONTINUOUSLY); // Loop forever
+		    
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) throws InterruptedException{
