@@ -530,6 +530,7 @@ public class Board {
 		int result = JOptionPane.showConfirmDialog(gameFrame, accusePanel, "Make an Accusation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
 		if (result == JOptionPane.OK_OPTION) {
+			ClueGame.stopMusic(); // Stop music
 			Solution accusation = new Solution((Card)roomCombo.getSelectedItem(),(Card)personCombo.getSelectedItem(),(Card)weaponCombo.getSelectedItem());
 
 			if (checkAccusation(accusation)) {

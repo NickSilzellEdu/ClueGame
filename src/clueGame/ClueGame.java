@@ -21,7 +21,16 @@ public class ClueGame extends JFrame {
 	private static BoardPanel boardPanel;
 	private static GameControlPanel controlPanel;
 	private static KnownCardsPanel cardsPanel;
+	private static Clip backgroundClip;
 
+	// Stop main music once an accusation is submitted
+	public static void stopMusic() {
+		if (backgroundClip != null && backgroundClip.isRunning()) {
+			backgroundClip.stop();
+			backgroundClip.close();
+		}
+	}
+	
 	public ClueGame() {
 		
 		// Setup the main window
@@ -70,6 +79,7 @@ public class ClueGame extends JFrame {
 		    Clip clip = AudioSystem.getClip();
 		    clip.open(ais);
 		    clip.loop(Clip.LOOP_CONTINUOUSLY); // Loop forever
+		    backgroundClip = clip;
 		    
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -90,6 +100,5 @@ public class ClueGame extends JFrame {
 		// Present a welcome screen
 		JOptionPane.showMessageDialog(game, "You are the " + board.getPlayers().get(0).getName() + ". Can you find the solution before the Computer Players?", "Welcome to Clue", JOptionPane.INFORMATION_MESSAGE);
 		board.startFirstTurn();
-
 	}
 }
