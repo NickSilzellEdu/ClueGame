@@ -543,7 +543,6 @@ public class Board {
 
 				JOptionPane.showMessageDialog(gameFrame, "Your accusation is incorrect, Game Over! "+reveal, "Accusation Result", JOptionPane.ERROR_MESSAGE);
 
-
 			}
 			// Close the entire game regardless of win or loss
 			gameFrame.dispose();
