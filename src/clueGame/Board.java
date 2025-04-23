@@ -527,7 +527,7 @@ public class Board {
 		accusePanel.add(weaponCombo);
 
 		// Dialog panels for correct and wrong
-		int result = JOptionPane.showConfirmDialog(gameFrame, accusePanel, "Make an accusation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		int result = JOptionPane.showConfirmDialog(gameFrame, accusePanel, "Make an Accusation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
 		if (result == JOptionPane.OK_OPTION) {
 			Solution accusation = new Solution((Card)roomCombo.getSelectedItem(),(Card)personCombo.getSelectedItem(),(Card)weaponCombo.getSelectedItem());
@@ -536,12 +536,12 @@ public class Board {
 				JOptionPane.showMessageDialog(gameFrame, "Congrats! You solved the mystery!", "Accusation Result", JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				// Show correct answer if wrong too
-				String reveal = String.format("The correct answer is:\nThe %s, The %s, and The %s.", 
+				String reveal = String.format("The Correct Answer:\nThe %s used the %s in the %s.", 
 						theAnswer.getPerson().getCardName(),
 						theAnswer.getWeapon().getCardName(),
 						theAnswer.getRoom().getCardName());
 
-				JOptionPane.showMessageDialog(gameFrame, "Your accusation is incorrect, game over! "+reveal, "Accusation Result", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(gameFrame, "Your accusation is incorrect, Game Over! "+reveal, "Accusation Result", JOptionPane.ERROR_MESSAGE);
 
 
 			}
