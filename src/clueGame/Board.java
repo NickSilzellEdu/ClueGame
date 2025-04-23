@@ -533,7 +533,7 @@ public class Board {
 			Solution accusation = new Solution((Card)roomCombo.getSelectedItem(),(Card)personCombo.getSelectedItem(),(Card)weaponCombo.getSelectedItem());
 
 			if (checkAccusation(accusation)) {
-				JOptionPane.showMessageDialog(gameFrame, "Congrats! You solved the mystery!", "Accusation Result", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(gameFrame, "Victory! Total damage: 100%", "Accusation Result", JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				// Show correct answer if wrong too
 				String reveal = String.format("The Correct Answer:\nThe %s used the %s in the %s.", 
