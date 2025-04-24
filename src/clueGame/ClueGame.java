@@ -90,7 +90,7 @@ public class ClueGame extends JFrame {
 		
 		
 		Board board = Board.getInstance();
-		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
+		board.setConfigFiles("/data/ClueLayout.csv", "/data/ClueSetup.txt");
 		board.initialize();	
 		
 		ClueGame game = new ClueGame();

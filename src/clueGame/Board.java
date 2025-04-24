@@ -162,7 +162,7 @@ public class Board {
 		if(roomMap == null) roomMap = new HashMap<Character, Room>();
 
 		// Set up config file
-		try(Scanner scan = new Scanner(new FileReader(this.setupConfigFile))) {
+		try(Scanner scan = new Scanner(getClass().getResourceAsStream(setupConfigFile))) {
 			// Read setup file line by line, and add to roomMap if valid
 			// For now: spaces are considered rooms
 			String currentLine = "";
@@ -232,7 +232,7 @@ public class Board {
 
 		// Read nonempty lines from layout file
 		List<String> lines = new ArrayList<String>();
-		try (Scanner scanner = new Scanner(new FileReader(layoutConfigFile))) {
+		try (Scanner scanner = new Scanner(getClass().getResourceAsStream(layoutConfigFile))) {
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
 				if (!line.trim().isEmpty()) {
