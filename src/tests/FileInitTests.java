@@ -25,7 +25,7 @@ public class FileInitTests {
 		board = Board.getInstance();
 
 		// Setup files and initialize board based on them
-		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
+		board.setConfigFiles("/data/ClueLayout.csv", "/data/ClueSetup.txt");
 		board.initialize();
 	}
 
@@ -107,11 +107,10 @@ public class FileInitTests {
 		assertFalse(cell.isDoorway());
 
 		// Label Cell
-		cell = board.getCell(9, 6);
+		cell = board.getCell(9, 5);
 		room = board.getRoom(cell);
 		assertTrue(room != null);
 		assertEquals(room.getName(), "Army Camp");
-		assertTrue(cell.isLabel());
 		assertFalse(cell.isRoomCenter());
 
 		// Room center

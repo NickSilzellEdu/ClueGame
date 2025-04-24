@@ -23,7 +23,7 @@ public class GameSolutionTest {
 	@BeforeAll
 	public static void setup(){
 		board = Board.getInstance();
-		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
+		board.setConfigFiles("/data/ClueLayout.csv", "/data/ClueSetup.txt");
 		board.initialize();	
 		// Use the same static cards for all tests
 		person1 = new Card("Person1", CardType.PERSON);

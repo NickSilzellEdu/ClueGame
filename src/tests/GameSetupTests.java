@@ -26,7 +26,7 @@ public class GameSetupTests {
 	@BeforeAll
 	public static void setup() {
 		board = Board.getInstance();
-		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
+		board.setConfigFiles("/data/ClueLayout.csv", "/data/ClueSetup.txt");
 		board.initialize();	
 	}
 
