@@ -518,6 +518,11 @@ public class Board {
 
 	// Handles all accusations
 	public void handleAccusation() {
+		// if it is not your turn let them know
+		if(!(currentPlayer instanceof HumanPlayer)) {
+			JOptionPane.showMessageDialog(boardPanel, "Please wait until it is your turn to make an accusation");
+			return;
+		}
 		JPanel accusePanel = new JPanel(new GridLayout(3,2,10,10));
 
 		accusePanel.add(new JLabel("Room: "));

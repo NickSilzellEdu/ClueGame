@@ -393,7 +393,7 @@ public class BoardPanel extends JPanel {
 						else suggestion = board.makeComputerSuggestion();
 						// Find the suggested player
 						for(Player p : board.getPlayers()) {
-							if(!suggestion.getPerson().getCardName().equals(board.getCurrentPlayer().getName()) && suggestion.getPerson().getCardName().equals(p.getName())) {
+							if(suggestion != null && !suggestion.getPerson().getCardName().equals(board.getCurrentPlayer().getName()) && suggestion.getPerson().getCardName().equals(p.getName())) {
 								movePlayer(newRow, newCol, p); // Move the suggested player to this room
 								p.setCanStayInRoom(true);// Make it so the player can stay in this room
 								break;
