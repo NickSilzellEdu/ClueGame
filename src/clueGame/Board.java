@@ -16,6 +16,7 @@ import javax.sound.sampled.AudioInputStream; // win and lose music
 import javax.sound.sampled.AudioSystem; // win and lose music
 import javax.sound.sampled.Clip; // win and lose music
 import javax.swing.ImageIcon; // img to win/lose panel
+import java.awt.Image; // sh-ame
 import javax.swing.BoxLayout; // what it says below
 import javax.swing.Box; // same
 import java.awt.Component; // also sick img
@@ -556,9 +557,9 @@ public class Board {
                 }
 				
 				// Win message plus sick image
-				ImageIcon icon = new ImageIcon(getClass().getResource("clashwin.png"));
+				ImageIcon win = new ImageIcon(getClass().getResource("clashwin.png"));
 				JLabel textLabel = new JLabel("Wow! .. you raided this base faster than a maxed Town Hall 13 Electro Drag push!");
-				JLabel imageLabel = new JLabel(icon);
+				JLabel imageLabel = new JLabel(win);
 				JPanel panel = new JPanel();
 				
 				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -589,12 +590,31 @@ public class Board {
                 }
 				
 				// Show correct answer if wrong too
-				String reveal = String.format("The Correct Answer:\nThe %s used the %s in the %s.", 
-					theAnswer.getPerson().getCardName(),
-					theAnswer.getWeapon().getCardName(),
-					theAnswer.getRoom().getCardName());
+				String reveal = String.format("\nThe %s used the %s in the %s.", theAnswer.getPerson().getCardName(), theAnswer.getWeapon().getCardName(), theAnswer.getRoom().getCardName());
+				
+				// Lose message plus lame image -- get same size imgs
+				ImageIcon win = new ImageIcon(getClass().getResource("clashwin.png")); // img quality is so shit tho
+				int w = win.getIconWidth();
+				int h = win.getIconHeight();
+				
+				ImageIcon lose1 = new ImageIcon(getClass().getResource("defeat.png"));
+				Image scaled = lose1.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
+				ImageIcon lose2 = new ImageIcon(scaled);
+				
+				JLabel textLabel = new JLabel("I've seen better raids from my cousins ..  " + reveal); // weird format, only thing i found to work
+				JLabel imageLabel = new JLabel(lose2);
+				JPanel panel = new JPanel();
+				
+				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+				textLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+				imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+				
+				panel.add(textLabel);
+				panel.add(Box.createVerticalStrut(10)); 
+				panel.add(imageLabel);
 
-				JOptionPane.showMessageDialog(gameFrame, "Your accusation is incorrect, Game Over! "+reveal, "Accusation Result", JOptionPane.ERROR_MESSAGE);
+				// Show loser image
+				JOptionPane.showMessageDialog(gameFrame, panel, "Accusation Result", JOptionPane.ERROR_MESSAGE);
 			}
 			
 			// Close the entire game regardless of win or loss
