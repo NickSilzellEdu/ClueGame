@@ -172,35 +172,35 @@ public class BoardPanel extends JPanel {
 		int base = Math.min(cellWidth, cellHeight);
 		int diameter = (int)(base * scale);
 		int shift = (diameter - base)/2;
-		
+
 		playersToDraw.forEach(player -> {
 			int x = player.getX();
 			int y = player.getY();
 			int x0 = x - shift;
-		    int y0 = y - shift;
-			
+			int y0 = y - shift;
+
 			g2.setColor(player.getColor());
-		    g2.setStroke(new BasicStroke(borderWidth));
-		    g2.drawOval(x0, y0, diameter, diameter);
-			
+			g2.setStroke(new BasicStroke(borderWidth));
+			g2.drawOval(x0, y0, diameter, diameter);
+
 			// Add char. imgs
-		    Image avatar = player.getAvatar();
-		    
-		    if (avatar != null) {
-		    	Shape oldClip = g2.getClip();
-		        
-		        Ellipse2D clipCircle = new Ellipse2D.Double(x0+borderWidth, y0+borderWidth, diameter-borderWidth*2, diameter-borderWidth*2);
-		        g2.setClip(clipCircle);
-		        
-		        g2.drawImage(avatar, x0+borderWidth, y0+borderWidth, diameter-borderWidth*2, diameter-borderWidth*2, this);
-		        g2.setClip(oldClip);
-		        
-		    } else {
-		        int inset = borderWidth;
-		        int d2 = diameter - inset*2;
-		        g2.setColor(player.getColor());
-		        g2.fillOval(x0 + inset, y0 + inset, d2, d2);
-		    }
+			Image avatar = player.getAvatar();
+
+			if (avatar != null) {
+				Shape oldClip = g2.getClip();
+
+				Ellipse2D clipCircle = new Ellipse2D.Double(x0+borderWidth, y0+borderWidth, diameter-borderWidth*2, diameter-borderWidth*2);
+				g2.setClip(clipCircle);
+
+				g2.drawImage(avatar, x0+borderWidth, y0+borderWidth, diameter-borderWidth*2, diameter-borderWidth*2, this);
+				g2.setClip(oldClip);
+
+			} else {
+				int inset = borderWidth;
+				int d2 = diameter - inset*2;
+				g2.setColor(player.getColor());
+				g2.fillOval(x0 + inset, y0 + inset, d2, d2);
+			}
 		});
 
 		// Styling the room names text
@@ -326,24 +326,26 @@ public class BoardPanel extends JPanel {
 				timer.stop();
 
 				// If player is in a room and it is their turn make a suggestion
-				if(board.getCell(newRow, newCol).isRoomCenter() && board.getCurrentPlayer() == player) {
-					Solution suggestion = null;
-					if(player instanceof HumanPlayer) suggestion = board.makeSuggestion();
-					else suggestion = board.makeComputerSuggestion();
-					// Find the suggested player
-					for(Player p : board.getPlayers()) {
-						if(!suggestion.getPerson().getCardName().equals(board.getCurrentPlayer().getName()) && suggestion.getPerson().getCardName().equals(p.getName())) {
-							movePlayer(newRow, newCol, p); // Move the suggested player to this room
-							p.setCanStayInRoom(true);// Make it so the player can stay in this room
-							break;
+				if(board.getCurrentPlayer() == player) {
+					if(board.getCell(newRow, newCol).isRoomCenter()) {
+						Solution suggestion = null;
+						if(player instanceof HumanPlayer) suggestion = board.makeSuggestion();
+						else suggestion = board.makeComputerSuggestion();
+						// Find the suggested player
+						for(Player p : board.getPlayers()) {
+							if(!suggestion.getPerson().getCardName().equals(board.getCurrentPlayer().getName()) && suggestion.getPerson().getCardName().equals(p.getName())) {
+								movePlayer(newRow, newCol, p); // Move the suggested player to this room
+								p.setCanStayInRoom(true);// Make it so the player can stay in this room
+								break;
+							}
 						}
 					}
+					else{
+						board.getGameControlPanel().setGuess("None");
+						board.getGameControlPanel().setGuessResult("None");
+					}
+					board.getControlPanel().getNextButton().setEnabled(true);
 				}
-				else if(board.getCurrentPlayer() == player){
-					board.getGameControlPanel().setGuess("None");
-					board.getGameControlPanel().setGuessResult("None");
-				}
-				board.getControlPanel().getNextButton().setEnabled(true);
 			}
 		});
 		board.getControlPanel().getNextButton().setEnabled(false);
@@ -352,6 +354,10 @@ public class BoardPanel extends JPanel {
 
 	}
 
+	// Move a player from a suggestion
+	public void movePlayerFromSuggestion(int newRow, int newCol, Player player) {
+
+	}
 
 	// Highlight all walkway targets, and valid rooms
 	public void highlightTargets(Graphics g) {

@@ -40,7 +40,7 @@ public class KnownCardsPanel extends JPanel {
 
 		// Initialize board for player list
 		board = Board.getInstance();
-		
+
 		for(Card card : board.getCurrentPlayer().getHand()) {
 			addCard(card, true);
 		}
@@ -66,38 +66,40 @@ public class KnownCardsPanel extends JPanel {
 
 	// Add a card to a section
 	public void addCard(Card card, boolean inHand) {
-		JPanel sectionPanel;
-		JTextField cardField = new JTextField(card.getCardName());
-		switch(card.getType()) {
+		if(!board.getCurrentPlayer().getSeen().contains(card)) {
+			JPanel sectionPanel;
+			JTextField cardField = new JTextField(card.getCardName());
+			switch(card.getType()) {
 
-		case CardType.PERSON:
-			// Handle section
-			if(inHand) sectionPanel = peopleInHand;
-			else sectionPanel = peopleSeen;
-			break;
+			case CardType.PERSON:
+				// Handle section
+				if(inHand) sectionPanel = peopleInHand;
+				else sectionPanel = peopleSeen;
+				break;
 
-		case CardType.ROOM:
-			if(inHand) sectionPanel = roomsInHand;
-			else sectionPanel = roomsSeen;
-			break;
+			case CardType.ROOM:
+				if(inHand) sectionPanel = roomsInHand;
+				else sectionPanel = roomsSeen;
+				break;
 
-		case CardType.WEAPON:
-			if(inHand) sectionPanel = weaponsInHand;
-			else sectionPanel = weaponsSeen;
-			break;
+			case CardType.WEAPON:
+				if(inHand) sectionPanel = weaponsInHand;
+				else sectionPanel = weaponsSeen;
+				break;
 
-		default:
-			sectionPanel = null;
-		}	
-		if (sectionPanel != null) {
+			default:
+				sectionPanel = null;
+			}	
+			if (sectionPanel != null) {
 
-			// If the card is seen, update the color to the player who has it
-			if(!inHand) setFieldBackgroundFromCard(cardField, card);
+				// If the card is seen, update the color to the player who has it
+				if(!inHand) setFieldBackgroundFromCard(cardField, card);
 
-			cardField.setEditable(false);
-			sectionPanel.add(cardField);
-			sectionPanel.revalidate();
-			sectionPanel.repaint();
+				cardField.setEditable(false);
+				sectionPanel.add(cardField);
+				sectionPanel.revalidate();
+				sectionPanel.repaint();
+			}
 		}
 	}
 

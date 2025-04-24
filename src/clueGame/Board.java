@@ -732,8 +732,9 @@ public class Board {
 			}
 			else {
 				controlPanel.setGuessResult(disprovingCard);
-				currentPlayer.addSeen(disprovingCard);
 				getknownCardsPanel().addCard(disprovingCard, false);
+				currentPlayer.addSeen(disprovingCard);
+
 			}
 			return suggestion;
 		} 
