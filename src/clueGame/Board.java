@@ -545,7 +545,7 @@ public class Board {
 				// Winning music
 				try {
                     AudioInputStream ais = AudioSystem.getAudioInputStream(
-                        getClass().getResource("music/capital_battle_end.wav")
+                        getClass().getResource("/music/capital_battle_end.wav")
                     );
                     
                     Clip sfx = AudioSystem.getClip();
@@ -557,7 +557,7 @@ public class Board {
                 }
 				
 				// Win message plus sick image
-				ImageIcon win = new ImageIcon(getClass().getResource("images/clashwin.png"));
+				ImageIcon win = new ImageIcon(getClass().getResource("/images/clashwin.png"));
 				JLabel textLabel = new JLabel("Wow! .. you raided this base faster than a maxed Town Hall 13 Electro Drag push!");
 				JLabel imageLabel = new JLabel(win);
 				JPanel panel = new JPanel();
@@ -578,7 +578,7 @@ public class Board {
 				// Losing music
 				try {
                     AudioInputStream ais = AudioSystem.getAudioInputStream(
-                        getClass().getResource("music/battle_lost_02.wav")
+                        getClass().getResource("/music/battle_lost_02.wav")
                     );
                     
                     Clip sfx = AudioSystem.getClip();
@@ -593,11 +593,11 @@ public class Board {
 				String reveal = String.format("\nThe %s used the %s in the %s.", theAnswer.getPerson().getCardName(), theAnswer.getWeapon().getCardName(), theAnswer.getRoom().getCardName());
 				
 				// Lose message plus lame image -- get same size imgs
-				ImageIcon win = new ImageIcon(getClass().getResource("images/clashwin.png")); // img quality is so shit tho
+				ImageIcon win = new ImageIcon(getClass().getResource("/images/clashwin.png")); // img quality is so shit tho
 				int w = win.getIconWidth();
 				int h = win.getIconHeight();
 				
-				ImageIcon lose1 = new ImageIcon(getClass().getResource("images/defeat.png"));
+				ImageIcon lose1 = new ImageIcon(getClass().getResource("/images/defeat.png"));
 				Image scaled = lose1.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
 				ImageIcon lose2 = new ImageIcon(scaled);
 				
