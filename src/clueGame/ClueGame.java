@@ -64,9 +64,9 @@ public class ClueGame extends JFrame {
 		
 		// Add bg music -- can play any of 3 songs
 		String[] tracks = {
-		    "home_music_part_1.wav",
-		    "home_music_part_2.wav",
-		    "home_music_part_3.wav"
+		    "/music/home_music_part_1.wav",
+		    "/music/home_music_part_2.wav",
+		    "/music/home_music_part_3.wav"
 		};
 		
 		// Randomize the played song
@@ -87,6 +87,8 @@ public class ClueGame extends JFrame {
 	}
 
 	public static void main(String[] args) throws InterruptedException{
+		
+		
 		Board board = Board.getInstance();
 		board.setConfigFiles("data/ClueLayout.csv", "data/ClueSetup.txt");
 		board.initialize();	

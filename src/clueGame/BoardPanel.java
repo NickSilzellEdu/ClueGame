@@ -18,13 +18,16 @@ import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import javax.swing.Timer;
 import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
@@ -38,6 +41,9 @@ public class BoardPanel extends JPanel {
 	private int cellHeight;
 	private int numRows;
 	private int numCols;
+	private Player hoverPlayer = null;
+	private static final double AVATAR_SCALE = 1.3;
+	private static final int BORDER_WIDTH = 3;
 
 	public BoardPanel() {
 
@@ -72,6 +78,37 @@ public class BoardPanel extends JPanel {
 				repaint();
 			}
 		});
+		
+		// Add the thing where if a player on the board is hoved there name is shown
+		addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				updateHover(e.getX(), e.getY());
+			}
+		});
+	}
+	
+	// Helper to mouselistner where player name is hovered
+	private void updateHover(int mx, int my) {
+		hoverPlayer = null;
+		int base1 = Math.min(cellWidth, cellHeight);
+		int diameter1 = (int)(base1*AVATAR_SCALE);
+		int shift1 = (diameter1-base1)/2;
+		
+		for (Player p : board.getPlayers()) {
+			int px = p.getX();
+			int py = p.getY();
+			int x0 = px-shift1;
+			int y0 = py-shift1;
+			double dx = mx-(x0+diameter1/2);
+			double dy = my-(y0+diameter1/2);
+			
+			if (dx*dx+dy*dy <= (diameter1/2.0)*(diameter1/2.0)) {
+				hoverPlayer = p;
+				break;
+			}
+		}
+		repaint();
 	}
 
 	// Board sizing
@@ -202,6 +239,29 @@ public class BoardPanel extends JPanel {
 				g2.fillOval(x0 + inset, y0 + inset, d2, d2);
 			}
 		});
+		
+		// Add hover players option
+		if (hoverPlayer != null) {
+			Graphics2D g3 = (Graphics2D) g;
+			Font font = new Font("Book Antiqua", Font.BOLD, 11);
+			g3.setFont(font);
+			FontMetrics fm = g3.getFontMetrics();
+			String name = hoverPlayer.getName();
+			
+			int textW = fm.stringWidth(name);
+			int base1 = Math.min(cellWidth, cellHeight);
+			int diameter1 = (int)(base1*AVATAR_SCALE);
+			int shift1 = (diameter1-base1)/2;
+			int px = hoverPlayer.getX();
+			int py = hoverPlayer.getY();
+			int x0 = px-shift1;
+			int y0 = py-shift1;
+			int textX = x0+(diameter1-textW)/2;
+			int textY = y0-4;
+			
+			g3.setColor(Color.BLACK);
+			g3.drawString(name, textX, textY);
+		}
 
 		// Styling the room names text
 		java.awt.Font clashFont = new java.awt.Font("Old English Text MT", java.awt.Font.BOLD, 15);
@@ -351,11 +411,6 @@ public class BoardPanel extends JPanel {
 		board.getControlPanel().getNextButton().setEnabled(false);
 		timer.start();
 
-
-	}
-
-	// Move a player from a suggestion
-	public void movePlayerFromSuggestion(int newRow, int newCol, Player player) {
 
 	}
 
