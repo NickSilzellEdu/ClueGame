@@ -12,7 +12,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-
+import java.awt.Shape;
+import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
@@ -26,6 +27,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.GridLayout;
 import java.awt.Stroke;
 import clueGame.Solution;
@@ -164,11 +166,41 @@ public class BoardPanel extends JPanel {
 		ArrayList<Player> playersToDraw = new ArrayList<>(board.getPlayers());
 		playersToDraw.sort((p1, p2) -> Integer.compare(p1.getDrawPriority(), p2.getDrawPriority()));
 
+		Graphics2D g2 = (Graphics2D) g;
+		int borderWidth = 3;
+		double scale = 1.3;
+		int base = Math.min(cellWidth, cellHeight);
+		int diameter = (int)(base * scale);
+		int shift = (diameter - base)/2;
+		
 		playersToDraw.forEach(player -> {
 			int x = player.getX();
 			int y = player.getY();
-			g.setColor(player.getColor());
-			g.fillOval(x, y, cellWidth, cellHeight);
+			int x0 = x - shift;
+		    int y0 = y - shift;
+			
+			g2.setColor(player.getColor());
+		    g2.setStroke(new BasicStroke(borderWidth));
+		    g2.drawOval(x0, y0, diameter, diameter);
+			
+			// Add char. imgs
+		    Image avatar = player.getAvatar();
+		    
+		    if (avatar != null) {
+		    	Shape oldClip = g2.getClip();
+		        
+		        Ellipse2D clipCircle = new Ellipse2D.Double(x0+borderWidth, y0+borderWidth, diameter-borderWidth*2, diameter-borderWidth*2);
+		        g2.setClip(clipCircle);
+		        
+		        g2.drawImage(avatar, x0+borderWidth, y0+borderWidth, diameter-borderWidth*2, diameter-borderWidth*2, this);
+		        g2.setClip(oldClip);
+		        
+		    } else {
+		        int inset = borderWidth;
+		        int d2 = diameter - inset*2;
+		        g2.setColor(player.getColor());
+		        g2.fillOval(x0 + inset, y0 + inset, d2, d2);
+		    }
 		});
 
 		// Styling the room names text

@@ -601,7 +601,7 @@ public class Board {
 				Image scaled = lose1.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
 				ImageIcon lose2 = new ImageIcon(scaled);
 				
-				JLabel textLabel = new JLabel("I've seen better raids from my cousins ..  " + reveal); // weird format, only thing i found to work
+				JLabel textLabel = new JLabel("Jeez! .. i've seen better attacks from my younger cousins -- " + reveal); // weird format, only thing i found to work
 				JLabel imageLabel = new JLabel(lose2);
 				JPanel panel = new JPanel();
 				

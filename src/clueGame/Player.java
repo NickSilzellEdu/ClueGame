@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.awt.Color;
+import java.awt.Image;
+import javax.imageio.ImageIO;
 
 public abstract class Player {
 	private Set<Card> hand;
@@ -23,6 +25,7 @@ public abstract class Player {
 	private static int drawCounter = 0; // For drawing priority when stacked
 	private int drawPriority = 0; // For drawing priority when stacked
 	private boolean canStayInRoom = false; // the option to stay in a room if moved because of another players suggestion
+	private Image avatar;
 
 	public Player(String name, Color color, int row, int col) {
 		this.name = name;
@@ -33,6 +36,23 @@ public abstract class Player {
 		this.seen = new HashSet<Card>();
 		this.turnFinished = true;
 		rand = new Random();
+		loadAvatar();
+	}
+	
+	// Put player pictures over character
+	private void loadAvatar() {
+		String fileName = name.replaceAll("\\s+", "") + ".png";
+		
+		try {
+			avatar = ImageIO.read(getClass().getResource("/images/" + fileName));
+		} catch (Exception e) {
+			avatar = null; // No img found
+		}
+	}
+	
+	// Get the image of the avatar
+	public Image getAvatar() {
+		return avatar;
 	}
 
 	// Each player adds a card to their hand
